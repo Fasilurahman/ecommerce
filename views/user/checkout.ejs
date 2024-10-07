@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- molla/checkout.html  22 Nov 2019 09:55:06 GMT -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Molla - Bootstrap eCommerce Template</title>
+    <meta name="keywords" content="HTML5 Template">
+    <meta name="description" content="Molla - Bootstrap eCommerce Template">
+    <meta name="author" content="p-themes">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icons/favicon-16x16.png">
+    <link rel="manifest" href="assets/images/icons/site.html">
+    <link rel="mask-icon" href="assets/images/icons/safari-pinned-tab.svg" color="#666666">
+    <link rel="shortcut icon" href="assets/images/icons/favicon.ico">
+    <meta name="apple-mobile-web-app-title" content="Molla">
+    <meta name="application-name" content="Molla">
+    <meta name="msapplication-TileColor" content="#cc9966">
+    <meta name="msapplication-config" content="assets/images/icons/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    <!-- Plugins CSS File -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <!-- Main CSS File -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<style>
+    /* Coupon Section Styling */
+.apply-coupon {
+    margin-top: 20px;
+}
+
+.apply-coupon .form-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.apply-coupon input {
+    width: 70%;
+    margin-right: 10px;
+}
+
+.apply-coupon button {
+    width: 25%;
+}
+
+#couponMessage {
+    font-size: 0.9em;
+    color: #28a745;
+}
+
+</style>
+<body>
+    <div class="page-wrapper">
+        <header class="header">
+            <div class="header-top">
+                <div class="container">
+                    <div class="header-left">
+                        <div class="header">
+                            <a href="#"></a>
+                            <div class="header-menu">
+                                <ul>
+                                    <li><a href="#"></a></li>
+                                    <li><a href="#"></a></li>
+                                </ul>
+                            </div><!-- End .header-menu -->
+                        </div><!-- End .header-dropdown -->
+
+                        <div class="header">
+                            <a href="#"></a>
+                            <div class="header-menu">
+                               
+                            </div><!-- End .header-menu -->
+                        </div><!-- End .header-dropdown -->
+                    </div><!-- End .header-left -->
+
+                    <div class="header-right">
+                        <ul class="top-menu">
+                            <li>
+                                
+                            </li>
+                        </ul><!-- End .top-menu -->
+                    </div><!-- End .header-right -->
+                </div><!-- End .container -->
+            </div><!-- End .header-top -->
+
+            <div class="header-middle sticky-header">
+                <div class="container">
+                    <div class="header-left">
+                        <button class="mobile-menu-toggler">
+                            <span class="sr-only">Toggle mobile menu</span>
+                            <i class="icon-bars"></i>
+                        </button>
+
+                        
+
+                        <nav class="main-nav">
+                            <ul class="menu sf-arrows">
+                                <li class="megamenu-container active">
+                                    <a href="/" class="sf-with-ul">Home</a>
+                                </li>
+                                <li>
+                                    <a href="/shop" class="sf-with-ul">Shop</a>
+                                </li>
+                                <li>
+                                    <a href="product.html" class="sf-with-ul">Product</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="sf-with-ul">Pages</a>
+                                </li>
+                                <li>
+                                    <a href="blog.html" class="sf-with-ul">Blog</a>
+                                </li>
+                                <li>
+                                    <a href="elements-list.html" class="sf-with-ul">Elements</a>
+                                </li>
+                            </ul><!-- End .menu -->
+                        </nav><!-- End .main-nav -->
+                    </div><!-- End .header-left -->
+
+                    <div class="header-right">
+                        <div class="header-search">
+                            <a href="#" class="search-toggle" role="button" title="Search"><i class="icon-search"></i></a>
+                            <form action="#" method="get">
+                                <div class="header-search-wrapper">
+                                    <label for="q" class="sr-only">Search</label>
+                                    <input type="search" class="form-control" name="q" id="q" placeholder="Search in..." required>
+                                </div><!-- End .header-search-wrapper -->
+                            </form>
+                        </div><!-- End .header-search -->
+                        <div class="dropdown compare-dropdown">
+                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
+                                <i class="icon-random"></i>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <ul class="compare-products">
+                                    
+                                </ul>
+
+                                <div class="compare-actions">
+                                    <a href="#" class="action-link">Clear All</a>
+                                    <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i class="icon-long-arrow-right"></i></a>
+                                </div>
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .compare-dropdown -->
+
+                        <div class="dropdown cart-dropdown">
+                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                                <i class="icon-shopping-cart"></i>
+                                <span class="cart-count">2</span>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-cart-action">
+                                    <a href="/cart" class="btn btn-primary">View Cart</a>
+                                    <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
+                                </div><!-- End .dropdown-cart-total -->
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .cart-dropdown -->
+                    </div><!-- End .header-right -->
+                </div><!-- End .container -->
+            </div><!-- End .header-middle -->
+        </header><!-- End .header -->
+
+        <main class="main">
+        	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        		<div class="container">
+        			<h1 class="page-title">Checkout<span>Shop</span></h1>
+        		</div><!-- End .container -->
+        	</div><!-- End .page-header -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <div class="container">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/cart">cart</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                    </ol>
+                </div><!-- End .container -->
+            </nav><!-- End .breadcrumb-nav -->
+
+            <div class="page-content">
+                <div class="checkout">
+                    <div class="container">
+                        <div class="page-content">
+                            <div class="checkout">
+                                <div class="container">
+                                    <div class="row"> <div class="col-lg-9">
+                                            <h2 class="checkout-title">Billing Details</h2>
+                                            <form action="/order" method="POST">
+                                                <input type="hidden" name="userId" value="<%= user._id %>">
+                                                <input type="hidden" name="addressId" value="<%= selectedAddressId || '' %>">
+                                                <input type="hidden" name="totalPrice" value="<%= cart.totalPrice %>">
+                                                <input type="hidden" name="finalPrice" value="<%= finalPrice %>">
+                                                <input type="hidden" name="ordereditems" value='<%= JSON.stringify(cart.items) %>'>
+                                                <!-- Address Selection -->
+                                                <div class="checkout-address-selection">
+                                                    <h4>Select a Saved Address</h4>
+                                                    <% if (addresses && addresses.length > 0) { %>
+                                                        <div class="form-group">
+                                                            <select id="addressSelect" name="addressId" class="form-control" required
+                                                                onchange="updateAddressDetails(this)">
+                                                                <option value="">Select Address</option>
+                                                                <% addresses.forEach(address => { %>
+                                                                    <% if (address.address && address.address.length > 0) { %>
+                                                                        <option value="<%= address._id %>">
+                                                                            <%= address.address[0].name %> -
+                                                                                <%= address.address[0].city %>,
+                                                                                    <%= address.address[0].state %> (<%= address.address[0].pincode %>)
+                                                                        </option>
+                                                                        <% } else { %>
+                                                                            <option disabled>No address details available</option>
+                                                                            <% } %>
+                                                                                <% }) %>
+                                                            </select>
+                                                        </div>
+                        
+                                                        <div id="addressActions" class="mt-3" style="display: none;">
+                                                            <a href="/addresses"><button class="btn btn-outline-primary" id="editButton">Edit</button></a>
+                                                            <a href="/addresses"><button class="btn btn-outline-danger"
+                                                                    id="deleteButton">Delete</button></a>
+                                                        </div>
+                                                        <% } else { %>
+                                                            <p>No saved addresses found. Please add a new address.</p>
+                                                            <% } %>
+                                                </div>
+                        
+                                                <h4 class="checkout-title">Or Enter a New Address</h4>
+                                                <div class="row">
+                                                    <div class="col-sm-6">
+                                                        <label for="name">Name *</label>
+                                                        <input type="text" id="name" name="name" class="form-control" required
+                                                            pattern="^[A-Za-z\s]{3,50}$"
+                                                            title="Name should be 3-50 characters long and contain only letters.">
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <label for="phone">Phone *</label>
+                                                        <input type="tel" id="phone" name="phone" class="form-control" required
+                                                            pattern="^\d{10}$" title="Phone number must be exactly 10 digits.">
+                                                    </div>
+                                                </div>
+                        
+                                                <label for="state">State *</label>
+                                                <input type="text" id="state" name="state" class="form-control" required
+                                                    pattern="^[A-Za-z\s]{2,50}$"
+                                                    title="State should be 2-50 characters long and contain only letters.">
+                        
+                                                <label for="city">City *</label>
+                                                <input type="text" id="city" name="city" class="form-control" required
+                                                    pattern="^[A-Za-z\s]{2,50}$"
+                                                    title="City should be 2-50 characters long and contain only letters.">
+                        
+                                                <label for="landMark">Landmark *</label>
+                                                <input type="text" id="landMark" name="landMark" class="form-control" required
+                                                    pattern="^.{3,100}$"
+                                                    title="Landmark should be between 3-100 characters long.">
+                        
+                                                <label for="pincode">Postcode / ZIP *</label>
+                                                <input type="text" id="pincode" name="pincode" class="form-control" required
+                                                    pattern="^\d{5}(-\d{4})?$"
+                                                    title="Postcode/ZIP should be 5 digits, optionally followed by a dash and 4 more digits.">
+                                            </form>
+                                        </div> 
+                                        <div class="col-lg-3"> <div class="summary">
+                                                <h3 class="summary-title">Your Order</h3>
+                                                <table class="table table-summary">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Product</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% if (cart && cart.items && cart.items.length > 0) { %>
+                                                            <% cart.items.forEach(item => { %>
+                                                                <tr>
+                                                                    <td>
+                                                                        <%= item.productId ? item.productId.name : 'Unknown Product' %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <% if (item.offerPrice) { %>
+                                                                            <!-- Show offer price if available -->
+                                                                            <span class="new-price">
+                                                                                $<%= (item.offerPrice * item.quantity).toFixed(2) %>
+                                                                            </span>
+                                                                            <span class="old-price">
+                                                                                $<%= (item.productId.price * item.quantity).toFixed(2) %>
+                                                                            </span>
+                                                                            <% } else { %>
+                                                                                <!-- Otherwise, show regular price -->
+                                                                                $<%= (item.productId.price * item.quantity).toFixed(2) %>
+                                                                                <% } %>
+                                                                    </td>
+                                                                </tr>
+                                                                <% }) %>
+                                                                    <% } else { %>
+                                                                        <tr>
+                                                                            <td colspan="2">No items in cart</td>
+                                                                        </tr>
+                                                                        <% } %>
+                                                                            <tr class="summary-total">
+                                                                                <td>Total:</td>
+                                                                                <td id="totalPrice">
+                                                                                    $<%= cart && cart.totalPrice ? cart.totalPrice.toFixed(2) : '0.00' %>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td colspan="2" class="apply-coupon">
+                                                                                    <input type="text" id="couponCode"
+                                                                                        placeholder="Enter coupon code" class="form-control" />
+                                                                                    <button type="button" class="btn btn-outline-primary mt-2"
+                                                                                        onclick="applyCoupon()">Apply Coupon</button>
+                                                                                    <div id="couponMessage" class="mt-2"></div>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td colspan="2">
+                                                                                    <h5>Available Coupons:</h5>
+                                                                                    <% if (coupons && coupons.length > 0) { %>
+                                                                                        <ul class="list-group">
+                                                                                            <% coupons.forEach(coupon => { %>
+                                                                                                <li class="list-group-item">
+                                                                                                    <strong>
+                                                                                                        <%= coupon.code %>
+                                                                                                    </strong> - Save
+                                                                                                    <%= coupon.discountValue %>% off
+                                                                                                        <span class="text-muted">(Expires on
+                                                                                                            <%= new Date(coupon.validTo).toLocaleDateString() %>)</span>
+                                                                                                </li>
+                                                                                                <% }) %>
+                                                                                        </ul>
+                                                                                        <% } else { %>
+                                                                                            <p>No active coupons available at the moment.</p>
+                                                                                            <% } %>
+                                                                                </td>
+                                                                            </tr>
+                                                    </tbody>
+                                                </table>
+                        
+                        
+                                                <!-- Payment Method Selection inside the summary -->
+                                                <div class="payment-methods mt-3">
+                                                    <label class="d-block">
+                                                        <input type="radio" name="paymentMethod" value="cod" required> Cash on Delivery (COD)
+                                                    </label>
+                                                    <label class="d-block">
+                                                        <input type="radio" name="paymentMethod" value="razorpay" required> Razorpay
+                                                    </label>
+                                                    <label class="d-block">
+                                                        <input type="radio" name="paymentMethod" value="wallet" required> Wallet
+                                                    </label>
+                                                </div>
+                        
+                                                <!-- Place Order Button -->
+                                                <div class="checkout-btn-container mt-4">
+                                                    <button type="button" class="btn btn-outline-primary-2 btn-order btn-block"
+                                                        onclick="proceedToPayment()">
+                                                        <span class="btn-text">Place Order</span>
+                                                        <span class="btn-hover-text">Proceed to Checkout</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div> 
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                        <!-- de>End .col-lg-3 -->
+                    </div>
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+
+        <footer class="footer">
+        	<div class="footer-middle">
+	            <div class="container">
+	            	<div class="row">
+	            		<div class="col-sm-6 col-lg-3">
+	            			<div class="widget widget-about">
+	            				<img src="assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
+	            				<p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
+
+	            				<div class="social-icons">
+	            					<a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
+	            					<a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
+	            					<a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
+	            					<a href="#" class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
+	            					<a href="#" class="social-icon" target="_blank" title="Pinterest"><i class="icon-pinterest"></i></a>
+	            				</div><!-- End .soial-icons -->
+	            			</div><!-- End .widget about-widget -->
+	            		</div><!-- End .col-sm-6 col-lg-3 -->
+
+	            		<div class="col-sm-6 col-lg-3">
+	            			<div class="widget">
+	            				<h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
+
+	            				<ul class="widget-list">
+	            					<li><a href="about.html">About Molla</a></li>
+	            					<li><a href="#">How to shop on Molla</a></li>
+	            					<li><a href="#">FAQ</a></li>
+	            					<li><a href="contact.html">Contact us</a></li>
+	            					<li><a href="login.html">Log in</a></li>
+	            				</ul><!-- End .widget-list -->
+	            			</div><!-- End .widget -->
+	            		</div><!-- End .col-sm-6 col-lg-3 -->
+
+	            		<div class="col-sm-6 col-lg-3">
+	            			<div class="widget">
+	            				<h4 class="widget-title">Customer Service</h4><!-- End .widget-title -->
+
+	            				<ul class="widget-list">
+	            					<li><a href="#">Payment Methods</a></li>
+	            					<li><a href="#">Money-back guarantee!</a></li>
+	            					<li><a href="#">Returns</a></li>
+	            					<li><a href="#">Shipping</a></li>
+	            					<li><a href="#">Terms and conditions</a></li>
+	            					<li><a href="#">Privacy Policy</a></li>
+	            				</ul><!-- End .widget-list -->
+	            			</div><!-- End .widget -->
+	            		</div><!-- End .col-sm-6 col-lg-3 -->
+
+	            		<div class="col-sm-6 col-lg-3">
+	            			<div class="widget">
+	            				<h4 class="widget-title">My Account</h4><!-- End .widget-title -->
+
+	            				<ul class="widget-list">
+	            					<li><a href="#">Sign In</a></li>
+	            					<li><a href="cart.html">View Cart</a></li>
+	            					<li><a href="#">My Wishlist</a></li>
+	            					<li><a href="#">Track My Order</a></li>
+	            					<li><a href="#">Help</a></li>
+	            				</ul><!-- End .widget-list -->
+	            			</div><!-- End .widget -->
+	            		</div><!-- End .col-sm-6 col-lg-3 -->
+	            	</div><!-- End .row -->
+	            </div><!-- End .container -->
+	        </div><!-- End .footer-middle -->
+
+	        <div class="footer-bottom">
+	        	<div class="container">
+	        		<p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p><!-- End .footer-copyright -->
+	        		<figure class="footer-payments">
+	        			<img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
+	        		</figure><!-- End .footer-payments -->
+	        	</div><!-- End .container -->
+	        </div><!-- End .footer-bottom -->
+        </div><!-- End .checkout --> 
+    </footer><!-- End .footer -->
+    
+    <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
+
+    <div class="mobile-menu-container">
+        <div class="mobile-menu-wrapper">
+            <span class="mobile-menu-close"><i class="icon-close"></i></span>
+
+            <form action="#" method="get" class="mobile-search">
+                <label for="mobile-search" class="sr-only">Search</label>
+                <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
+                <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+            </form>
+            
+            <nav class="mobile-nav">
+                <ul class="mobile-menu">
+                    <li class="active">
+                        <a href="index.html">Home</a>
+                    </li>
+                    <li>
+                        <a href="category.html">Shop</a>
+                    </li>
+                    <li>
+                        <a href="product.html" class="sf-with-ul">Product</a>
+                    </li>
+                    <li>
+                        <a href="#">Pages</a>
+                    </li>
+                    <li>
+                        <a href="blog.html">Blog</a>
+                    </li>
+                    <li>
+                        <a href="elements-list.html">Elements</a>
+                    </li>
+                </ul>
+            </nav><!-- End .mobile-nav -->
+
+            <div class="social-icons">
+                <a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
+                <a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
+                <a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
+                <a href="#" class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
+            </div><!-- End .social-icons -->
+        </div><!-- End .mobile-menu-wrapper -->
+    </div><!-- End .mobile-menu-container -->
+
+    <!-- Sign in / Register Modal -->
+    <div class="modal fade" id="signin-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="icon-close"></i></span>
+                    </button>
+
+                    <div class="form-box">
+                        <div class="form-tab">
+                            <ul class="nav nav-pills nav-fill" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="signin-tab" data-toggle="tab" href="#signin" role="tab" aria-controls="signin" aria-selected="true">Sign In</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="false">Register</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="tab-content-5">
+                                <div class="tab-pane fade show active" id="signin" role="tabpanel" aria-labelledby="signin-tab">
+                                    <form action="#">
+                                        <div class="form-group">
+                                            <label for="singin-email">Username or email address *</label>
+                                            <input type="text" class="form-control" id="singin-email" name="singin-email" required>
+                                        </div><!-- End .form-group -->
+
+                                        <div class="form-group">
+                                            <label for="singin-password">Password *</label>
+                                            <input type="password" class="form-control" id="singin-password" name="singin-password" required>
+                                        </div><!-- End .form-group -->
+
+                                        <div class="form-footer">
+                                            <button type="submit" class="btn btn-outline-primary-2">
+                                                <span>LOG IN</span>
+                                                <i class="icon-long-arrow-right"></i>
+                                            </button>
+
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="signin-remember">
+                                                <label class="custom-control-label" for="signin-remember">Remember Me</label>
+                                            </div><!-- End .custom-checkbox -->
+
+                                            <a href="#" class="forgot-link">Forgot Your Password?</a>
+                                        </div><!-- End .form-footer -->
+                                    </form>
+                                    <div class="form-choice">
+                                        <p class="text-center">or sign in with</p>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <a href="#" class="btn btn-login btn-g">
+                                                    <i class="icon-google"></i>
+                                                    Login With Google
+                                                </a>
+                                            </div><!-- End .col-6 -->
+                                            <div class="col-sm-6">
+                                                <a href="#" class="btn btn-login btn-f">
+                                                    <i class="icon-facebook-f"></i>
+                                                    Login With Facebook
+                                                </a>
+                                            </div><!-- End .col-6 -->
+                                        </div><!-- End .row -->
+                                    </div><!-- End .form-choice -->
+                                </div><!-- .End .tab-pane -->
+                                <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
+                                    <form action="#">
+                                        <div class="form-group">
+                                            <label for="register-email">Your email address *</label>
+                                            <input type="email" class="form-control" id="register-email" name="register-email" required>
+                                        </div><!-- End .form-group -->
+
+                                        <div class="form-group">
+                                            <label for="register-password">Password *</label>
+                                            <input type="password" class="form-control" id="register-password" name="register-password" required>
+                                        </div><!-- End .form-group -->
+
+                                        <div class="form-footer">
+                                            <button type="submit" class="btn btn-outline-primary-2">
+                                                <span>SIGN UP</span>
+                                                <i class="icon-long-arrow-right"></i>
+                                            </button>
+
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="register-policy" required>
+                                                <label class="custom-control-label" for="register-policy">I agree to the <a href="#">privacy policy</a> *</label>
+                                            </div><!-- End .custom-checkbox -->
+                                        </div><!-- End .form-footer -->
+                                    </form>
+                                    <div class="form-choice">
+                                        <p class="text-center">or sign in with</p>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <a href="#" class="btn btn-login btn-g">
+                                                    <i class="icon-google"></i>
+                                                    Login With Google
+                                                </a>
+                                            </div><!-- End .col-6 -->
+                                            <div class="col-sm-6">
+                                                <a href="#" class="btn btn-login  btn-f">
+                                                    <i class="icon-facebook-f"></i>
+                                                    Login With Facebook
+                                                </a>
+                                            </div><!-- End .col-6 -->
+                                        </div><!-- End .row -->
+                                    </div><!-- End .form-choice -->
+                                </div><!-- .End .tab-pane -->
+                            </div><!-- End .tab-content -->
+                        </div><!-- End .form-tab -->
+                    </div><!-- End .form-box -->
+                </div><!-- End .modal-body -->
+            </div><!-- End .modal-content -->
+        </div><!-- End .modal-dialog -->
+    </div><!-- End .modal -->
+
+    <!-- Plugins JS File -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/jquery.hoverIntent.min.js"></script>
+    <script src="assets/js/jquery.waypoints.min.js"></script>
+    <script src="assets/js/superfish.min.js"></script>
+    <script src="assets/js/owl.carousel.min.js"></script>
+    <!-- Main JS File -->
+    <script src="assets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const addressSelect = document.getElementById('addressSelect');
+            const addressActions = document.getElementById('addressActions');
+    
+            // Show or hide action buttons based on selection
+            addressSelect.addEventListener('change', function () {
+                const selectedAddressId = this.value;
+                if (selectedAddressId) {
+                    addressActions.style.display = 'block';
+                    document.getElementById('editButton').setAttribute('data-id', selectedAddressId);
+                    document.getElementById('deleteButton').setAttribute('data-id', selectedAddressId);
+                } else {
+                    addressActions.style.display = 'none';
+                }
+            });
+        });
+    
+        async function editAddress() {
+            console.log('12345');
+            
+            const addressId = document.getElementById('editButton').getAttribute('data-id'); // Get the data-id from the button
+
+            try {
+                const response = await fetch(`/getAddressData/${addressId}`); // Fixed missing quotes
+                if (!response.ok) {
+                    throw new Error('Failed to load address data');
+                }
+                const data = await response.json();
+
+                // Show the modal
+                document.getElementById('editAddressModal').style.display = 'block';
+
+                // Reset form fields before populating
+                const form = document.getElementById('editAddressForm');
+                form.reset(); // Clear existing values
+
+                // Populate modal form with fetched data
+                document.getElementById('editName').value = data.name || '';
+                document.getElementById('editPhone').value = data.phone || '';
+                document.getElementById('editState').value = data.state || '';
+                document.getElementById('editCity').value = data.city || '';
+                document.getElementById('editLandMark').value = data.landMark || '';
+                document.getElementById('editPincode').value = data.pincode || '';
+
+                // Set form action for update
+                form.setAttribute('action', `/editaddress/${addressId}`); // Fixed missing quotes
+            } catch (error) {
+                console.error('Error fetching address:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Failed to load address data.'
+                });
+            }
+        }
+
+
+
+    
+        document.getElementById('editAddressForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            
+            const addressId = document.getElementById('editButton').getAttribute('data-id');
+            const updatedData = {
+                name: document.getElementById('editName').value,
+                phone: document.getElementById('editPhone').value,
+                state: document.getElementById('editState').value,
+                city: document.getElementById('editCity').value,
+                landMark: document.getElementById('editLandMark').value,
+                pincode: document.getElementById('editPincode').value
+            };
+    
+            try {
+                const response = await fetch(/editaddress/${addressId}, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+    
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Address updated successfully!',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.reload(); 
+                    });
+                } else {
+                    throw new Error('Error updating address');
+                }
+            } catch (error) {
+                console.error('Error updating address:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Failed to update address!'
+                });
+            }
+        });
+    
+    
+        function closeModal() {
+            document.getElementById('editAddressModal').style.display = 'none';
+            document.getElementById('editAddressForm').reset(); 
+        }
+
+    </script>
+
+
+<script>
+    async function proceedToPayment() {
+        console.log('Proceeding to payment');
+        
+        const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+        console.log('Selected payment method:', selectedPaymentMethod);
+        const userId = document.querySelector('input[name="userId"]').value;
+        const addressId = document.querySelector('select[name="addressId"]').value;
+
+
+        // Validate that the address is selected
+        if (!addressId) {
+        alert('Please select an address before proceeding to payment.');
+        return;
+        }
+        console.log('Address ID:', addressId);  // Ensure that Address ID is not empty
+
+        const totalPrice = parseFloat(document.querySelector('input[name="totalPrice"]').value);
+        const finalPrice = parseFloat(document.querySelector('input[name="finalPrice"]').value);
+        const ordereditems = document.querySelector('input[name="ordereditems"]').value;
+        
+
+        const orderData = {
+            userId,
+            addressId, 
+            amount:totalPrice,
+            finalPrice,
+            ordereditems,
+            paymentMethod: selectedPaymentMethod
+        };
+
+        if(selectedPaymentMethod == 'cod'){
+            console.log('normalrequst for a order')
+
+        
+
+           placeorder()
+
+
+        }else if(selectedPaymentMethod == 'razorpay'){
+            console.log('Proceeding with Razorpay');
+            const response = await fetch('/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            });
+            console.log('1');
+            
+
+            if (!response.ok) {
+                console.log('2');
+                
+                const errorData = await response.json();
+                alert(`Error placing order: ${errorData.message}`);
+                return;
+            }
+            console.log('3',response);
+            const order = await response.json();
+            console.log(order,'orders');
+            
+
+      // Open Razorpay Checkout
+      const options = {
+        key: 'rzp_test_l1wDTzBK3cxTc4', 
+        amount: totalPrice * 100,
+        currency: 'INR',
+        name: 'Your Company Name',
+        description: 'Test Transaction',
+        order_id: order.id, // This is the order_id created in the backend
+        callback_url: 'http://localhost:3000/payment-success', 
+        prefill: {
+          name: 'Your Name',
+          email: 'your.email@example.com',
+          contact: '9999999999'
+        },
+        theme: {
+          color: '#F37254'
+        },
+        handler: function (response) {
+        console.log(response,'verify-payment response')
+          fetch('/verify-payment', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            })
+          }).then(res => res.json())
+            .then(data => {
+                
+              if (data.status === 'ok') {
+                return placeorder()
+              } else {
+                alert('Payment verification failed');
+              }
+            }).catch(error => {
+              console.error('Error:', error);
+              alert('Error verifying payment');
+            });
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+         }else{
+            console.log('wallet requst for a order');
+
+            placeorder()
+            
+         }
+
+         async function placeorder(){{
+            const response = await fetch('/order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+             return   window.location.href = `/order-success/${data.orderId}`;
+            } else {
+                const errorData = await response.json();
+                alert(`Error placing order: ${errorData.message}`);
+            }
+    }}
+    }
+   
+</script>
+
+<script>
+    const form = document.getElementById('addressForm');
+
+    // Function to validate the form fields dynamically
+    function validateForm() {
+        const inputs = form.elements;
+        let isValid = true;
+
+        // Check each input field for validity
+        for (let i = 0; i < inputs.length; i++) {
+            if (!inputs[i].checkValidity()) {
+                isValid = false;
+                // Show error message directly in the input field
+                inputs[i].setCustomValidity(inputs[i].title);
+                inputs[i].reportValidity(); // Show validation error
+            } else {
+                inputs[i].setCustomValidity(""); // Clear previous error message
+            }
+        }
+
+        // Optional: You can handle what to do if the form is valid
+        if (isValid) {
+            console.log("Form is valid!");
+        }
+    }
+
+    // Attach event listeners to each input for real-time validation
+    const inputs = form.elements;
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].addEventListener('input', validateForm);
+    }
+</script>
+<script>
+    async function applyCoupon() {
+        const couponCode = document.getElementById('couponCode').value;
+        const totalAmount = parseFloat(document.getElementById('totalPrice').innerText.replace('$', '').replace(',', '')); // Updated to handle commas
+
+        const response = await fetch('/apply-coupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ couponCode, totalAmount })
+        });
+
+        const result = await response.json();
+        const couponMessage = document.getElementById('couponMessage');
+
+        if (result.success) {
+            // Update the total price with discount
+            couponMessage.innerText = `Coupon applied! Discount: $${result.discountAmount.toFixed(2)}. New Total: $${result.newTotal.toFixed(2)}`;
+            document.getElementById('totalPrice').innerText = `$${result.newTotal.toFixed(2)}`;
+
+            // Update hidden input for final price
+            document.querySelector('input[name="finalPrice"]').value = result.newTotal; // Update the finalPrice input
+        } else {
+            couponMessage.innerText = result.message;
+        }
+    }
+</script>
+<script>
+    function updateAddressDetails(select) {
+    const selectedAddressId = select.value;
+
+    // If an address is selected, show the buttons
+    if (selectedAddressId) {
+        document.getElementById('addressActions').style.display = 'block';
+        document.getElementById('editButton').setAttribute('data-id', selectedAddressId); // Set the data-id for the selected address
+    } else {
+        // Hide the buttons if no address is selected
+        document.getElementById('addressActions').style.display = 'none';
+    }
+}
+
+</script>
+
+
+</body>
+
+</html>

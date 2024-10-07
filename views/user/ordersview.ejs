@@ -1,0 +1,175 @@
+<!-- views/orderDetails.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Add your styles here */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #007bff;
+            padding: 15px 20px;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        .cancel-btn {
+    background-color: #d9534f; /* Bootstrap's danger color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px; /* Adjust padding for size */
+    font-size: 16px; /* Increase font size */
+    transition: background-color 0.3s, transform 0.3s; /* Smooth transition for hover effects */
+    cursor: pointer;
+}
+
+.cancel-btn:hover {
+    background-color: #c9302c; /* Darker shade on hover */
+    transform: scale(1.05); /* Slightly enlarge button on hover */
+}
+
+.cancel-btn:focus {
+    outline: none; /* Remove outline on focus */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+}
+
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-logo">ESSENCE OF HEAVEN</div>
+        <div>
+            <a href="/orders" class="active">My Orders</a>
+        </div>
+    </nav>
+
+    <div class="content">
+        <h1>Order Details</h1>
+        <% if (!order) { %>
+            <p>No orders found.</p>
+        <% } else { %>
+            <div class="order-details">
+                <h2><i class="fas fa-shopping-cart"></i> Order Id: &nbsp;<%= order.orderId %></h2>
+                <p><strong>Date:</strong> <%= new Date(order.createdOn).toDateString() %></p>
+                <p><strong>Total:</strong> $<%= order.finalPrice %></p>
+                <p><strong>Status:</strong> <%= order.status %></p>
+                <!-- Display address and other details -->
+            </div>
+            <div class="product-details">
+                <h3>Ordered Products:</h3>
+                <% order.ordereditems.forEach(item => { %>
+                    <div class="product-item">
+                        <% if (item.productId) { %>
+                            <div>
+                                <p><strong>Product Name:</strong> <%= item.productId.name %></p>
+                                <p><strong>Quantity:</strong> <%= item.quantity %></p>
+                                <p><strong>Price:</strong> $<%= item.price %></p>
+                            </div>
+                        <% } else { %>
+                            <p>Product information not available.</p>
+                        <% } %>
+                    </div>
+                <% }) %>
+            </div>
+    
+            <% if (order.status === 'Delivered') { %>
+                <!-- Show return button if the order is delivered -->
+                <form id="returnOrderForm" action="/orders/return/<%= order._id %>" method="POST" class="return-order-form">
+                    <button type="submit" class="btn btn-warning btn-lg return-btn">
+                        <i class="fas fa-undo"></i> Return Order
+                    </button>
+                </form>
+            <% } else if (order.status === 'Cancelled' || order.status === 'Returned') { %>
+                <!-- Show nothing if the order is cancelled or returned -->
+            <% } else { %>
+                <!-- Show cancel button if the order is not cancelled and not returned -->
+                <form id="cancelOrderForm" action="/orders/cancel/<%= order._id %>" method="POST" class="cancel-order-form">
+                    <button type="button" class="btn btn-danger btn-lg cancel-btn" onclick="confirmCancelOrder(event, '<%= order._id %>')">
+                        <i class="fas fa-times"></i> Cancel Order
+                    </button>
+                </form>
+            <% } %>
+        <% } %>
+        <a href="/orders" class="btn btn-secondary">Back to Orders</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('returnOrderForm').onsubmit = function (event) {
+        event.preventDefault(); // Prevent form submission
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to return this order?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ffc107',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, return it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit(); // Submit the form if confirmed
+            }
+        });
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmCancelOrder(event, orderId) {
+        event.preventDefault(); // Prevent the default form submission
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If confirmed, submit the form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/orders/cancel/${orderId}`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

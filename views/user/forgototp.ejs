@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffffff, #ffffff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+            transition: background 0.5s ease-in-out;
+        }
+
+        .otp-container {
+            width: 100%;
+            max-width: 450px;
+            background: #fff;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .otp-container:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .otp-input {
+            width: 100%;
+            height: 50px;
+            font-size: 1.2rem;
+            border: 2px solid #6e8efb;
+            border-radius: 8px;
+            outline: none;
+            text-align: center;
+            letter-spacing: 8px;
+            margin-bottom: 20px;
+            padding: 10px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .otp-input:focus {
+            border-color: #a777e3;
+            box-shadow: 0 0 10px rgba(110, 142, 251, 0.5);
+        }
+
+        .btn-dark, .btn-resend {
+            background-color: #6e8efb;
+            color: white;
+            border-radius: 8px;
+            padding: 15px 20px;
+            font-size: 1rem;
+            width: 100%;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-dark:hover, .btn-resend:hover {
+            background-color: #a777e3;
+            transform: scale(1.03);
+        }
+
+        .btn-resend {
+            background-color: #f0f0f0;
+            color: #6e8efb;
+        }
+
+        .btn-resend:hover {
+            background-color: #6e8efb;
+            color: #fff;
+        }
+
+        .timer {
+            margin-top: 10px;
+            font-size: 1rem;
+            color: #666;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #a777e3;
+        }
+    </style>
+</head>
+<body>
+    <div class="otp-container">
+        <h2>OTP Verification</h2>
+        <p>Please enter the OTP sent to your email</p>
+        <form id="otpForm" method="POST">
+            <input type="text" id="otpInput" name="otp" class="otp-input" placeholder="Enter OTP" maxlength="6" required>
+            <button type="submit" class="btn-dark">Verify OTP</button>
+        </form>
+        <form action="/resend-forgototp" method="POST">
+            <button type="submit" class="btn-resend">Resend OTP</button>
+        </form>
+        <div class="timer" id="time">00:30</div>
+    </div>
+
+  
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let timerInterval;
+        let timeLeft = 30; 
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('otpInput').disabled = true;
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Time expired!',
+                        text: 'Please request a new OTP.'
+                    });
+                } else {
+                    let minutes = Math.floor(timeLeft / 60);
+                    let seconds = timeLeft % 60;
+                    document.getElementById('time').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    timeLeft--;
+                }
+            }, 1000);
+        }
+
+        $(document).ready(function() {
+            startTimer();
+
+            $('#otpForm').on('submit', function(e) {
+                e.preventDefault();
+                const otpInput = $('#otpInput').val();
+                
+                $.ajax({
+                    type: "POST",
+                    url: '/verify-forgototp',
+                    data: { otp: otpInput },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "OTP verified successfully",
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.href = response.redirectUrl;
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: response.message,
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid OTP',
+                            text: 'Please try again'
+                        });
+                    }
+                });
+            });
+
+            $('.btn-resend').on('click', function(e) {
+                e.preventDefault();
+                clearInterval(timerInterval);
+                timeLeft = 30;
+                document.getElementById('otpInput').disabled = false;
+                startTimer();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/resend-forgototp",
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "OTP Sent",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: "An error occurred while resending OTP. Please try again."
+                            });
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "An error occurred while resending OTP. Please try again."
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

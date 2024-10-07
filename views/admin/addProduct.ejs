@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Product</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/cropperjs@1.5.12/dist/cropper.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+  <style>
+    .cropper-container {
+      margin-top: 20px;
+      max-width: 200px;  /* Increase the max width */
+      max-height: 200px; /* Increase the max height */
+      overflow: hidden;
+    }
+
+    .image-preview {
+      width: 100%;     /* Adjust to fit container */
+      height: auto;
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    .crop-buttons {
+      margin-top: 10px;
+    }
+  </style>
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Add Product</h2>
+    <form id="add-product-form" action="/admin/addProduct" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="name">Product Name</label>
+        <input type="text" name="name" id="name" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select name="category" id="category" class="form-control" required>
+          <% categories.forEach(category => { %>
+            <option value="<%= category._id %>"><%= category.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea name="description" id="description" class="form-control" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="brand">Brand</label>
+        <select name="brand" id="brand" class="form-control" required>
+          <% brands.forEach(brand => { %>
+            <option value="<%= brand._id %>"><%= brand.brandName %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <!-- Variants Section -->
+      <div id="variants-section">
+        <h4>Variants</h4>
+        <div class="variant-group">
+          <div class="form-group">
+            <label for="variantQuantity">Quantity</label>
+            <input type="text" name="variants[0][quantity]" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="variantPrice">Price</label>
+            <input type="number" name="variants[0][price]" class="form-control" step="0.01" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="variantStock">Stock</label>
+            <input type="number" name="variants[0][stock]" class="form-control" min="0" required>
+          </div>
+        </div>
+        <button type="button" id="add-variant-btn" class="btn btn-secondary">Add Another Variant</button>
+      </div>
+
+      <!-- File input for images -->
+      <div class="form-group">
+        <label for="images">Product Images (select up to 4)</label>
+        <input type="file" name="images" id="images" class="form-control" multiple required accept="image/*">
+    </div>
+
+    <!-- Image Preview Section -->
+    <div id="image-preview-container"></div>
+
+    <button type="submit" class="btn btn-success">Add Product</button>
+    </form>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/cropperjs@1.5.12/dist/cropper.min.js"></script>
+
+
+
+
+  <script>
+    document.getElementById('add-product-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+  
+      // Form values
+      const productName = document.getElementById('name').value.trim();
+      const category = document.getElementById('category').value;
+      const description = document.getElementById('description').value.trim();
+      const brand = document.getElementById('brand').value;
+  
+      const variants = document.querySelectorAll('.variant-group');
+      const imagesInput = document.getElementById('images');
+      const images = imagesInput.files;
+  
+      let isValid = true;
+      let errorMessage = '';
+  
+      // Product name validation
+      if (productName.length < 3 || productName.length > 100) {
+        isValid = false;
+        errorMessage = 'Product name must be between 3 and 100 characters.';
+      }
+  
+      // Category validation
+      if (!category) {
+        isValid = false;
+        errorMessage = 'Please select a valid category.';
+      }
+  
+      // Brand validation
+      if (!brand) {
+        isValid = false;
+        errorMessage = 'Please select a valid brand.';
+      }
+  
+      // Variants validation
+      variants.forEach(variant => {
+        const quantity = variant.querySelector('input[name*="quantity"]').value;
+        const price = variant.querySelector('input[name*="price"]').value;
+        const stock = variant.querySelector('input[name*="stock"]').value;
+  
+  
+        if (!price || isNaN(price) || price <= 0) {
+          isValid = false;
+          errorMessage = 'Each variant must have a valid positive price.';
+        }
+  
+        if (!stock || isNaN(stock) || stock < 0) {
+          isValid = false;
+          errorMessage = 'Each variant must have a valid stock number.';
+        }
+      });
+  
+      // Images validation
+      if (images.length < 1 || images.length > 4) {
+        isValid = false;
+        errorMessage = 'Please select between 1 and 4 product images.';
+      }
+  
+      // Validate each image file
+      Array.from(images).forEach(image => {
+        if (!['image/jpeg', 'image/png'].includes(image.type)) {
+          isValid = false;
+          errorMessage = 'Only JPEG and PNG image formats are allowed.';
+        }
+        if (image.size > 2 * 1024 * 1024) { // 2MB limit
+          isValid = false;
+          errorMessage = 'Each image size must not exceed 2MB.';
+        }
+      });
+  
+      // Final validation check
+      if (!isValid) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Validation Error',
+          text: errorMessage,
+          confirmButtonText: 'OK'
+        });
+        return; // Prevent form submission if validation fails
+      }
+  
+      // Proceed to submit the form if validation passes
+      const formData = new FormData(this);
+  
+      fetch(this.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: data.message,
+            confirmButtonText: 'OK'
+          }).then(() => {
+            window.location.href = '/admin/products';
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: data.message,
+            confirmButtonText: 'OK'
+          });
+        }
+      })
+      .catch(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'An unexpected error occurred. Please try again later.',
+          confirmButtonText: 'OK'
+        });
+      });
+    });
+  </script>
+  
+</body>
+</html>

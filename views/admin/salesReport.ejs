@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #4a4a4a;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .filter-section {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-section select,
+        .filter-section input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 150px;
+        }
+
+        .filter-section button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-section button:hover {
+            background-color: #0056b3;
+        }
+
+        .overall-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .overall-stats div {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 30%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        .pagination button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .filter-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .overall-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .overall-stats div {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .filter-section select, 
+            .filter-section input {
+                width: 100%;
+            }  
+        }
+        #date-range-selector {
+    padding: 10px;
+    margin-right: 10px; /* Spacing between select and input fields */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+}
+    </style>
+</head>
+<body>
+    
+    <h1><i class="fas fa-chart-line icon"></i> Sales Report</h1>
+    
+    <div class="filter-section">
+        <select id="user-filter">
+            <option value="All">All</option>
+            <option value="Today">Today</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Yearly">Yearly</option>
+        </select>
+        <input type="date" class="form-control" id="start-date" name="validFrom" required>
+        <input type="date" class="form-control" id="end-date" name="validFrom" required>
+        <button id="filter-button" onclick="filterSales()">
+            <i class="fas fa-filter icon"></i> Filter
+        </button>
+        <button id="export-pdf" onclick="window.location.href='/admin/sales-report/pdf?startDate=' + document.getElementById('start-date').value + '&endDate=' + document.getElementById('end-date').value;">
+            <i class="fas fa-file-pdf icon"></i> Export as PDF
+        </button>
+        
+        <button id="export-excel" onclick="exportToExcel()"><i class="fas fa-file-excel icon"></i> Export as Excel</button>
+    </div>
+
+    <div class="overall-stats">
+        <div>
+            <h3><i class="fas fa-chart-bar icon"></i> Overall Sales Count</h3>
+            <p><%= overallSalesCount %></p>
+        </div>
+        <div>
+            <h3><i class="fas fa-rupee-sign icon"></i> Overall Amount</h3>
+            <p><%= overallAmount.toFixed(2) %></p>
+        </div>
+        <div>
+            <h3><i class="fas fa-percent icon"></i> Overall Discount</h3>
+            <p><%= overallDiscount.toFixed(2) %></p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>User Name</th>
+                <th>Total Amount</th>
+                <th>Ordered at</th>
+                <th>Delivered at</th>
+                <th>Payment Method</th>
+            </tr>
+        </thead>
+        <tbody id="order-table-body">
+        </tbody>
+    </table>
+    
+    <div class="pagination">
+        <button id="prev-btn" onclick="changePage(-1)" disabled><i class="fas fa-chevron-left icon"></i> Previous</button>
+        <button id="next-btn" onclick="changePage(1)">Next <i class="fas fa-chevron-right icon"></i></button>
+    </div>
+    
+    <script>
+        let orders = <%- JSON.stringify(orders.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn))) %>;
+        const ordersPerPage = 7;
+        let currentPage = 1;
+        const totalPages = Math.ceil(orders.length / ordersPerPage);
+    
+        function displayOrders() {
+            const orderTableBody = document.getElementById('order-table-body');
+            orderTableBody.innerHTML = ''; // Clear the table body
+    
+            // Get the subset of orders for the current page
+            const start = (currentPage - 1) * ordersPerPage;
+            const end = start + ordersPerPage;
+            const ordersToDisplay = orders.slice(start, end);
+    
+            // Render each order row
+            ordersToDisplay.forEach(order => {
+                orderTableBody.innerHTML += `
+                    <tr>
+                        <td>${order.orderId}</td>
+                        <td>${order.address.name}</td>
+                        <td>₹${order.finalPrice.toFixed(2)}</td>
+                        <td>${new Date(order.createdOn).toLocaleDateString()}</td>
+                        <td>${order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString() : 'Pending'}</td>
+                        <td>${order.paymentMethod}</td>
+                    </tr>`;
+            });
+    
+            // Update pagination buttons
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
+        }
+    
+        function changePage(direction) {
+            currentPage += direction;
+            displayOrders();
+        }
+    
+        // Initial display
+        displayOrders();
+    </script>
+    
+
+    <script>
+        // PDF Export Function
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.text('Sales Report', 14, 22);
+            doc.setFontSize(12);
+            doc.text('Generated on: ' + new Date().toLocaleDateString(), 14, 30);
+
+            let rows = [];
+            const tableRows = document.querySelectorAll('table tbody tr');
+            tableRows.forEach(row => {
+                let cols = Array.from(row.children).map(cell => cell.innerText);
+                rows.push(cols);
+            });
+
+            doc.autoTable({
+                head: [['Order ID', 'User Name', 'Total Amount', 'Ordered at', 'Delivered at', 'Payment Method']],
+                body: rows,
+                startY: 40
+            });
+
+            doc.save('sales_report.pdf');
+        }
+
+        // Excel Export Function
+        function exportToExcel() {
+            let table = document.querySelector('table');
+            let wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
+            XLSX.writeFile(wb, 'sales_report.xlsx');
+        }
+    </script>
+    <script>
+        function filterSales() {
+            const userFilter = document.getElementById('user-filter').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+
+            const queryParams = new URLSearchParams();
+            if (userFilter !== 'All') {
+                queryParams.append('userFilter', userFilter);
+            }
+            if (startDate) {
+                queryParams.append('startDate', startDate);
+            }
+            if (endDate) {
+                queryParams.append('endDate', endDate);
+            }
+
+            window.location.href = '/admin/sales-report?' + queryParams.toString();
+        }
+    </script>
+    <script>
+    // Initialize Flatpickr for the date inputs
+    flatpickr("#start-date", {
+        dateFormat: "d-m-Y", // Custom date format
+    });
+
+    flatpickr("#end-date", {
+        dateFormat: "d-m-Y", // Custom date format
+    });
+
+    // Function to set date range based on selection
+    document.getElementById("date-range-selector").addEventListener("change", function() {
+        const today = new Date();
+        let startDate, endDate;
+
+        switch (this.value) {
+            case "today":
+                startDate = endDate = today;
+                break;
+            case "thisWeek":
+                startDate = new Date(today.setDate(today.getDate() - today.getDay())); // Sunday
+                endDate = new Date(today.setDate(startDate.getDate() + 6)); // Saturday
+                break;
+            case "thisMonth":
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1); // First day of the month
+                endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Last day of the month
+                break;
+            case "thisYear":
+                startDate = new Date(today.getFullYear(), 0, 1); // First day of the year
+                endDate = new Date(today.getFullYear(), 11, 31); // Last day of the year
+                break;
+            case "custom":
+                startDate = null;
+                endDate = null;
+                break;
+            default:
+                return;
+        }
+
+        if (startDate && endDate) {
+            // Format dates to dd-mm-yyyy for Flatpickr
+            const formatDate = (date) => {
+                return ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
+            };
+            document.getElementById("start-date").value = formatDate(startDate);
+            document.getElementById("end-date").value = formatDate(endDate);
+        } else {
+            document.getElementById("start-date").value = '';
+            document.getElementById("end-date").value = '';
+        }
+    });
+</script>
+
+</body>
+</html>

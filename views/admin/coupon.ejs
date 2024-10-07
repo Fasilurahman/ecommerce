@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SB Admin 2 - Tables</title>
+
+    <!-- Custom fonts for this template -->
+    <link href="/startbootstrap-sb-admin-2-gh-pages/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/startbootstrap-sb-admin-2-gh-pages/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this page -->
+    <link href="/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+        <!-- SweetAlert JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-laugh-wink"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="/admin">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <li class="nav-item">
+                <a class="nav-link " href="/admin/sales-report" data-toggle="" data-target="#collapseTwo"
+                    aria-expanded="true" aria-controls="collapseTwo">
+                    <span>Sales report</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Utilities Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link  " href="/admin/users" data-toggle="" data-target="#collapseUtilities"
+                    aria-expanded="true" aria-controls="">
+                    <span>Users</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="/admin/products" data-toggle="" data-target="#collapsePages"
+                    aria-expanded="true" aria-controls="collapsePages">
+                    <span>Product</span>
+                </a>
+            </li>
+
+            <li class="nav-item" >
+                <a class="nav-link collapsed" href="/admin/brand" data-toggle="" data-target="#collapsePages"
+                    aria-expanded="true" aria-controls="collapsePages">
+                    <span>Brand</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="/admin/coupon" data-toggle="" data-target="#collapsePages"
+                    aria-expanded="true" aria-controls="collapsePages" style="color: rgba(255, 255, 255, 0.8);">
+                    <span>Coupon</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="/admin/offer" data-toggle="" data-target="#collapsePages"
+                    aria-expanded="true" aria-controls="collapsePages" style="color: rgba(255, 255, 255, 0.8);">
+                    <span>Offers</span>
+                </a>
+            </li>
+            
+            
+
+            <!-- Nav Item - Charts -->
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/order">
+                    <span>Orders</span></a>
+            </li>
+
+            <!-- Nav Item - Tables -->
+            
+            <li class="nav-item">
+                <a class="nav-link  " href="/admin/category" data-toggle="" data-target="#collapseUtilities"
+                    aria-expanded="true" aria-controls="">
+                    <span>category</span>
+                </a>
+            
+            
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <a class="nav-link collapsed" href="/logout" data-toggle="" data-target="#collapsePages"
+                aria-expanded="true" aria-controls="collapsePages">
+                <span>Logout</span>
+            </a>
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+            <!-- Sidebar Message -->
+            
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <form class="form-inline">
+                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                    </form>
+
+                    <!-- Topbar Search -->
+                    <form
+                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                                aria-label="Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+
+                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                        <li class="nav-item dropdown no-arrow d-sm-none">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-search fa-fw"></i>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                                aria-labelledby="searchDropdown">
+                                <form class="form-inline mr-auto w-100 navbar-search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light border-0 small"
+                                            placeholder="Search for..." aria-label="Search"
+                                            aria-describedby="basic-addon2">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button">
+                                                <i class="fas fa-search fa-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+
+                        <!-- Nav Item - Alerts -->
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-bell fa-fw"></i>
+                                <!-- Counter - Alerts -->
+                                <span class="badge badge-danger badge-counter">3+</span>
+                            </a>
+                            <!-- Dropdown - Alerts -->
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="alertsDropdown">
+                                <h6 class="dropdown-header">
+                                    Alerts Center
+                                </h6>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-primary">
+                                            <i class="fas fa-file-alt text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="small text-gray-500">December 12, 2019</div>
+                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-success">
+                                            <i class="fas fa-donate text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="small text-gray-500">December 7, 2019</div>
+                                        $290.29 has been deposited into your account!
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-warning">
+                                            <i class="fas fa-exclamation-triangle text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="small text-gray-500">December 2, 2019</div>
+                                        Spending Alert: We've noticed unusually high spending for your account.
+                                    </div>
+                                </a>
+                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                            </div>
+                        </li>
+
+                        <!-- Nav Item - Messages -->
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-envelope fa-fw"></i>
+                                <!-- Counter - Messages -->
+                                <span class="badge badge-danger badge-counter">7</span>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="messagesDropdown">
+                                <h6 class="dropdown-header">
+                                    Message Center
+                                </h6>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="dropdown-list-image mr-3">
+                                        <img class="rounded-circle" src="img/undraw_profile_1.svg"
+                                            alt="...">
+                                        <div class="status-indicator bg-success"></div>
+                                    </div>
+                                    <div class="font-weight-bold">
+                                        <div class="text-truncate">Hi there! I am wondering if you can help me with a
+                                            problem I've been having.</div>
+                                        <div class="small text-gray-500">Emily Fowler · 58m</div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="dropdown-list-image mr-3">
+                                        <img class="rounded-circle" src="img/undraw_profile_2.svg"
+                                            alt="...">
+                                        <div class="status-indicator"></div>
+                                    </div>
+                                    <div>
+                                        <div class="text-truncate">I have the photos that you ordered last month, how
+                                            would you like them sent to you?</div>
+                                        <div class="small text-gray-500">Jae Chun · 1d</div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="dropdown-list-image mr-3">
+                                        <img class="rounded-circle" src="img/undraw_profile_3.svg"
+                                            alt="...">
+                                        <div class="status-indicator bg-warning"></div>
+                                    </div>
+                                    <div>
+                                        <div class="text-truncate">Last month's report looks great, I am very happy with
+                                            the progress so far, keep up the good work!</div>
+                                        <div class="small text-gray-500">Morgan Alvarez · 2d</div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="dropdown-list-image mr-3">
+                                        <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
+                                            alt="...">
+                                        <div class="status-indicator bg-success"></div>
+                                    </div>
+                                    <div>
+                                        <div class="text-truncate">Am I a good boy? The reason I ask is because someone
+                                            told me that people say this to all dogs, even if they aren't good...</div>
+                                        <div class="small text-gray-500">Chicken the Dog · 2w</div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
+                            </div>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                                <img class="img-profile rounded-circle"
+                                    src="img/undraw_profile.svg">
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Settings
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Activity Log
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <body id="page-top">
+                    <div id="wrapper">
+                        <div id="content-wrapper" class="d-flex flex-column">
+                            <div id="content">
+                                <div class="container-fluid">
+                                    <h1 class="h3 mb-2 text-gray-800">Manage Coupons</h1>
+                                    <p class="mb-4">This page allows you to manage coupons for your store. You can add, view, or update coupons as needed.</p>
+                
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="m-0 font-weight-bold text-primary">Coupon List</h6>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#addCouponModal">Add Coupon</button>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="couponTable" width="100%" cellspacing="0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Coupon Code</th>
+                                                        <th>Discount</th>
+                                                        <th>Discount Value</th>
+                                                        <th>Expiry Date</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% coupons.forEach(coupon => { %>
+                                                        <tr>
+                                                            <td><%= coupon.code %></td>
+                                                            <td><%= coupon.discountType %></td>
+                                                            <td><%= coupon.discountValue %></td>
+                                                            <td><%= coupon.expiryDate %></td>
+                                                            <td>
+                                                                <% if (!coupon.isBlocked) { %>
+                                                                    <button onclick="blockCoupon('<%= coupon._id %>')" class="btn btn-warning">Block</button>
+                                                                <% } else { %>
+                                                                    <button onclick="unblockCoupon('<%= coupon._id %>')" class="btn btn-success">Unblock</button>
+                                                                <% } %>
+                                                                <button
+                                                                    onclick="editCoupon('<%= coupon._id %>', '<%= encodeURIComponent(coupon.code) %>', '<%= coupon.discountType %>', '<%= coupon.discountValue %>', '<%= coupon.expiryDate %>', '<%= coupon.minOrderAmount %>', '<%= coupon.maxOrderAmount %>', '<%= encodeURIComponent(coupon.description) %>')"
+                                                                    class="btn btn-success btn-icon-split"
+                                                                    style="margin-right: 5px;">
+                                                                    <span class="icon text-white-50">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </span>
+                                                                    <span class="text">Edit</span>
+                                                                </button>
+
+                                                                <button 
+                                                                    onclick="deleteCoupon('<%= coupon._id %>')"
+                                                                    class="btn btn-danger btn-icon-split">
+                                                                    <span class="icon text-white-50">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </span>
+                                                                    <span class="text">Delete</span>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    <% }) %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                
+                                    <!-- Add Coupon Modal -->
+                                    <div class="modal fade" id="addCouponModal" tabindex="-1" role="dialog" aria-labelledby="addCouponModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="addCouponModalLabel">Add Coupon</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <form id="addCouponForm" onsubmit="addCoupon(event)">
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label for="couponCode">Coupon Code</label>
+                                                            <input type="text" class="form-control" id="couponCode" name="code" required maxlength="5">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="discountType">Discount Type</label>
+                                                            <select class="form-control" id="discountType" name="discountType" required>
+                                                                <option value="" disabled selected>Select discount type</option>
+                                                                <option value="percentage">Percentage</option>
+                                                                <option value="fixed">Fixed Amount</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="discountValue">Discount Value</label>
+                                                            <input type="number" class="form-control" id="discountValue" name="discountValue" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="expiryDate">Expiry Date</label>
+                                                            <input type="date" class="form-control" id="expiryDate" name="expiryDate" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="minOrderAmount">Minimum Order Amount</label>
+                                                            <input type="number" class="form-control" id="minOrderAmount" name="minOrderAmount" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="maxOrderAmount">Maximum Order Amount</label>
+                                                            <input type="number" class="form-control" id="maxOrderAmount" name="maxOrderAmount" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description">Description</label>
+                                                            <textarea class="form-control" id="description" name="description" required></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Add Coupon</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                
+                                    <!-- Edit Coupon Modal -->
+                                    <div class="modal fade" id="editCouponModal" tabindex="-1" role="dialog" aria-labelledby="editCouponModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editCouponModalLabel">Edit Coupon</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <form id="editCouponForm" onsubmit="saveCouponChanges(event)">
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label for="editCouponCode">Coupon Code</label>
+                                                            <input type="text" class="form-control" id="editCouponCode" name="code" required>
+                                                            <input type="hidden" id="couponID" name="id">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="editDiscountType">Discount Type</label>
+                                                            <select class="form-control" id="editDiscountType" name="discountType" required>
+                                                                <option value="percentage">Percentage</option>
+                                                                <option value="fixed">Fixed Amount</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="editCouponDiscount">Discount Value</label>
+                                                            <input type="number" class="form-control" id="editCouponDiscount" name="discountValue" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="editExpiryDate">Expiry Date</label>
+                                                            <input type="date" class="form-control" id="editExpiryDate" name="expiryDate" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="editMinOrderAmount">Minimum Order Amount</label>
+                                                            <input type="number" class="form-control" id="editMinOrderAmount" name="minOrderAmount" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="editMaxOrderAmount">Maximum Order Amount</label>
+                                                            <input type="number" class="form-control" id="editMaxOrderAmount" name="maxOrderAmount" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="editDescription">Description</label>
+                                                            <textarea class="form-control" id="editDescription" name="description" required></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="/startbootstrap-sb-admin-2-gh-pages/vendor/jquery/jquery.min.js"></script>
+    <script src="/startbootstrap-sb-admin-2-gh-pages/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="/startbootstrap-sb-admin-2-gh-pages/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="/startbootstrap-sb-admin-2-gh-pages/js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="/startbootstrap-sb-admin-2-gh-pages/js/demo/datatables-demo.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+   <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+   <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+
+
+
+    <script>
+        function addCoupon(event) {
+            event.preventDefault();
+            
+            // Get form values
+            const couponCode = document.getElementById('couponCode').value.trim();
+            const discountType = document.getElementById('discountType').value;
+            const discountValue = document.getElementById('discountValue').value;
+            const expiryDate = document.getElementById('expiryDate').value;
+            const minOrderAmount = document.getElementById('minOrderAmount').value;
+            const maxOrderAmount = document.getElementById('maxOrderAmount').value;
+            const description = document.getElementById('description').value.trim();
+
+            // Regex for validating coupon code (allow alphanumeric, length of 5)
+            const codeRegex = /^[A-Za-z0-9]{5}$/;
+            
+            // Date validation (expiry date should be in the future)
+            const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+            
+            // Validation flags
+            let isValid = true;
+            let errorMessage = '';
+
+            // Validate coupon code
+            if (!codeRegex.test(couponCode)) {
+                isValid = false;
+                errorMessage = 'Coupon code must be 5 alphanumeric characters.';
+            }
+            
+            // Validate discount type
+            if (discountType !== 'percentage' && discountType !== 'fixed') {
+                isValid = false;
+                errorMessage = 'Please select a valid discount type.';
+            }
+
+            // Validate discount value (must be greater than 0)
+            if (isNaN(discountValue) || discountValue <= 0) {
+                isValid = false;
+                errorMessage = 'Discount value must be greater than 0.';
+            }
+
+            // Validate expiry date (must be in the future)
+            if (!expiryDate || expiryDate <= today) {
+                isValid = false;
+                errorMessage = 'Expiry date must be a future date.';
+            }
+
+            // Validate minimum order amount
+            if (isNaN(minOrderAmount) || minOrderAmount <= 0) {
+                isValid = false;
+                errorMessage = 'Minimum order amount must be a positive number.';
+            }
+
+            // Validate maximum order amount (must be greater than or equal to minimum)
+            if (isNaN(maxOrderAmount) || maxOrderAmount <= 0 || Number(maxOrderAmount) < Number(minOrderAmount)) {
+                isValid = false;
+                errorMessage = 'Maximum order amount must be greater than or equal to the minimum order amount.';
+            }
+
+        
+            
+
+            if (!isValid) {
+                Swal.fire('Validation Error', errorMessage, 'error');
+                return; // Prevent the form from submitting if validation fails
+            }
+
+            // Prepare coupon data object
+            const couponData = {
+                code: couponCode,
+                discountType: discountType,
+                discountValue: discountValue,
+                expiryDate: expiryDate,
+                minOrderAmount: minOrderAmount,
+                maxOrderAmount: maxOrderAmount,
+                description: description
+            };
+
+            // Send the coupon data to the server
+            fetch('/admin/coupon/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(couponData)
+            }).then(res => res.json())
+            .then(data => {
+                Swal.fire('Success', 'Coupon has been added successfully.', 'success')
+                .then(() => {
+                    location.reload();
+                });
+            }).catch(error => {
+                console.error('Error in adding coupon:', error);
+                Swal.fire('Error', 'There was an error adding the coupon.', 'error');
+            });
+        }
+
+
+
+        function editCoupon(id, code, discountType, discountValue, expiryDate, minOrderAmount, maxOrderAmount, description){
+            console.log("Parameters received:", id, code, discountType, discountValue, expiryDate, minOrderAmount, maxOrderAmount, description);
+            
+            document.getElementById('editCouponModal').setAttribute('data-id', id);
+            document.getElementById('editCouponCode').value = code;
+            document.getElementById('editDiscountType').value = discountType;
+            document.getElementById('editCouponDiscount').value = discountValue;
+            document.getElementById('editExpiryDate').value = expiryDate.split('T')[0];
+            document.getElementById('editMinOrderAmount').value = minOrderAmount;
+            document.getElementById('editMaxOrderAmount').value = maxOrderAmount;
+            document.getElementById('editDescription').value = description;
+            document.getElementById('couponID').value = id;
+
+            $('#editCouponModal').modal('show');
+        }
+        console.log(id, code, discountType, discountValue, expiryDate, minOrderAmount, maxOrderAmount, description,'adsfffdfffffff');
+        
+        function saveCouponChanges(event) {
+    event.preventDefault();
+
+    // Get form values
+    const couponID = document.getElementById('couponID').value.trim();
+    const couponCode = document.getElementById('editCouponCode').value.trim();
+    const discountType = document.getElementById('editDiscountType').value;
+    const discountValue = document.getElementById('editCouponDiscount').value;
+    const expiryDate = document.getElementById('editExpiryDate').value;
+    const minOrderAmount = document.getElementById('editMinOrderAmount').value;
+    const maxOrderAmount = document.getElementById('editMaxOrderAmount').value;
+    const description = document.getElementById('editDescription').value.trim();
+
+    // Regex for validating coupon code (allow alphanumeric, length of 5)
+    const codeRegex = /^[A-Za-z0-9]{5}$/;
+
+    // Date validation (expiry date should be in the future)
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+
+    // Validation flags
+    let isValid = true;
+    let errorMessage = '';
+
+    // Validate coupon code
+    if (!codeRegex.test(couponCode)) {
+        isValid = false;
+        errorMessage = 'Coupon code must be 5 alphanumeric characters.';
+    }
+
+    // Validate discount type
+    if (discountType !== 'percentage' && discountType !== 'fixed') {
+        isValid = false;
+        errorMessage = 'Please select a valid discount type.';
+    }
+
+    // Validate discount value (must be greater than 0)
+    if (isNaN(discountValue) || discountValue <= 0) {
+        isValid = false;
+        errorMessage = 'Discount value must be greater than 0.';
+    }
+
+    // Validate expiry date (must be in the future)
+    if (!expiryDate || expiryDate <= today) {
+        isValid = false;
+        errorMessage = 'Expiry date must be a future date.';
+    }
+
+    // Validate minimum order amount
+    if (isNaN(minOrderAmount) || minOrderAmount <= 0) {
+        isValid = false;
+        errorMessage = 'Minimum order amount must be a positive number.';
+    }
+
+    // Validate maximum order amount (must be greater than or equal to minimum)
+    if (isNaN(maxOrderAmount) || maxOrderAmount <= 0 || Number(maxOrderAmount) < Number(minOrderAmount)) {
+        isValid = false;
+        errorMessage = 'Maximum order amount must be greater than or equal to the minimum order amount.';
+    }
+
+    // Check validation status
+    if (!isValid) {
+        Swal.fire('Validation Error', errorMessage, 'error');
+        return; // Prevent the form from submitting if validation fails
+    }
+
+    // Prepare the coupon data object for sending to the server
+    const data = {
+        id: couponID,
+        code: couponCode,
+        discountType: discountType,
+        discountValue: discountValue,
+        expiryDate: expiryDate,
+        minOrderAmount: minOrderAmount,
+        maxOrderAmount: maxOrderAmount,
+        description: description
+    };
+
+    console.log(data, 'Data being sent');
+
+    // Send the updated coupon data to the server
+    fetch(`/admin/coupon/edit/${couponID}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.fire('Success', 'Coupon has been updated successfully.', 'success')
+        .then(() => {
+            $('#editCouponModal').modal('hide');
+            location.reload();
+        });
+    }).catch(error => {
+        console.error('Error in editing coupon:', error);
+        Swal.fire('Error', 'There was an error updating the coupon.', 'error');
+    });
+}
+
+
+
+
+        function deleteCoupon(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you really want to delete this coupon?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/admin/coupon/delete/' + id, {
+                        method: 'POST'
+                    }).then(res => res.json())
+                    .then(data => {
+                        Swal.fire('Deleted!', 'Coupon has been deleted.', 'success')
+                        .then(() => {
+                            location.reload();
+                        });
+                    }).catch(error => {
+                        console.error('Error in deleting coupon:', error);
+                        Swal.fire('Error', 'There was an error deleting the coupon.', 'error');
+                    });
+                }
+            });
+        }
+
+        function blockCoupon(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You are about to block this coupon.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, block it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/admin/coupon/block/' + id, {
+                        method: 'POST'
+                    }).then(res => res.json())
+                    .then(data => {
+                        Swal.fire('Blocked!', 'Coupon has been blocked.', 'success')
+                        .then(() => {
+                            location.reload();
+                        });
+                    }).catch(error => {
+                        console.error('Error in blocking coupon:', error);
+                        Swal.fire('Error', 'There was an error blocking the coupon.', 'error');
+                    });
+                }
+            });
+        }
+
+        function unblockCoupon(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You are about to unblock this coupon.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, unblock it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/admin/coupon/unblock/' + id, {
+                        method: 'POST'
+                    }).then(res => res.json())
+                    .then(data => {
+                        Swal.fire('Unblocked!', 'Coupon has been unblocked.', 'success')
+                        .then(() => {
+                            location.reload();
+                        });
+                    }).catch(error => {
+                        console.error('Error in unblocking coupon:', error);
+                        Swal.fire('Error', 'There was an error unblocking the coupon.', 'error');
+                    });
+                }
+            });
+        }
+    </script>
+    
+
+</body>
+
+</html>

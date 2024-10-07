@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+    <title>User Addresses</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Include Font Awesome -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            background: radial-gradient(circle at top right, #eae5e4, #ffffff, #ffffff);
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 220px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            text-align: left;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .navbar a {
+            color: #b2adad;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            transition: background-color 0.3s, color 0.3s;
+            border-left: 4px solid transparent;
+            border-radius: 8px;
+        }
+
+        .navbar a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #11283f;
+        }
+
+        .navbar a.active {
+            background-color: #2774d8;
+            color: #fff;
+            border-left: 4px solid #fff;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 2rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            width: calc(100% - 250px);
+            max-width: calc(100% - 250px);
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .address-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ddd;
+            transition: background-color 0.3s, border 0.3s;
+        }
+
+        .address-item.active {
+            background-color: #e7f0ff;
+            border: 1px solid #007bff;
+        }
+
+        .address-item h4 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .address-item p {
+            margin: 0.5rem 0;
+            color: #555;
+        }
+
+        .address-item a {
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 14px;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        .address-item a.btn-primary {
+            background-color: #007bff;
+        }
+
+        .address-item a.btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .address-item a.btn-danger {
+            background-color: #dc3545;
+        }
+
+        .address-item a.btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: none;
+            }
+
+            .content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; 
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; 
+            max-width: 600px; 
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal-header, .modal-footer {
+            padding: 10px;
+            background: #f1f1f1;
+            border-bottom: 1px solid #ddd;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .modal-footer {
+            border-top: none;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn {
+            cursor: pointer;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        #addAddressBtn {
+        background-color: #28a745; /* Green background */
+        color: white;              /* White text */
+        border: none;              /* Remove default border */
+        padding: 10px 20px;        /* Add some padding */
+        font-size: 16px;           /* Increase font size */
+        border-radius: 5px;        /* Rounded corners */
+        cursor: pointer;           /* Pointer cursor on hover */
+        transition: background-color 0.3s ease; /* Smooth hover effect */
+    }
+
+    #addAddressBtn:hover {
+        background-color: #218838; /* Darker green on hover */
+    }
+
+    #addAddressBtn:active {
+        background-color: #1e7e34; /* Even darker green when clicked */
+    }
+    /* Modal container (hidden by default) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        background-color: rgba(0, 0, 0, 0.5); /* Black background with transparency */
+        overflow: auto; /* Enable scroll if needed */
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Modal content box */
+    .modal-content {
+        background-color: #f9f9f9;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        width: 80%; /* 80% of the screen width */
+        max-width: 600px; /* Max width for larger screens */
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative; /* For close button positioning */
+    }
+
+    /* Close button */
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    /* Form inputs */
+    form label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    form input[type="text"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    /* Button styles */
+    .btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+    }
+
+    .btn:active {
+        background-color: #004085;
+    }
+
+    /* Mobile responsiveness */
+    @media screen and (max-width: 768px) {
+        .modal-content {
+            width: 95%;
+        }
+    }
+    /* Add to your CSS file or within a <style> tag in the HTML head */
+
+    .btn-danger {
+        background-color: #dc3545; /* Bootstrap red */
+        color: white; /* Text color */
+        padding: 8px 16px; /* Padding for the button */
+        border: none; /* Remove border */
+        border-radius: 5px; /* Rounded corners */
+        font-size: 14px; /* Font size */
+        cursor: pointer; /* Pointer cursor on hover */
+        transition: background-color 0.3s, transform 0.3s; /* Smooth transition */
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333; /* Darker red on hover */
+        transform: scale(1.05); /* Slightly enlarge on hover */
+    }
+
+    .btn-danger:focus {
+        outline: none; /* Remove focus outline */
+        box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.5); /* Add shadow for focus */
+    }
+    ul li a {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    text-decoration: none;
+    color: #333; /* Change color as needed */
+}
+
+ul li a:hover {
+    background-color: #f0f0f0; /* Change hover effect */
+}
+
+ul li a.active {
+    font-weight: bold;
+    color: #007bff; /* Change color for active link */
+}
+
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <div class="content">
+        <h1>Your Addresses</h1>
+        <div>
+            <button id="addAddressBtn" class="btn btn-success">Add New Address</button>
+            <% addresses.forEach(addressDoc => { %>
+                <% addressDoc.address.forEach(address => { %>
+                    <div class="address-item">
+                        <h4><%= address.name %></h4>
+                        <p><%= address.addressType %>: <%= address.landMark %>, <%= address.city %>, <%= address.state %> - <%= address.pincode %></p>
+                        <p>Phone: <%= address.phone %></p>
+                        <a href="#" class="btn btn-primary edit-btn" data-id="<%= address._id %>">Edit</a>
+                        <!-- Inside the loop that generates address items -->
+                        <!-- Inside the loop that generates address items -->
+                        <form action="/deleteAddress/<%= address._id %>" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+
+                    </div>
+                <% }) %>
+            <% }) %>
+        </div>
+        <a href="/profile" class="btn btn-secondary">Back to Profile</a>
+    </div>
+
+    <!-- Add Address Modal -->
+    <div id="addAddressModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Add New Address</h2>
+            <form action="/addAddress" method="post">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="landMark">Landmark:</label>
+                <input type="text" id="landMark" name="landMark" required>
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required>
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" required>
+                <label for="pincode">Pincode:</label>
+                <input type="text" id="pincode" name="pincode" required>
+                <label for="phone">Phone:</label>
+                <input type="text" id="phone" name="phone" required>
+                <button type="submit" class="btn btn-primary">Save Address</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Address Modal -->
+    <div id="editAddressModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Edit Address</h2>
+            <form id="editAddressForm"  method="post">
+                <label for="editName">Name:</label>
+                <input type="text" id="editName" name="name" required>
+                <label for="editLandMark">Landmark:</label>
+                <input type="text" id="editLandMark" name="landMark" required>
+                <label for="editCity">City:</label>
+                <input type="text" id="editCity" name="city" required>
+                <label for="editState">State:</label>
+                <input type="text" id="editState" name="state" required>
+                <label for="editPincode">Pincode:</label>
+                <input type="text" id="editPincode" name="pincode" required>
+                <label for="editPhone">Phone:</label>
+                <input type="text" id="editPhone" name="phone" required>
+                <button type="submit" class="btn btn-primary">Update Address</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addAddressBtn = document.getElementById('addAddressBtn');
+            const addAddressModal = document.getElementById('addAddressModal');
+            const editButtons = document.querySelectorAll('.edit-btn');
+            const editModal = document.getElementById('editAddressModal');
+            const closeModal = document.querySelectorAll('.close');
+    
+            // Show Add Address Modal
+            addAddressBtn.addEventListener('click', function() {
+                addAddressModal.style.display = 'block';
+            });
+
+            // Fetch and show Edit Address Modal
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const addressId = this.getAttribute('data-id');
+                    fetch(`/getAddressData/${addressId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.querySelector('#editAddressModal #editName').value = data.name;
+                            document.querySelector('#editAddressModal #editLandMark').value = data.landMark;
+                            document.querySelector('#editAddressModal #editCity').value = data.city;
+                            document.querySelector('#editAddressModal #editState').value = data.state;
+                            document.querySelector('#editAddressModal #editPincode').value = data.pincode;
+                            document.querySelector('#editAddressModal #editPhone').value = data.phone;
+                            document.querySelector('#editAddressModal form').action = `/editAddress/${addressId}`;
+                            editModal.style.display = 'block';
+                        });
+                });
+            });
+
+            // Close modals
+            closeModal.forEach(span => {
+                span.addEventListener('click', function() {
+                    addAddressModal.style.display = 'none';
+                    editModal.style.display = 'none';
+                });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('addAddressForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+
+            const formData = new FormData(this);
+
+            fetch('/addAddress', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload(); // Reload the page to show the new address
+                } else {
+                    alert('Error adding address');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+
+
+    </script>
+    <script>
+       document.addEventListener('DOMContentLoaded', function() {
+        const editButtons = document.querySelectorAll('.edit-btn');
+
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const addressId = this.getAttribute('data-id');
+                const form = document.getElementById('editAddressForm');
+
+                fetch(`/getAddress/${addressId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        form.querySelector('#editName').value = data.name;
+                        form.querySelector('#editLandMark').value = data.landMark;
+                        form.querySelector('#editCity').value = data.city;
+                        form.querySelector('#editState').value = data.state;
+                        form.querySelector('#editPincode').value = data.pincode;
+                        form.querySelector('#editPhone').value = data.phone;
+                        form.setAttribute('action', `/editAddress/${addressId}`);
+                        
+                        document.getElementById('editAddressModal').style.display = 'block';
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
+    //     document.getElementById('editAddressForm').addEventListener('submit', async function(event) {
+    //         event.preventDefault(); // Prevent the form from submitting normally
+
+    //         const formData = new FormData(this);
+    //         console.log('req')
+    //         const response = await fetch(this.action, {
+    //             method: 'POST',
+    //             headers:{
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify(Object.fromEntries(formData))
+    //         })
+    //     });
+    // });
+       })
+
+
+    </script>
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent default link behavior
+
+                const addressId = this.getAttribute('data-id');
+                const confirmed = confirm('Are you sure you want to delete this address?');
+
+                if (confirmed) {
+                    fetch(`/deleteAddress/${addressId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ addressId: addressId })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload(); // Reload the page to remove the deleted address
+                        } else {
+                            alert('Error deleting address');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+            });
+        });
+    });
+
+    </script> 
+
+    <%- include('../partials/footer') %>
+</body>
+
+</html>

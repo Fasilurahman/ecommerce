@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Product</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- SweetAlert CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+  <div class="container">
+    <h2 class="mt-5">Edit Product</h2>
+
+    <% if (product) { %>
+    <form id="edit-product-form" action="/admin/editProduct/<%= product._id %>" method="POST" enctype="multipart/form-data">
+      <!-- Product Name -->
+      <div class="form-group">
+        <label for="name">Product Name</label>
+        <input type="text" name="name" id="name" class="form-control" value="<%= product.name %>" required>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea name="description" id="description" class="form-control" rows="4" required><%= product.description %></textarea>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select name="category" id="category" class="form-control" required>
+          <% categories.forEach(category => { %>
+            <option value="<%= category._id %>" <%= product.category && product.category.equals(category._id) ? 'selected' : '' %>><%= category.name %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <!-- Product Variants -->
+      <div class="form-group">
+        <label for="variants">Product Variants</label>
+        <div id="variants-container">
+            <% if (product.variants && product.variants.length > 0) { %>
+                <% product.variants.forEach((variant, index) => { %>
+                    <div class="variant-group mb-3">
+                        <h6>Variant <%= index + 1 %></h6>
+                        <div class="form-group">
+                            <label for="variant-quantity-<%= index %>">Quantity</label>
+                            <select name="variants[<%= index %>][quantity]" id="variant-quantity-<%= index %>" class="form-control" required>
+                                <option value="100 ml" <%= variant.quantity === '100 ml' ? 'selected' : '' %>>100 ml</option>
+                                <option value="200 ml" <%= variant.quantity === '200 ml' ? 'selected' : '' %>>200 ml</option>
+                                <option value="300 ml" <%= variant.quantity === '300 ml' ? 'selected' : '' %>>300 ml</option>
+                                <option value="400 ml" <%= variant.quantity === '400 ml' ? 'selected' : '' %>>400 ml</option>
+                                <option value="500 ml" <%= variant.quantity === '500 ml' ? 'selected' : '' %>>500 ml</option>
+                                <!-- Add more options as needed -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="variant-price-<%= index %>">Price</label>
+                            <input type="number" name="variants[<%= index %>][price]" id="variant-price-<%= index %>" class="form-control" step="0.01" value="<%= variant.price %>" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="variant-stock-<%= index %>">Stock</label>
+                            <input type="number" name="variants[<%= index %>][stock]" id="variant-stock-<%= index %>" class="form-control" value="<%= variant.stock %>" min="0" required>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>No variants available.</p>
+            <% } %>
+        </div>
+        <button type="button" onclick="addVariant()">Add New Variant</button>
+      </div>
+
+      <!-- Image Input Fields -->
+      <div class="form-group">
+        <label for="image1">Product Image 1</label>
+        <input type="file" name="image1" id="image1" class="form-control-file">
+        <% if (product.images && product.images[0]) { %>
+          <div class="mt-2">
+            <p>Current Image 1:</p>
+            <img src="/uploads/<%= product.images[0] %>" alt="Current Product Image 1" style="max-width: 200px;">
+          </div>
+        <% } %>
+      </div>
+      
+      <div class="form-group">
+        <label for="image2">Product Image 2</label>
+        <input type="file" name="image2" id="image2" class="form-control-file">
+        <% if (product.images && product.images[1]) { %>
+          <div class="mt-2">
+            <p>Current Image 2:</p>
+            <img src="/uploads/<%= product.images[1] %>" alt="Current Product Image 2" style="max-width: 200px;">
+          </div>
+        <% } %>
+      </div>
+      
+      <div class="form-group">
+        <label for="image3">Product Image 3</label>
+        <input type="file" name="image3" id="image3" class="form-control-file">
+        <% if (product.images && product.images[2]) { %>
+          <div class="mt-2">
+            <p>Current Image 3:</p>
+            <img src="/uploads/<%= product.images[2] %>" alt="Current Product Image 3" style="max-width: 200px;">
+          </div>
+        <% } %>
+      </div>
+      
+      <div class="form-group">
+        <label for="image4">Product Image 4</label>
+        <input type="file" name="image4" id="image4" class="form-control-file">
+        <% if (product.images && product.images[3]) { %>
+          <div class="mt-2">
+            <p>Current Image 4:</p>
+            <img src="/uploads/<%= product.images[3] %>" alt="Current Product Image 4" style="max-width: 200px;">
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary">Update Product</button>
+      <a href="/admin/products" class="btn btn-secondary">Cancel</a>
+    </form>
+
+    <% } else { %>
+    <p class="mt-5 text-danger">Product not found. Please go back to the <a href="/admin/products">products list</a>.</p>
+    <% } %>
+  </div>
+
+  <!-- SweetAlert Script -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.getElementById('edit-product-form').addEventListener('submit', function(e) {
+      e.preventDefault(); // Prevent the default form submission
+
+      const form = this;
+      const formData = new FormData(form);
+
+      fetch(form.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: data.message,
+            confirmButtonText: 'OK'
+          }).then(() => {
+            window.location.href = '/admin/products';
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: data.message,
+            confirmButtonText: 'OK'
+          });
+        }
+      })
+      .catch(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'An unexpected error occurred. Please try again later.',
+          confirmButtonText: 'OK'
+        });
+      });
+    });
+
+    function addVariant() {
+      const container = document.getElementById('variants-container');
+      const variantCount = container.children.length;
+
+      const variantDiv = document.createElement('div');
+      variantDiv.className = 'variant-group mb-3';
+      variantDiv.innerHTML = `
+          <h6>Variant ${variantCount + 1}</h6>
+          <div class="form-group">
+              <label for="variant-quantity-${variantCount}">Quantity</label>
+              <select name="variants[${variantCount}][quantity]" id="variant-quantity-${variantCount}" class="form-control" required>
+                  <option value="100 ml">100 ml</option>
+                  <option value="200 ml">200 ml</option>
+                  <option value="300 ml">300 ml</option>
+                  <option value="400 ml">400 ml</option>
+                  <option value="100 ml">500 ml</option>
+                  <option value="200 ml">600 ml</option>
+                  <!-- Add more options as needed -->
+              </select>
+          </div>
+          <div class="form-group">
+              <label for="variant-price-${variantCount}">Price</label>
+              <input type="number" name="variants[${variantCount}][price]" id="variant-price-${variantCount}" class="form-control" step="0.01" required>
+          </div>
+          <div class="form-group">
+              <label for="variant-stock-${variantCount}">Stock</label>
+              <input type="number" name="variants[${variantCount}][stock]" id="variant-stock-${variantCount}" class="form-control" required>
+          </div>
+          <button type="button" onclick="removeVariant(this)" class="btn btn-danger mt-2">Remove Variant</button>
+      `;
+      container.appendChild(variantDiv);
+    }
+
+    function removeVariant(button) {
+      const variantDiv = button.parentElement;
+      variantDiv.remove();
+    }
+  </script>
+
+  <!-- Bootstrap and jQuery scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
