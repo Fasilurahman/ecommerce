@@ -9,9 +9,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "apexcharts": "^3.54.0",
     "bcrypt": "^5.1.1",
+    "chart.js": "^4.4.4",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.6",
+    "crypto": "^1.0.1",
+    "csrf": "^3.1.0",
+    "csurf": "^1.11.0",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "exceljs": "^4.4.0",
@@ -35,6 +40,5 @@
     "uuid": "^10.0.0",
     "xlsx": "^0.18.5"
   },
-  "devDependencies": {},
   "description": ""
 }

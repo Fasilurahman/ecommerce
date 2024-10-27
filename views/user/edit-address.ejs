@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="icon" type="/image/png" sizes="32x32" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="icon" type="/image/png" sizes="16x16" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="manifest" href="/assets/images/icons/site.html">
+    <link rel="mask-icon" href="assets/images/icons/safari-pinned-tab.svg" color="#666666">
+    <link rel="shortcut icon" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <title>Edit Address</title>
+    <style>
+        /* Basic styles for body and content */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Profile container styles */
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-picture img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 2px solid #ddd;
+        }
+
+        .profile-info h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: #333;
+        }
+
+        .profile-info h2 {
+            font-size: 1.4rem;
+            margin-top: 5px;
+            color: #555;
+        }
+
+        /* Form styles */
+        form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus {
+            border-color: #0f8f06;
+            outline: none;
+        }
+
+        /* Submit button styles */
+        button[type="submit"] {
+            background-color: #0f8f06;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0f8f06;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-picture {
+                margin-bottom: 20px;
+            }
+
+            .profile-info h1 {
+                font-size: 1.5rem;
+            }
+
+            .profile-info h2 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-picture">
+                    <img src="<%= user.profilePicture ? user.profilePicture.replace(/\\/g, '/') : '/assets/images/icons/istockphoto-1300845620-612x612.jpg' %>" alt="<%= user.username %>">
+                </div>
+                <div class="profile-info">
+                    <h1><%= user.username %></h1>
+                    <h2>Edit Address</h2>
+                </div>
+            </div>
+
+            <form id="editAddressForm" action="/edit-address/<%= address._id %>" method="POST">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="<%= address.name %>" required>
+
+                <label for="landmark">Landmark:</label>
+                <input type="text" id="landmark" name="landmark" value="<%= address.landMark %>">
+
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" value="<%= address.city %>" required>
+
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" value="<%= address.state %>" required>
+
+                <label for="zip">Zip Code:</label>
+                <input type="text" id="zip" name="zip" value="<%= address.pincode %>" required>
+
+                <label for="phone">Phone:</label>
+                <input type="text" id="phone" name="phone" value="<%= address.phone %>" required>
+
+                <button type="submit">Update Address</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("editAddressForm").addEventListener("submit", function(event) {
+            // Clear existing error messages (if any)
+            let isValid = true;
+            const errorMessages = [];
+
+            // Get form values
+            const name = document.forms["editAddressForm"]["name"].value.trim();
+            const landMark = document.forms["editAddressForm"]["landmark"].value.trim();
+            const city = document.forms["editAddressForm"]["city"].value.trim();
+            const state = document.forms["editAddressForm"]["state"].value.trim();
+            const zip = document.forms["editAddressForm"]["zip"].value.trim();
+            const phone = document.forms["editAddressForm"]["phone"].value.trim();
+
+            // Validate Name
+            const namePattern = /^(?! )[A-Za-z\s]+(?<! )$/; // No leading/trailing spaces
+            if (!namePattern.test(name) || name.length < 3) {
+                errorMessages.push("Name must be at least 3 characters long and can only contain letters and spaces.");
+                isValid = false;
+            }
+
+            // Validate Landmark
+            const landMarkPattern = /^(?! )[A-Za-z\s]+(?<! )$/; // No leading/trailing spaces
+            if (!landMarkPattern.test(landMark)) {
+                errorMessages.push("Landmark cannot start or end with a space and can only contain letters and spaces.");
+                isValid = false;
+            }
+
+            // Validate City
+            const cityPattern = /^(?! )[A-Za-z\s]+(?<! )$/; // No leading/trailing spaces
+            if (!cityPattern.test(city)) {
+                errorMessages.push("City must not be empty, cannot start or end with a space, and can only contain letters and spaces.");
+                isValid = false;
+            }
+
+            // Validate State
+            const statePattern = /^(?! )[A-Za-z\s]+(?<! )$/; // No leading/trailing spaces
+            if (!statePattern.test(state)) {
+                errorMessages.push("State must not be empty, cannot start or end with a space, and can only contain letters and spaces.");
+                isValid = false;
+            }
+
+            // Validate Zip Code
+            const pincodePattern = /^\d{5}$/; // Exactly 5 digits
+            if (!pincodePattern.test(zip)) {
+                errorMessages.push("Zip code must be exactly 5 digits.");
+                isValid = false;
+            }
+
+            // Validate Phone Number
+            const phonePattern = /^\d{10}$/; // Exactly 10 digits
+            if (!phonePattern.test(phone)) {
+                errorMessages.push("Phone number must be exactly 10 digits with no other characters.");
+                isValid = false;
+            }
+
+            // If validation fails, prevent form submission and display errors
+            if (!isValid) {
+                event.preventDefault();
+                alert(errorMessages.join("\n")); // Display all error messages in an alert
+            }
+        });
+    </script>
+</body>
+
+
+
+</html>

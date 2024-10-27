@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Requests</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+        .alert {
+            margin-bottom: 20px;
+        }
+        table {
+            background-color: #ffffff;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .action-buttons form {
+            display: inline;
+        }
+        .action-buttons button {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Return Requests</h1>
+
+        <% if (query.success) { %>
+            <div class="alert alert-success">
+                <%= query.success %>
+            </div>
+        <% } %>
+
+        <% if (query.error) { %>
+            <div class="alert alert-danger">
+                <%= query.error %>
+            </div>
+        <% } %>
+
+        <% if (orders.length > 0) { %>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>User ID</th>
+                        <th>Return Reason</th>
+                        <th>Approval Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% orders.forEach(order => { %>
+                        <tr>
+                            <td><%= order._id %></td>
+                            <td><%= order.userId %></td>
+                            <td><%= order.returnRequest.reason %></td>
+                            <td><%= order.returnRequest.approved ? 'Approved' : 'Pending' %></td>
+                            <td class="action-buttons">
+                                <% if (!order.returnRequest.approved) { %>
+                                    <form action="/admin/approve-return/<%= order._id %>" method="POST">
+                                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                    </form>
+                                    <form action="/admin/reject-return/<%= order._id %>" method="POST">
+                                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                    </form>
+                                <% } else { %>
+                                    <p class="text-success">Request already approved</p>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p class="text-center">No return requests available</p>
+        <% } %>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

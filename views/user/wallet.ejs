@@ -4,15 +4,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet Details</title>
+    <title>ESSENCE OF HEAVEN</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="icon" type="/image/png" sizes="32x32" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="icon" type="/image/png" sizes="16x16" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="manifest" href="/assets/images/icons/site.html">
+    <link rel="mask-icon" href="assets/images/icons/safari-pinned-tab.svg" color="#666666">
+    <link rel="shortcut icon" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8f9fa;
             color: #333;
-            padding: 20px;
+            padding: 0;
             margin: 0;
+            display: flex;
+            flex-direction: row; /* Set default layout to row for larger screens */
+            height: 100vh; /* Ensures full height for the body */
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 200px;
+            background: linear-gradient(135deg, #00be00, #4b4c4d);
+            border-radius: 0 10px 10px 0;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            z-index: 1000; /* Ensure navbar is above other content */
+            overflow-y: auto; /* Enables scrolling for navbar content */
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .navbar ul li {
+            margin-bottom: 15px;
+        }
+
+        .navbar ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 10px;
+            display: block;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         .wallet-container {
@@ -21,11 +75,18 @@
             border-radius: 8px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
             max-width: 900px;
-            margin: 40px auto;
+            margin: 40px auto; /* Adjusted margin to create space below navbar */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center-align elements */
+            overflow-y: auto; /* Enables scrolling for wallet content */
+            margin-left: 260px; /* Leave space for fixed navbar */
+            transition: margin-left 0.3s; /* Smooth transition for margin adjustments */
         }
 
         h2 {
-            color: #007bff;
+            color: #3f4246;
             font-weight: 600;
             font-size: 1.8em;
             text-align: center;
@@ -47,22 +108,30 @@
             text-align: center;
         }
 
+        .table-container {
+            width: 100%;
+            overflow-x: auto; /* Enables horizontal scrolling on small screens */
+            margin-top: 20px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             background-color: #fff;
-            margin-top: 20px;
             border: 1px solid #ddd;
+            margin: 0 auto; /* Center the table */
+            text-align: center; /* Center text within the table cells */
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px 15px;
-            text-align: left;
+            text-align: center; /* Center-align text in cells */
             border: 1px solid #ddd;
         }
 
         th {
-            background-color: #007bff;
+            background-color: #089313;
             color: white;
             text-transform: uppercase;
             font-weight: 600;
@@ -86,44 +155,110 @@
             background-color: #e9ecef;
         }
 
-        @media (max-width: 768px) {
-            .wallet-container {
-                padding: 20px;
+        @media (max-width: 1024px) {
+            .navbar {
+                width: 200px; /* Slightly narrower navbar */
             }
 
-            table th, table td {
+            .wallet-container {
+                margin-left: 220px; /* Adjust left margin for navbar */
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column; /* Column layout for smaller screens */
+            }
+
+            .navbar {
+                position: static;
+                width: 100%;
+                height: auto;
+                margin-bottom: 20px;
+                overflow-y: visible; /* Disable overflow for smaller screens */
+            }
+
+            .wallet-container {
+                margin: 20px auto; /* Reduced margin for smaller screens */
+                padding: 20px; /* Adjusted padding for smaller screens */
+                width: 95%; /* Responsive width */
+                margin-left: 0; /* Remove left margin for mobile */
+            }
+
+            table th,
+            table td {
                 padding: 10px;
+                font-size: 0.9em; /* Reduced font size for smaller screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            h2 {
+                font-size: 1.5em; /* Smaller heading on mobile */
+            }
+
+            .balance {
+                font-size: 1.4em; /* Smaller balance font */
+            }
+
+            h3 {
+                font-size: 1.2em; /* Smaller subheading on mobile */
+            }
+
+            table th,
+            table td {
+                padding: 8px; /* Smaller padding */
+                font-size: 0.8em; /* Further reduced font size */
             }
         }
     </style>
 </head>
 
 <body>
+    <div class="navbar">
+            <a href="/" class="logo">
+                <img src="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg" alt="Molla Logo" width="190" height="60">
+            </a>
+        <ul>
+            <li><a href="/profile"><i class="fas fa-user">&nbsp;&nbsp;</i> Profile</a></li>
+            <li><a href="/addresses"><i class="fas fa-address-book">&nbsp;&nbsp;</i> Addresses</a></li>
+            <li><a href="/orders" class="active"><i class="fas fa-box">&nbsp;&nbsp;</i> Orders</a></li>
+            <li><a href="/changepassword"><i class="fas fa-key">&nbsp;&nbsp;</i> Change Password</a></li>
+            <li><a href="/wallet"><i class="fas fa-wallet">&nbsp;&nbsp;</i> Wallet</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </div>
+
     <div class="wallet-container">
         <h2>Wallet Details</h2>
-        <div class="balance">Current Balance: $<%= wallet.balance.toFixed(2) %></div>
+        <div class="balance">Current Balance: ₹<%= wallet.balance.toFixed(2) %></div>
 
         <h3>Transaction History</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% wallet.transactions.forEach(transaction => { %>
-                    <tr class="transaction-row">
-                        <td><%= transaction.date.toISOString().substring(0, 10) %></td>
-                        <td><%= transaction.type %></td>
-                        <td>$<%= transaction.amount.toFixed(2) %></td>
-                        <td><%= transaction.description %></td>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Description</th>
                     </tr>
-                <% }) %>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <% 
+                    wallet.transactions
+                    .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date (latest first)
+                    .forEach(transaction => { %>
+                        <tr class="transaction-row">
+                            <td><%= transaction.date.toISOString().substring(0, 10) %></td>
+                            <td><%= transaction.type %></td>
+                            <td>₹<%= transaction.amount.toFixed(2) %></td>
+                            <td><%= transaction.description %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 

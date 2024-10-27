@@ -1,4 +1,3 @@
-<!-- views/orderDetails.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,15 +7,14 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Add your styles here */
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f9f9f9;
             margin: 0;
             padding: 0;
             color: #333;
-            line-height: 1.6;
         }
+
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -26,45 +24,250 @@
             color: white;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .content {
-            max-width: 800px;
-            margin: 40px auto;
+            max-width: 900px;
+            margin: 20px auto;
             padding: 20px;
             background: white;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .btn-warning {
-            background-color: #ffc107;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
         }
-        .btn-warning:hover {
-            background-color: #e0a800;
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-warning, .cancel-btn, .download-invoice-btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .cancel-btn {
+            background-color: #d9534f;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background-color: #c9302c;
+        }
+
+        .download-invoice-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .download-invoice-btn:hover {
+            background-color: #0056b3;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        a.btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: white;
+            background-color: #6c757d;
+            border-radius: 5px;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            table, th, td {
+                font-size: 0.9rem;
+            }
+
+            .content {
+                padding: 15px;
+                margin: 10px;
+            }
+
+            .btn-warning, .cancel-btn, .download-invoice-btn {
+                font-size: 0.9rem;
+                padding: 8px 15px;
+            }
+
+            .order-summary, .product-summary {
+                margin-top: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content {
+                padding: 10px;
+            }
+
+            table, th, td {
+                font-size: 0.85rem;
+                padding: 8px;
+            }
+
+            .navbar-logo, h1, .download-invoice-btn, .cancel-btn {
+                font-size: 1rem;
+            }
+
+            .download-invoice-btn i {
+                margin-right: 5px;
+            }
+
+            /* Stack elements vertically on small screens */
+            .order-summary, .product-summary {
+                margin-top: 10px;
+            }
         }
         .cancel-btn {
-    background-color: #d9534f; /* Bootstrap's danger color */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px; /* Adjust padding for size */
-    font-size: 16px; /* Increase font size */
-    transition: background-color 0.3s, transform 0.3s; /* Smooth transition for hover effects */
-    cursor: pointer;
-}
+            background-color: #ff4d4f; /* Bright red color */
+            color: #fff; /* White text */
+            border: none;
+            border-radius: 8px; /* Rounded corners */
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-.cancel-btn:hover {
-    background-color: #c9302c; /* Darker shade on hover */
-    transform: scale(1.05); /* Slightly enlarge button on hover */
-}
+        .cancel-btn i {
+            font-size: 16px; /* Icon size */
+        }
 
-.cancel-btn:focus {
-    outline: none; /* Remove outline on focus */
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
-}
+        .cancel-btn:hover {
+            background-color: #d43f3a; /* Slightly darker red on hover */
+            transform: scale(1.05); /* Slightly larger on hover */
+        }
+
+        .cancel-btn:focus {
+            outline: none;
+            box-shadow: 0 0 5px #ff4d4f;
+        }
+        /* Form Container Styling */
+        .return-form {
+            background-color: #f9f9f9; /* Light grey background */
+            border: 1px solid #ddd; /* Soft border */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            max-width: 400px; /* Restrict width */
+            margin: 20px auto; /* Center form */
+            font-family: Arial, sans-serif;
+        }
+
+        /* Label Styling */
+        .return-form label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Textarea Styling */
+        .reason-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical; /* Allow vertical resizing */
+            font-size: 14px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+
+        /* Button Styling */
+        .return-btn {
+            background-color: #007bff; /* Primary blue color */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .return-btn:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        .return-btn:focus {
+            outline: none;
+            box-shadow: 0 0 4px #007bff;
+        }
+        .custom-retry-button {
+            background-color: #343a40; /* Darker shade */
+            color: white;
+            border: none;
+            border-radius: 8px; /* Rounded corners */
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
+        }
+
+        .custom-retry-button:hover {
+            background-color: #495057; /* Lighter shade on hover */
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        .custom-retry-button:focus {
+            outline: none; /* Remove default focus outline */
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5); /* Custom focus effect */
+        }
+
 
     </style>
 </head>
@@ -75,101 +278,269 @@
             <a href="/orders" class="active">My Orders</a>
         </div>
     </nav>
-
     <div class="content">
         <h1>Order Details</h1>
         <% if (!order) { %>
             <p>No orders found.</p>
         <% } else { %>
-            <div class="order-details">
-                <h2><i class="fas fa-shopping-cart"></i> Order Id: &nbsp;<%= order.orderId %></h2>
-                <p><strong>Date:</strong> <%= new Date(order.createdOn).toDateString() %></p>
-                <p><strong>Total:</strong> $<%= order.finalPrice %></p>
-                <p><strong>Status:</strong> <%= order.status %></p>
-                <!-- Display address and other details -->
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+                <table>
+                    <tr>
+                        <th>Order Id</th>
+                        <td><%= order.orderId %></td>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <td><%= new Date(order.createdOn).toDateString() %></td>
+                    </tr>
+                    <tr>
+                        <th>Total</th>
+                        <td>₹<%= order.finalPrice %></td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td><%= order.status %></td>
+                    </tr>
+                </table>
+                <% if (order.paymentMethod === 'razorpay' && order.paymentStatus === 'pending') { %>
+                    <button class="btn btn-dark btn-md mt-3 px-4 custom-retry-button" onclick="repaymentRazorpay('<%= order._id %>')">
+                        Retry Payment
+                    </button>
+                <% } %>
+                
+
+                <% if (order.status === 'Delivered') { %>
+                    <a href="/orders/invoice/<%= order._id %>" class="download-invoice-btn">
+                        <i class="fas fa-file-pdf"></i> Download Invoice (PDF)
+                    </a>
+                <% } %>
             </div>
-            <div class="product-details">
-                <h3>Ordered Products:</h3>
-                <% order.ordereditems.forEach(item => { %>
-                    <div class="product-item">
-                        <% if (item.productId) { %>
-                            <div>
-                                <p><strong>Product Name:</strong> <%= item.productId.name %></p>
-                                <p><strong>Quantity:</strong> <%= item.quantity %></p>
-                                <p><strong>Price:</strong> $<%= item.price %></p>
-                            </div>
-                        <% } else { %>
-                            <p>Product information not available.</p>
-                        <% } %>
-                    </div>
-                <% }) %>
+            <div class="product-summary">
+                <h2>Ordered Products</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% order.ordereditems.forEach(item => { %>
+                            <tr>
+                                <% if (item.productId) { %>
+                                    <td><%= item.productId.name %></td>
+                                    <td><%= item.quantity %></td>
+                                    <td>₹<%= item.price %></td>
+                                    <td>
+                                        <% if (!order.couponApplied) { %>
+                                            <% if (!item.isCancelled && order.ordereditems.length > 1 && (order.status !== 'Delivered' && order.status !== 'Returned')) { %>
+                                                <form id="cancel-item-form-<%= item._id %>" action="/orders/cancel-item/<%= order._id %>/<%= item.productId._id %>" method="POST">
+                                                    <button type="button" class="cancel-btn" onclick="confirmCancel('<%= item._id %>')">
+                                                        <i class="fa fa-times-circle" aria-hidden="true"></i> Cancel Item
+                                                    </button>
+                                                </form>
+                                            <% } else if (order.ordereditems.length === 1) { %>
+                                                <p>You can cancel the order below</p>
+                                            <% } else if (order.status === 'Delivered') { %>
+                                                <p>Delivered</p>
+                                            <% } else { %>
+                                                <p>Cancelled</p>
+                                            <% } %>
+                                        <% } else { %>
+                                            <p>Coupon Applied: Cannot Cancel</p>
+                                        <% } %>
+                                    </td>
+                                       
+                                <% } else { %>
+                                    <td colspan="4">Product information not available.</td>
+                                <% } %>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
             </div>
-    
             <% if (order.status === 'Delivered') { %>
-                <!-- Show return button if the order is delivered -->
-                <form id="returnOrderForm" action="/orders/return/<%= order._id %>" method="POST" class="return-order-form">
-                    <button type="submit" class="btn btn-warning btn-lg return-btn">
-                        <i class="fas fa-undo"></i> Return Order
+                <form id="returnOrderForm" action="/orders/return/<%= order._id %>" method="POST" class="return-form">
+                    <label for="reason">Reason for Return:</label>
+                    <textarea name="reason" id="reason" required class="reason-textarea"></textarea>
+                    <button type="button" class="return-btn" onclick="confirmReturnOrder(event, '<%= order._id %>')">
+                        Request Return
                     </button>
                 </form>
-            <% } else if (order.status === 'Cancelled' || order.status === 'Returned') { %>
-                <!-- Show nothing if the order is cancelled or returned -->
-            <% } else { %>
-                <!-- Show cancel button if the order is not cancelled and not returned -->
+                
+            <% } else if (order.status !== 'Cancelled' && order.status !== 'Returned') { %>
                 <form id="cancelOrderForm" action="/orders/cancel/<%= order._id %>" method="POST" class="cancel-order-form">
                     <button type="button" class="btn btn-danger btn-lg cancel-btn" onclick="confirmCancelOrder(event, '<%= order._id %>')">
                         <i class="fas fa-times"></i> Cancel Order
                     </button>
                 </form>
             <% } %>
+
         <% } %>
         <a href="/orders" class="btn btn-secondary">Back to Orders</a>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.getElementById('returnOrderForm').onsubmit = function (event) {
-        event.preventDefault(); // Prevent form submission
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'Do you want to return this order?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ffc107',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, return it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                this.submit(); // Submit the form if confirmed
-            }
-        });
-    };
-</script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    function confirmCancelOrder(event, orderId) {
-        event.preventDefault(); // Prevent the default form submission
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        function confirmCancelOrder(event, orderId) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/orders/cancel/${orderId}`;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, cancel it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // If confirmed, submit the form
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/orders/cancel/${orderId}`;
-                document.body.appendChild(form);
-                form.submit();
+        function repaymentRazorpay(orderId) {
+        fetch('/order/repayment-razorpay', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ orderId: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('1',data);
+            
+            if (data.success) {
+                const options = {
+                    key: data.key, 
+                    amount: data.amount,
+                    currency: "INR",
+                    name: "Essence Of Heaven",
+                    order_id: data.orderId || data.id,
+                    handler: function (response) {
+                        console.log('2');
+                        
+                        fetch('/order/verifyRepayment', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                orderId: data.orderReceipt,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        }).then(res => res.json())
+                        .then(result => {
+                            if (result.success) {
+                                    Swal.fire({
+                                    icon: 'success',
+                                    title: 'Payment Successful!',
+                                    text: 'Your payment has been verified and processed.',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                    Swal.fire({
+                                    icon: 'error',
+                                    title: 'Payment verification failed!',
+                                    text: 'There was an issue verifying your payment. Please try again.',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        });
+                    },
+                    prefill: {
+                        name: "<%= user.username %>",
+                        email: "<%= user.email %>",
+                    },
+                    theme: {
+                        color: '#3399cc'
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+            } else {
+                alert('Unable to initiate payment.');
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Something went wrong. Please try again.');
         });
     }
-</script>
-
+    </script>
+    <script>
+        function confirmCancel(itemId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you really want to cancel this item?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!',
+                cancelButtonText: 'No, keep it'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If confirmed, submit the form
+                    document.getElementById('cancel-item-form-' + itemId).submit();
+                }
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // SweetAlert for "Request Return"
+        function confirmReturnOrder(event, orderId) {
+            event.preventDefault(); // Prevent immediate form submission
+    
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you really want to request a return for this order?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, request return!',
+                cancelButtonText: 'No, keep it'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If confirmed, submit the return form
+                    document.getElementById('returnOrderForm').submit();
+                }
+            });
+        }
+        // SweetAlert for "Cancel Order" (already in place)
+        function confirmCancelOrder(event, orderId) {
+            event.preventDefault(); // Prevent immediate form submission
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you really want to cancel this order?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!',
+                cancelButtonText: 'No, keep it'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If confirmed, submit the cancel form
+                    document.getElementById('cancelOrderForm').submit();
+                }
+            });
+        }
+    </script>
 </body>
 </html>

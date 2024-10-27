@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="icon" type="/image/png" sizes="32x32" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="icon" type="/image/png" sizes="16x16" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="manifest" href="/assets/images/icons/site.html">
+    <link rel="mask-icon" href="assets/images/icons/safari-pinned-tab.svg" color="#666666">
+    <link rel="shortcut icon" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
     <title>OTP Verification</title>
     <style>
         body {
@@ -84,49 +90,58 @@
     </style>
 </head>
 <body>
-
     <div class="otp-container">
         <form id="otpForm" onsubmit="return ValidateOTPForm(event);">
             <div class="bg-white p-5 rounded-3 shadow-sm border text-center">
                 <h2 class="mb-3">Enter OTP</h2>
                 <p class="text-muted mb-5">Please enter the four-digit code</p>
-    
                 <div id="timer" class="text-muted mb-3">Time remaining: <span id="time">00:30</span></div>
-    
                 <input type="text" class="otp-input" name="otp" id="otpInput" maxlength="6" required>
-    
                 <button type="submit" class="btn-dark">Verify OTP</button>
                 <button type="button" class="btn-resend" onclick="resendOTP()">Resend OTP</button>
             </div>
         </form>
     </div>
-    
+
     <script>
         let timerIntervall;
-        let time = 100;
-    
+        let timeLeft = 30; // Timer starts at 30 seconds
+        const timerElement = document.getElementById('time');
+        let timerExpired = false; // Flag to check if time has expired
+
         function startTimer() {
             timerIntervall = setInterval(function () {
-                if (time <= 0) {
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                timerElement.textContent = `${minutes}:${seconds}`;
+                timeLeft--;
+
+                if (timeLeft < 0) {
                     clearInterval(timerIntervall);
-                    document.getElementById('#otpInput').disabled = true; 
-                    document.getElementById('timer').classList.add("expired");
-                } else {
-                    time--;
-                    let minutes = Math.floor(time / 60);
-                    let seconds = time % 60;
-                    document.getElementById('time').textContent = minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0');
+                    timerExpired = true; // Set the flag to true when time expires
+                    document.getElementById('otpInput').disabled = true;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Time Expired',
+                        text: 'Your OTP has expired. Please request a new one.',
+                    });
                 }
             }, 1000);
         }
-    
+
+        startTimer(); // Start the timer on page load
+
         function resendOTP() {
             clearInterval(timerIntervall); 
-            time = 30; 
-            document.getElementById('otpInput').disabled = false; 
-            document.getElementById('timer').classList.remove("expired"); 
-            startTimer(); 
-    
+            timeLeft = 30; // Reset the timer to 30 seconds
+            timerExpired = false; // Reset the expired flag
+            document.getElementById('otpInput').disabled = false;
+            startTimer(); // Restart the timer
+
             $.ajax({
                 type: "POST",
                 url: "/resend-otp",
@@ -154,87 +169,60 @@
                     });
                 }
             });
-    
-            return false; // Prevent form submission
+
+            return false; 
         }
-    </script>
-    
 
-<script>
+        async function ValidateOTPForm(e) {
+            e.preventDefault();
+            const otpInput = document.querySelector('#otpInput').value;
 
+            if (timerExpired) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Time Expired',
+                    text: 'Your OTP has expired. Please request a new one.',
+                });
+                return false; // Do not proceed with verification
+            }
 
-         
-                async function ValidateOTPForm(e) {
-                e.preventDefault();
-                const otpInput = document.querySelector('#otpInput').value;
-
-                $.ajax({
-                    type: "POST",
-                    url: "/otp",
-                    data: { otp: otpInput },
-                    success: function (response) {
+            $.ajax({
+                type: "POST",
+                url: "/otp",
+                data: { otp: otpInput },
+                success: function (response) {
                     if (response.success) {
                         Swal.fire({
-                        icon: "success",
-                        title: "OTP verified successfully",
-                        showConfirmButton: false,
-                        timer: 1500
+                            icon: "success",
+                            title: "OTP verified successfully",
+                            showConfirmButton: false,
+                            timer: 1500
                         }).then(() => {
-                        window.location.href = response.redirectUrl; 
+                            window.location.href = response.redirectUrl;
                         });
                     } else {
                         Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: response.message,
+                            icon: "error",
+                            title: "Error",
+                            text: response.message,
                         });
                     }
-                    },
-                    error: function (xhr, status, error) {
-                    console.error('AJAX Error:', error); 
+                },
+                error: function (xhr, status, error) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Invalid OTP',
                         text: 'Please try again'
                     });
-                    }
-                });
-
-                return false; 
                 }
+            });
 
-
-
-    
-    let timeLeft = 30; 
-    const timerElement = document.getElementById('time');
-
-    const timerInterval = setInterval(() => {
-        let minutes = Math.floor(timeLeft / 60);
-        let seconds = timeLeft % 60;
-
-
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
-
-
-        timerElement.textContent =` ${minutes}:${seconds}`;
-
-
-        timeLeft--;
-
-        if (timeLeft < 0) {
-            clearInterval(timerInterval);
-            document.getElementById('otpForm').querySelector('button[type="submit"]').disabled = true;
-            alert('Time expired! Please request a new OTP.');
+            return false; 
         }
-    }, 1000); 
-
+    </script>
     
-</script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
+
 </html>

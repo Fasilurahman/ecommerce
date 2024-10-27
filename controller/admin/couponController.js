@@ -3,13 +3,33 @@ const Coupon = require('../../models/couponSchema');
 // Load coupon page
 const loadCoupon = async (req, res) => {
     try {
-        const coupons = await Coupon.find();
-        res.render('coupon', { coupons });
+        // Get the current page and limit from the query params (default: page 1, limit 10)
+        const { page = 1, limit = 2 } = req.query;
+        const currentPage = parseInt(page);
+        const couponsPerPage = parseInt(limit);
+
+        // Fetch coupons for the current page
+        const coupons = await Coupon.find()
+            .skip((currentPage - 1) * couponsPerPage) // Skip coupons from previous pages
+            .limit(couponsPerPage); // Limit the number of coupons per page
+
+        // Get the total number of coupons
+        const totalCoupons = await Coupon.countDocuments();
+        const totalPages = Math.ceil(totalCoupons / couponsPerPage); // Calculate total pages
+
+        // Render the coupon list page with pagination data
+        res.render('coupon', {
+            coupons,
+            currentPage,
+            totalPages,
+            couponsPerPage
+        });
     } catch (error) {
         console.log('Error loading coupons:', error);
         res.status(500).send('Internal Server Error');
     }
 };
+
 
 
 const addCoupon = async (req, res) => {

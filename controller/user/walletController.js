@@ -1,15 +1,11 @@
 const Wallet = require("../../models/walletSchema");
+const User = require("../../models/userSchema");
 
 const loadWalletPage = async (req, res) => {
-    console.log('1111');
-    
     try {
-        console.log('2222');
-
-        console.log('Session User:', req.cookies.user);
-        const user = req.cookies.user;
+        const users = req.cookies.user;
+        const user = await User.findById(users);
         let wallet = await Wallet.findOne({ userId: user }); 
-        console.log(wallet,' wallet');
         
         if (!wallet) {
             wallet = new Wallet({
@@ -23,7 +19,8 @@ const loadWalletPage = async (req, res) => {
         }
         res.render('wallet', {
             wallet,
-            transactions: wallet.transactions
+            transactions: wallet.transactions,
+            user
         }); 
     } catch (error) {
         console.log('Error while loading wallet page', error);

@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Tables</title>
+    <title>Essence of Heaven</title>
 
     <!-- Custom fonts for this template -->
     <link href="/startbootstrap-sb-admin-2-gh-pages/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -28,7 +28,34 @@
         <!-- SweetAlert JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
+    <style>
+        .pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
 
+.page-item .page-link {
+  color: #007bff;
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.page-item.active .page-link {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.page-item.disabled .page-link {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+    </style>
 </head>
 
 <body id="page-top">
@@ -44,7 +71,7 @@
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+                <div class="sidebar-brand-text mx-3"><sup>ESSENCE OF HEAVEN</sup></div>
             </a>
 
             <!-- Divider -->
@@ -52,7 +79,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="/admin">
+                <a class="nav-link" href="/admin/dashboard">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
@@ -125,7 +152,7 @@
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
-            <a class="nav-link collapsed" href="/logout" data-toggle="" data-target="#collapsePages"
+            <a class="nav-link collapsed" href="/admin/logout" data-toggle="" data-target="#collapsePages"
                 aria-expanded="true" aria-controls="collapsePages">
                 <span>Logout</span>
             </a>
@@ -417,6 +444,28 @@
                                             </table>
                                         </div>
                                     </div>
+
+                                    <div class="pagination d-flex justify-content-center">
+                                        <ul class="pagination">
+                                          <!-- Previous Button: Disabled on the first page -->
+                                          <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                            <a class="page-link" href="?page=<%= currentPage - 1 %>&limit=<%= couponsPerPage %>">Previous</a>
+                                          </li>
+                                      
+                                          <!-- Page Numbers -->
+                                          <% for (let i = 1; i <= totalPages; i++) { %>
+                                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                              <a class="page-link" href="?page=<%= i %>&limit=<%= couponsPerPage %>"><%= i %></a>
+                                            </li>
+                                          <% } %>
+                                      
+                                          <!-- Next Button: Disabled on the last page -->
+                                          <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                            <a class="page-link" href="?page=<%= currentPage + 1 %>&limit=<%= couponsPerPage %>">Next</a>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                      
                 
                                     <!-- Add Coupon Modal -->
                                     <div class="modal fade" id="addCouponModal" tabindex="-1" role="dialog" aria-labelledby="addCouponModalLabel" aria-hidden="true">
@@ -552,100 +601,103 @@
 
     <script>
         function addCoupon(event) {
-            event.preventDefault();
-            
-            // Get form values
-            const couponCode = document.getElementById('couponCode').value.trim();
-            const discountType = document.getElementById('discountType').value;
-            const discountValue = document.getElementById('discountValue').value;
-            const expiryDate = document.getElementById('expiryDate').value;
-            const minOrderAmount = document.getElementById('minOrderAmount').value;
-            const maxOrderAmount = document.getElementById('maxOrderAmount').value;
-            const description = document.getElementById('description').value.trim();
-
-            // Regex for validating coupon code (allow alphanumeric, length of 5)
-            const codeRegex = /^[A-Za-z0-9]{5}$/;
-            
-            // Date validation (expiry date should be in the future)
-            const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-            
-            // Validation flags
-            let isValid = true;
-            let errorMessage = '';
-
-            // Validate coupon code
-            if (!codeRegex.test(couponCode)) {
-                isValid = false;
-                errorMessage = 'Coupon code must be 5 alphanumeric characters.';
-            }
-            
-            // Validate discount type
-            if (discountType !== 'percentage' && discountType !== 'fixed') {
-                isValid = false;
-                errorMessage = 'Please select a valid discount type.';
-            }
-
-            // Validate discount value (must be greater than 0)
-            if (isNaN(discountValue) || discountValue <= 0) {
-                isValid = false;
-                errorMessage = 'Discount value must be greater than 0.';
-            }
-
-            // Validate expiry date (must be in the future)
-            if (!expiryDate || expiryDate <= today) {
-                isValid = false;
-                errorMessage = 'Expiry date must be a future date.';
-            }
-
-            // Validate minimum order amount
-            if (isNaN(minOrderAmount) || minOrderAmount <= 0) {
-                isValid = false;
-                errorMessage = 'Minimum order amount must be a positive number.';
-            }
-
-            // Validate maximum order amount (must be greater than or equal to minimum)
-            if (isNaN(maxOrderAmount) || maxOrderAmount <= 0 || Number(maxOrderAmount) < Number(minOrderAmount)) {
-                isValid = false;
-                errorMessage = 'Maximum order amount must be greater than or equal to the minimum order amount.';
-            }
-
+        event.preventDefault();
         
-            
+        // Get form values
+        const couponCode = document.getElementById('couponCode').value.trim();
+        const discountType = document.getElementById('discountType').value;
+        const discountValue = document.getElementById('discountValue').value;
+        const expiryDate = document.getElementById('expiryDate').value;
+        const minOrderAmount = document.getElementById('minOrderAmount').value;
+        const maxOrderAmount = document.getElementById('maxOrderAmount').value;
+        const description = document.getElementById('description').value.trim();
 
-            if (!isValid) {
-                Swal.fire('Validation Error', errorMessage, 'error');
-                return; // Prevent the form from submitting if validation fails
-            }
+        // Regex for validating coupon code (allow alphanumeric, length of 5)
+        const codeRegex = /^[A-Za-z0-9]{5}$/;
+        
+        // Date validation (expiry date should be in the future)
+        const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+        
+        // Validation flags
+        let isValid = true;
+        let errorMessage = '';
 
-            // Prepare coupon data object
-            const couponData = {
-                code: couponCode,
-                discountType: discountType,
-                discountValue: discountValue,
-                expiryDate: expiryDate,
-                minOrderAmount: minOrderAmount,
-                maxOrderAmount: maxOrderAmount,
-                description: description
-            };
+        // Validate coupon code
+        if (!codeRegex.test(couponCode)) {
+            isValid = false;
+            errorMessage = 'Coupon code must be 5 alphanumeric characters.';
+        }
+        
+        // Validate discount type
+        if (discountType !== 'percentage' && discountType !== 'fixed') {
+            isValid = false;
+            errorMessage = 'Please select a valid discount type.';
+        }
 
-            // Send the coupon data to the server
-            fetch('/admin/coupon/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(couponData)
-            }).then(res => res.json())
-            .then(data => {
+        // Validate discount value (must be greater than 0)
+        if (isNaN(discountValue) || discountValue <= 0) {
+            isValid = false;
+            errorMessage = 'Discount value must be greater than 0.';
+        }
+
+        // Validate expiry date (must be in the future)
+        if (!expiryDate || expiryDate <= today) {
+            isValid = false;
+            errorMessage = 'Expiry date must be a future date.';
+        }
+
+        // Validate minimum order amount
+        if (isNaN(minOrderAmount) || minOrderAmount <= 0) {
+            isValid = false;
+            errorMessage = 'Minimum order amount must be a positive number.';
+        }
+
+        // Validate maximum order amount (must be greater than or equal to minimum)
+        if (isNaN(maxOrderAmount) || maxOrderAmount <= 0 || Number(maxOrderAmount) < Number(minOrderAmount)) {
+            isValid = false;
+            errorMessage = 'Maximum order amount must be greater than or equal to the minimum order amount.';
+        }
+
+        if (!isValid) {
+            Swal.fire('Validation Error', errorMessage, 'error');
+            return; // Prevent the form from submitting if validation fails
+        }
+
+        // Prepare coupon data object
+        const couponData = {
+            code: couponCode,
+            discountType: discountType,
+            discountValue: discountValue,
+            expiryDate: expiryDate,
+            minOrderAmount: minOrderAmount,
+            maxOrderAmount: maxOrderAmount,
+            description: description
+        };
+
+        // Send the coupon data to the server
+        fetch('/admin/coupon/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(couponData)
+        }).then(res => res.json())
+        .then(data => {
+            if (data.message === 'Coupon code already exists') {
+                // If the coupon code exists, show SweetAlert
+                Swal.fire('Error', 'Coupon code already exists. Please try another code.', 'error');
+            } else {
                 Swal.fire('Success', 'Coupon has been added successfully.', 'success')
                 .then(() => {
                     location.reload();
                 });
-            }).catch(error => {
-                console.error('Error in adding coupon:', error);
-                Swal.fire('Error', 'There was an error adding the coupon.', 'error');
-            });
-        }
+            }
+        }).catch(error => {
+            console.error('Error in adding coupon:', error);
+            Swal.fire('Error', 'There was an error adding the coupon.', 'error');
+        });
+    }
+event.preventDefault();
 
 
 

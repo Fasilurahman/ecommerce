@@ -5,6 +5,7 @@ const path = require('path');
 const connectDB = require("./config/db");
 const userRouter = require('./routes/userRouter');
 const adminRouter = require('./routes/adminRouter');
+const dashboardRoutes = require('./routes/adminRouter');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('./config/passport');
@@ -50,8 +51,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/', userRouter);
 app.use('/admin', adminRouter);
+app.use('/', dashboardRoutes);
 
-
+app.use((req,res,next)=>{
+ res.render('page-404.ejs')
+})
 
 app.listen(process.env.PORT, () => {
     console.log("SERVER IS RUNNING");

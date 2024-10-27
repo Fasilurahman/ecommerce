@@ -1,11 +1,11 @@
 const User = require('../models/userSchema');
 const userAuth = (req, res, next) => {
   if (req.session.user) {
-    res.locals.username=req.session.username
+    res.locals.username = req.session.username
     User.findById(req.session.user)
       .then(user => {
         if (user && !user.isBlocked) {
-          req.user = user; 
+          req.user = user;
           console.log('User authenticated:', user);
           next();
         } else {
@@ -21,23 +21,25 @@ const userAuth = (req, res, next) => {
   }
 };
 
-const adminAuth = (req,res,next)=>{
-    User.findOne({isAdmin:true})
-    .then(data=>{
-        if(data){
-            next();
-        }else{
-            res.redirect('/admin/login')
-        }
-    })
-    .catch(error=>{
-        console.log("Error in adminauth middleware",error);
-        res.status(500).send("Internal server Error")
-    })
-}
+
+const adminAuth = (req, res, next) => {
+  if (req.session.admin) {
+      if (req.originalUrl === '/admin/login') {
+          return res.redirect('/admin/dashboard');
+      }
+      next();
+  } else {
+      if (req.originalUrl === '/admin/login' || req.originalUrl === '/admin') {
+          next(); 
+      } else {
+          res.redirect('/admin/login'); 
+      }
+  }
+};
+
 
 
 module.exports = {
-    userAuth,
-    adminAuth
+  userAuth,
+  adminAuth
 }

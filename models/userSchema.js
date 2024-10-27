@@ -50,20 +50,29 @@ const userSchema = new Schema({
         type:Date,
         default:Date.now
     },
+
+    profilePicture: { type: String },
     order_history:[{
         type:Schema.Types.ObjectId,
         ref:"Order"
     }],
-    // referalcode:{
-    //     type:String,
-    // },
-    // redeemed:{
-    //     type:Boolean
-    // },
-    // redeemedUsers:[{
-    //     type:Schema.Types.ObjectId,
-    //     ref:"User"
-    // }],
+    referralCode: {
+        type: String,
+        unique: true, // Ensure each referral code is unique
+        required: true
+    },
+    isReferred: { // Flag to check if the user has referred someone
+        type: Boolean,
+        default: false
+    },
+    referredUsers: [{ // List of users who have used the referral code
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    }],
+    redeemStatus: { // Status for referral redemption
+        type: Boolean,
+        default: false
+    },
     // searchHistory:[{
     //     category:{
     //         type:Schema.Types.ObjectId,

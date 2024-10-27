@@ -1,23 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reset Password</title>
-</head>
-<body>
+  </head>
+  <body>
     <h2>Reset Password</h2>
     <form action="/resetpassword" method="POST">
-        <label for="otp">Enter OTP:</label>
-        <input type="text" id="otp" name="otp" required>
-        <br>
-        <label for="newPassword">New Password:</label>
-        <input type="password" id="newPassword" name="newPassword" required>
-        <br>
-        <label for="confirmPassword">Confirm New Password:</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" required>
-        <br>
-        <button type="submit">Reset Password</button>
+      <label for="otp">Enter OTP:</label>
+      <input type="text" id="otp" name="otp" required />
+      <br />
+      <label for="newPassword">New Password:</label>
+      <input type="password" id="newPassword" name="newPassword" required />
+      <br />
+      <label for="confirmPassword">Confirm New Password:</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        name="confirmPassword"
+        required
+      />
+      <br />
+      <button type="submit">Reset Password</button>
     </form>
-</body>
+  </body>
 </html>
+<script>
+  async function proceedToPayment() {
+    console.log("Proceeding to payment");
+
+    const selectedPaymentMethod = document.querySelector(
+      'input[name="paymentMethod"]:checked'
+    ).value;
+    console.log("Selected payment method:", selectedPaymentMethod);
+    const userId = document.querySelector('input[name="userId"]').value;
+    const addressId = document.querySelector('select[name="addressId"]').value;
+
+    // Validate that the address is selected
+    if (!addressId) {
+      alert("Please select an address before proceeding to payment.");
+      return;
+    }
+    console.log("Address ID:", addressId); // Ensure that Address ID is not empty
+
+    const totalPrice = parseFloat(
+      document.querySelector('input[name="totalPrice"]').value
+    );
+    const finalPrice = parseFloat(
+      document.querySelector('input[name="finalPrice"]').value
+    );
+    const ordereditems = document.querySelector(
+      'input[name="ordereditems"]'
+    ).value;
+
+    const orderData = {
+      userId,
+      addressId,
+      amount: totalPrice,
+      finalPrice,
+      ordereditems,
+      paymentMethod: selectedPaymentMethod,
+    };
+
+    if (selectedPaymentMethod == "cod") {
+      console.log("normalrequst for a order");
+
+      placeorder();
+    } else if (selectedPaymentMethod == "razorpay") {
+      console.log("Proceeding with Razorpay");
+      const response = await fetch("/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+      console.log("1");
+      if (!response.ok) {
+        console.log("2");
+
+        const errorData = await response.json();
+        alert(`Error placing order: ${errorData.message}`);
+        return;
+      }
+      console.log("3", response);
+      const order = await response.json();
+      console.log(order, "orders");
+
+      // Open Razorpay Checkout
+      const options = {
+        key: "rzp_test_l1wDTzBK3cxTc4",
+        amount: totalPrice * 100,
+        currency: "INR",
+        name: "Your Company Name",
+        description: "Test Transaction",
+        order_id: order.id, // This is the order_id created in the backend
+        callback_url: "http://localhost:3000/payment-success",
+        prefill: {
+          name: "Your Name",
+          email: "your.email@example.com",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#F37254",
+        },
+        handler: function (response) {
+          console.log(response, "verify-payment response");
+          fetch("/verify-payment", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.status === "ok") {
+                return placeorder();
+              } else {
+                alert("Payment verification failed");
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("Error verifying payment");
+            });
+        },
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    } else {
+      console.log("wallet requst for a order");
+
+      placeorder();
+    }
+
+    async function placeorder() {
+      {
+        const response = await fetch("/order", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          return (window.location.href = `/order-success/${data.orderId}`);
+        } else {
+          const errorData = await response.json();
+          alert(`Error placing order: ${errorData.message}`);
+        }
+      }
+    }
+  }
+</script>

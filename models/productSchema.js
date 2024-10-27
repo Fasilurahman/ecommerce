@@ -11,6 +11,7 @@ const productSchema = new mongoose.Schema({
     type:String,
     required:false
   },
+  status: { type: String, enum: ['active', 'blocked'], default: 'active' },
   images: {
     type: [String],
     required: true

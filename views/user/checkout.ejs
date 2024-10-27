@@ -11,13 +11,13 @@
     <meta name="keywords" content="HTML5 Template">
     <meta name="description" content="Molla - Bootstrap eCommerce Template">
     <meta name="author" content="p-themes">
-    <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icons/favicon-16x16.png">
-    <link rel="manifest" href="assets/images/icons/site.html">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="icon" type="/image/png" sizes="32x32" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="icon" type="/image/png" sizes="16x16" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="manifest" href="/assets/images/icons/site.html">
     <link rel="mask-icon" href="assets/images/icons/safari-pinned-tab.svg" color="#666666">
-    <link rel="shortcut icon" href="assets/images/icons/favicon.ico">
+    <link rel="shortcut icon" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
     <meta name="apple-mobile-web-app-title" content="Molla">
     <meta name="application-name" content="Molla">
     <meta name="msapplication-TileColor" content="#cc9966">
@@ -190,82 +190,84 @@
                         <div class="page-content">
                             <div class="checkout">
                                 <div class="container">
-                                    <div class="row"> <div class="col-lg-9">
+                                    <div class="row"> 
+                                        <div class="col-lg-9">
                                             <h2 class="checkout-title">Billing Details</h2>
-                                            <form action="/order" method="POST">
+                                            <form id="billingForm" action="/addaddress" method="POST">
                                                 <input type="hidden" name="userId" value="<%= user._id %>">
                                                 <input type="hidden" name="addressId" value="<%= selectedAddressId || '' %>">
                                                 <input type="hidden" name="totalPrice" value="<%= cart.totalPrice %>">
                                                 <input type="hidden" name="finalPrice" value="<%= finalPrice %>">
                                                 <input type="hidden" name="ordereditems" value='<%= JSON.stringify(cart.items) %>'>
+                                        
                                                 <!-- Address Selection -->
                                                 <div class="checkout-address-selection">
                                                     <h4>Select a Saved Address</h4>
                                                     <% if (addresses && addresses.length > 0) { %>
                                                         <div class="form-group">
-                                                            <select id="addressSelect" name="addressId" class="form-control" required
-                                                                onchange="updateAddressDetails(this)">
+                                                            <select id="addressSelect" name="addressId" class="form-control" onchange="updateAddressDetails(this)">
                                                                 <option value="">Select Address</option>
                                                                 <% addresses.forEach(address => { %>
                                                                     <% if (address.address && address.address.length > 0) { %>
                                                                         <option value="<%= address._id %>">
-                                                                            <%= address.address[0].name %> -
-                                                                                <%= address.address[0].city %>,
-                                                                                    <%= address.address[0].state %> (<%= address.address[0].pincode %>)
+                                                                            <%= address.address[0].name %> - <%= address.address[0].city %>, <%= address.address[0].state %> (<%= address.address[0].pincode %>)
                                                                         </option>
-                                                                        <% } else { %>
-                                                                            <option disabled>No address details available</option>
-                                                                            <% } %>
-                                                                                <% }) %>
+                                                                    <% } else { %>
+                                                                        <option disabled>No address details available</option>
+                                                                    <% } %>
+                                                                <% }) %>
                                                             </select>
                                                         </div>
-                        
+                                        
                                                         <div id="addressActions" class="mt-3" style="display: none;">
-                                                            <a href="/addresses"><button class="btn btn-outline-primary" id="editButton">Edit</button></a>
-                                                            <a href="/addresses"><button class="btn btn-outline-danger"
-                                                                    id="deleteButton">Delete</button></a>
+                                                            <a href="/addresses"><button class="btn btn-outline-danger" id="deleteButton">Edit</button></a>
                                                         </div>
-                                                        <% } else { %>
-                                                            <p>No saved addresses found. Please add a new address.</p>
-                                                            <% } %>
+                                        
+                                                    <% } else { %>
+                                                        <p>No saved addresses found. Please add a new address.</p>
+                                                    <% } %>
                                                 </div>
-                        
+                                        
+                                                <!-- <div class="mt-3">
+                                                    <a href="/addaddress">
+                                                        <button class="btn btn-outline-primary" id="editButton">Add</button>
+                                                    </a>
+                                                </div> -->
+                                        
                                                 <h4 class="checkout-title">Or Enter a New Address</h4>
                                                 <div class="row">
                                                     <div class="col-sm-6">
                                                         <label for="name">Name *</label>
-                                                        <input type="text" id="name" name="name" class="form-control" required
-                                                            pattern="^[A-Za-z\s]{3,50}$"
-                                                            title="Name should be 3-50 characters long and contain only letters.">
+                                                        <input type="text" id="name" name="name" class="form-control">
+                                                        <span class="error-message" id="nameError"></span>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <label for="phone">Phone *</label>
-                                                        <input type="tel" id="phone" name="phone" class="form-control" required
-                                                            pattern="^\d{10}$" title="Phone number must be exactly 10 digits.">
+                                                        <input type="tel" id="phone" name="phone" class="form-control">
+                                                        <span class="error-message" id="phoneError"></span>
                                                     </div>
                                                 </div>
-                        
+                                        
                                                 <label for="state">State *</label>
-                                                <input type="text" id="state" name="state" class="form-control" required
-                                                    pattern="^[A-Za-z\s]{2,50}$"
-                                                    title="State should be 2-50 characters long and contain only letters.">
-                        
+                                                <input type="text" id="state" name="state" class="form-control">
+                                                <span class="error-message" id="stateError"></span>
+                                        
                                                 <label for="city">City *</label>
-                                                <input type="text" id="city" name="city" class="form-control" required
-                                                    pattern="^[A-Za-z\s]{2,50}$"
-                                                    title="City should be 2-50 characters long and contain only letters.">
-                        
+                                                <input type="text" id="city" name="city" class="form-control">
+                                                <span class="error-message" id="cityError"></span>
+                                        
                                                 <label for="landMark">Landmark *</label>
-                                                <input type="text" id="landMark" name="landMark" class="form-control" required
-                                                    pattern="^.{3,100}$"
-                                                    title="Landmark should be between 3-100 characters long.">
-                        
+                                                <input type="text" id="landMark" name="landMark" class="form-control">
+                                                <span class="error-message" id="landMarkError"></span>
+                                        
                                                 <label for="pincode">Postcode / ZIP *</label>
-                                                <input type="text" id="pincode" name="pincode" class="form-control" required
-                                                    pattern="^\d{5}(-\d{4})?$"
-                                                    title="Postcode/ZIP should be 5 digits, optionally followed by a dash and 4 more digits.">
+                                                <input type="text" id="pincode" name="pincode" class="form-control">
+                                                <span class="error-message" id="pincodeError"></span>
+                                        
+                                                <button type="button" class="btn btn-primary" onclick="validateForm()">Submit</button>
                                             </form>
-                                        </div> 
+                                        </div>
+                                        
                                         <div class="col-lg-3"> <div class="summary">
                                                 <h3 class="summary-title">Your Order</h3>
                                                 <table class="table table-summary">
@@ -281,65 +283,62 @@
                                                                 <tr>
                                                                     <td>
                                                                         <%= item.productId ? item.productId.name : 'Unknown Product' %>
+                                                                        <% if (item.variantId && item.productId.variants) { %>
+                                                                            <br><small>Variant: <%= item.productId.variants.id(item.variantId).name %></small>
+                                                                        <% } %>
                                                                     </td>
                                                                     <td>
                                                                         <% if (item.offerPrice) { %>
                                                                             <!-- Show offer price if available -->
                                                                             <span class="new-price">
-                                                                                $<%= (item.offerPrice * item.quantity).toFixed(2) %>
+                                                                                ₹<%= (item.offerPrice * item.quantity).toFixed(2) %>
                                                                             </span>
                                                                             <span class="old-price">
-                                                                                $<%= (item.productId.price * item.quantity).toFixed(2) %>
+                                                                                ₹<%= (item.productId.price * item.quantity).toFixed(2) %>
                                                                             </span>
-                                                                            <% } else { %>
-                                                                                <!-- Otherwise, show regular price -->
-                                                                                $<%= (item.productId.price * item.quantity).toFixed(2) %>
-                                                                                <% } %>
+                                                                        <% } else { %>
+                                                                            <!-- Otherwise, show regular price -->
+                                                                            ₹<%= (item.variantId ? item.productId.variants.id(item.variantId).price : item.productId.price) * item.quantity %>
+                                                                        <% } %>
                                                                     </td>
                                                                 </tr>
-                                                                <% }) %>
-                                                                    <% } else { %>
-                                                                        <tr>
-                                                                            <td colspan="2">No items in cart</td>
-                                                                        </tr>
-                                                                        <% } %>
-                                                                            <tr class="summary-total">
-                                                                                <td>Total:</td>
-                                                                                <td id="totalPrice">
-                                                                                    $<%= cart && cart.totalPrice ? cart.totalPrice.toFixed(2) : '0.00' %>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td colspan="2" class="apply-coupon">
-                                                                                    <input type="text" id="couponCode"
-                                                                                        placeholder="Enter coupon code" class="form-control" />
-                                                                                    <button type="button" class="btn btn-outline-primary mt-2"
-                                                                                        onclick="applyCoupon()">Apply Coupon</button>
-                                                                                    <div id="couponMessage" class="mt-2"></div>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td colspan="2">
-                                                                                    <h5>Available Coupons:</h5>
-                                                                                    <% if (coupons && coupons.length > 0) { %>
-                                                                                        <ul class="list-group">
-                                                                                            <% coupons.forEach(coupon => { %>
-                                                                                                <li class="list-group-item">
-                                                                                                    <strong>
-                                                                                                        <%= coupon.code %>
-                                                                                                    </strong> - Save
-                                                                                                    <%= coupon.discountValue %>% off
-                                                                                                        <span class="text-muted">(Expires on
-                                                                                                            <%= new Date(coupon.validTo).toLocaleDateString() %>)</span>
-                                                                                                </li>
-                                                                                                <% }) %>
-                                                                                        </ul>
-                                                                                        <% } else { %>
-                                                                                            <p>No active coupons available at the moment.</p>
-                                                                                            <% } %>
-                                                                                </td>
-                                                                            </tr>
+                                                            <% }) %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="2">No items in cart</td>
+                                                            </tr>
+                                                        <% } %>
+                                                        <tr class="summary-total">
+                                                            <td>Total:</td>
+                                                            <td id="totalPrice">
+                                                                ₹<%= cart && cart.totalPrice ? cart.totalPrice.toFixed(2) : '0.00' %>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="2" class="apply-coupon">
+                                                                <input type="text" id="couponCode" placeholder="Enter coupon code" class="form-control" />
+                                                                <button type="button" class="btn btn-outline-primary mt-2" onclick="applyCoupon()">Apply Coupon</button>
+                                                                <div id="couponMessage" class="mt-2"></div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="2">
+                                                                <h5>Available Coupons:</h5>
+                                                                <% if (coupons && coupons.length > 0) { %>
+                                                                    <ul class="list-group">
+                                                                        <% coupons.forEach(coupon => { %>
+                                                                            <li class="list-group-item">
+                                                                                <strong><%= coupon.code %></strong> - Save <%= coupon.discountValue %>% off
+                                                                            </li>
+                                                                        <% }) %>
+                                                                    </ul>
+                                                                <% } else { %>
+                                                                    <p>No active coupons available at the moment.</p>
+                                                                <% } %>
+                                                            </td>
+                                                        </tr>
                                                     </tbody>
+                                                    
                                                 </table>
                         
                         
@@ -640,312 +639,312 @@
                 }
             });
         });
-    
-        async function editAddress() {
-            console.log('12345');
-            
-            const addressId = document.getElementById('editButton').getAttribute('data-id'); // Get the data-id from the button
-
-            try {
-                const response = await fetch(`/getAddressData/${addressId}`); // Fixed missing quotes
-                if (!response.ok) {
-                    throw new Error('Failed to load address data');
-                }
-                const data = await response.json();
-
-                // Show the modal
-                document.getElementById('editAddressModal').style.display = 'block';
-
-                // Reset form fields before populating
-                const form = document.getElementById('editAddressForm');
-                form.reset(); // Clear existing values
-
-                // Populate modal form with fetched data
-                document.getElementById('editName').value = data.name || '';
-                document.getElementById('editPhone').value = data.phone || '';
-                document.getElementById('editState').value = data.state || '';
-                document.getElementById('editCity').value = data.city || '';
-                document.getElementById('editLandMark').value = data.landMark || '';
-                document.getElementById('editPincode').value = data.pincode || '';
-
-                // Set form action for update
-                form.setAttribute('action', `/editaddress/${addressId}`); // Fixed missing quotes
-            } catch (error) {
-                console.error('Error fetching address:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Failed to load address data.'
-                });
-            }
-        }
-
-
-
-    
-        document.getElementById('editAddressForm').addEventListener('submit', async function (event) {
-            event.preventDefault();
-            
-            const addressId = document.getElementById('editButton').getAttribute('data-id');
-            const updatedData = {
-                name: document.getElementById('editName').value,
-                phone: document.getElementById('editPhone').value,
-                state: document.getElementById('editState').value,
-                city: document.getElementById('editCity').value,
-                landMark: document.getElementById('editLandMark').value,
-                pincode: document.getElementById('editPincode').value
-            };
-    
-            try {
-                const response = await fetch(/editaddress/${addressId}, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updatedData)
-                });
-    
-                if (response.ok) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Address updated successfully!',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        window.location.reload(); 
-                    });
-                } else {
-                    throw new Error('Error updating address');
-                }
-            } catch (error) {
-                console.error('Error updating address:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Failed to update address!'
-                });
-            }
-        });
-    
-    
-        function closeModal() {
-            document.getElementById('editAddressModal').style.display = 'none';
-            document.getElementById('editAddressForm').reset(); 
-        }
-
     </script>
 
 
 <script>
     async function proceedToPayment() {
         console.log('Proceeding to payment');
-        
+
+        const addressSelect = document.querySelector('#addressSelect');
         const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
         console.log('Selected payment method:', selectedPaymentMethod);
+
         const userId = document.querySelector('input[name="userId"]').value;
-        const addressId = document.querySelector('select[name="addressId"]').value;
-
-
-        // Validate that the address is selected
-        if (!addressId) {
-        alert('Please select an address before proceeding to payment.');
-        return;
-        }
-        console.log('Address ID:', addressId);  // Ensure that Address ID is not empty
-
+        const addressId = addressSelect ? addressSelect.value : '';
         const totalPrice = parseFloat(document.querySelector('input[name="totalPrice"]').value);
         const finalPrice = parseFloat(document.querySelector('input[name="finalPrice"]').value);
         const ordereditems = document.querySelector('input[name="ordereditems"]').value;
-        
+
+        // Check if addresses are available
+        const addressOptions = addressSelect ? addressSelect.options.length : 0;
+        console.log('Available address options:', addressOptions);
+
+        // If no address is available, show an alert to add an address
+        if (!addressId && addressOptions <= 1) { // First option is usually "Select Address"
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Address Found',
+                text: 'No address available. Please add an address before proceeding.',
+            });
+            return;
+        }
+
+        // Proceed to validate the selected address
+        if (!addressId) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Address Selection Required',
+                text: 'Please select an address before proceeding to payment.',
+            });
+            return;
+        }
 
         const orderData = {
             userId,
-            addressId, 
-            amount:totalPrice,
+            selectedAddressId: addressId,
+            amount: totalPrice,
             finalPrice,
             ordereditems,
             paymentMethod: selectedPaymentMethod
         };
+        console.log(orderData, 'order data');
 
-        if(selectedPaymentMethod == 'cod'){
-            console.log('normalrequst for a order')
-
-        
-
-           placeorder()
-
-
-        }else if(selectedPaymentMethod == 'razorpay'){
-            console.log('Proceeding with Razorpay');
-            const response = await fetch('/create-order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(orderData)
-            });
-            console.log('1');
-            
-
-            if (!response.ok) {
-                console.log('2');
-                
-                const errorData = await response.json();
-                alert(`Error placing order: ${errorData.message}`);
-                return;
-            }
-            console.log('3',response);
-            const order = await response.json();
-            console.log(order,'orders');
-            
-
-      // Open Razorpay Checkout
-      const options = {
-        key: 'rzp_test_l1wDTzBK3cxTc4', 
-        amount: totalPrice * 100,
-        currency: 'INR',
-        name: 'Your Company Name',
-        description: 'Test Transaction',
-        order_id: order.id, // This is the order_id created in the backend
-        callback_url: 'http://localhost:3000/payment-success', 
-        prefill: {
-          name: 'Your Name',
-          email: 'your.email@example.com',
-          contact: '9999999999'
-        },
-        theme: {
-          color: '#F37254'
-        },
-        handler: function (response) {
-        console.log(response,'verify-payment response')
-          fetch('/verify-payment', {
+        if (selectedPaymentMethod === 'cod') {
+            console.log('Normal request for an order');
+            await placeorder(orderData);
+        } else if (selectedPaymentMethod === 'razorpay') {
+    console.log('Proceeding with Razorpay');
+    try {
+        const response = await fetch('/order', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature
+                paymentMethod: "razorpay",
+                selectedAddressId: addressId,
+                finalPrice: finalPrice,
             })
-          }).then(res => res.json())
-            .then(data => {
-                
-              if (data.status === 'ok') {
-                return placeorder()
-              } else {
-                alert('Payment verification failed');
-              }
-            }).catch(error => {
-              console.error('Error:', error);
-              alert('Error verifying payment');
-            });
-        }
-      };
+        });
 
-      const rzp = new Razorpay(options);
-      rzp.open();
-         }else{
-            console.log('wallet requst for a order');
+        const order = await response.json();
+        console.log(order, 'razorpay order');
+        console.log(order.data.razorpayOrder, 'razorpay details');
 
-            placeorder()
-            
-         }
+        if (response.ok) {
+            const options = {
+                key: "rzp_test_l1wDTzBK3cxTc4",
+                amount: order.data.razorpayOrder.amount,
+                currency: "INR",
+                order_id: order.data.razorpayOrder.id,
+                handler: async function (response) {
+                    console.log('Payment success response:', response);
+                    const verificationResponse = await fetch('/verify-payment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature
+                        })
+                    });
 
-         async function placeorder(){{
-            const response = await fetch('/order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+                    const res = await verificationResponse.json();
+                    console.log(res, 'Payment verification result');
+
+                    if (res.success) {
+                        window.location.href = `/orderSuccess/${res.orderID}`; 
+                    } else {
+                        alert('Payment verification failed.');
+                    }
                 },
-                body: JSON.stringify(orderData)
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+
+            const rzp = new Razorpay(options);
+
+            // Handling payment failure
+            rzp.on('payment.failed', function (response) {
+                console.log('failed payment razor[ay worked]')
+                console.log('Payment failed:', response);
+                
+                fetch("/verify-payment", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        orderData: order,
+                        payment_id: response.error.metadata.payment_id,
+                        order_id: response.error.metadata.order_id,
+                        signature: response.error.metadata.signature
+                    }),
+                })
+                .then(res => res.json())
+                .then(failedData => {
+                    console.log('Payment failed, got response:', failedData);
+                    console.log('Redirecting to order details...');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Payment Failed',
+                        text: 'The payment was not completed. Redirecting to order details...',
+                        confirmButtonText: 'OK',
+                        timer: 3000,
+                        willClose: () => {
+                            if (failedData.response) {
+                                console.log('Redirecting to', failedData.response);
+                                window.location = failedData.response; 
+                            } else {
+                                console.log('No URL provided, redirecting to home');
+                                window.location = "/";  // Fallback in case no URL provided
+                            }
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.error('Failed payment error handling:', err);
+                    alert('An error occurred while handling the failed payment.');
+                });
             });
 
-            if (response.ok) {
-                const data = await response.json();
-             return   window.location.href = `/order-success/${data.orderId}`;
-            } else {
-                const errorData = await response.json();
-                alert(`Error placing order: ${errorData.message}`);
-            }
-    }}
-    }
-   
-</script>
-
-<script>
-    const form = document.getElementById('addressForm');
-
-    // Function to validate the form fields dynamically
-    function validateForm() {
-        const inputs = form.elements;
-        let isValid = true;
-
-        // Check each input field for validity
-        for (let i = 0; i < inputs.length; i++) {
-            if (!inputs[i].checkValidity()) {
-                isValid = false;
-                // Show error message directly in the input field
-                inputs[i].setCustomValidity(inputs[i].title);
-                inputs[i].reportValidity(); // Show validation error
-            } else {
-                inputs[i].setCustomValidity(""); // Clear previous error message
-            }
+            rzp.open();
+        } else {
+            alert(order.message);
         }
-
-        // Optional: You can handle what to do if the form is valid
-        if (isValid) {
-            console.log("Form is valid!");
+    } catch (err) {
+        console.error('Error:', err);
+        alert('An error occurred while placing the order.');
+    }
+}
+ else if (selectedPaymentMethod === 'wallet') {
+            console.log('Wallet request for an order');
+            await placeorder(orderData);
         }
     }
 
-    // Attach event listeners to each input for real-time validation
-    const inputs = form.elements;
-    for (let i = 0; i < inputs.length; i++) {
-        inputs[i].addEventListener('input', validateForm);
-    }
-</script>
-<script>
-    async function applyCoupon() {
-        const couponCode = document.getElementById('couponCode').value;
-        const totalAmount = parseFloat(document.getElementById('totalPrice').innerText.replace('$', '').replace(',', '')); // Updated to handle commas
-
-        const response = await fetch('/apply-coupon', {
+    async function placeorder(orderData) {
+        const response = await fetch('/order', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ couponCode, totalAmount })
+            body: JSON.stringify(orderData)
         });
 
-        const result = await response.json();
-        const couponMessage = document.getElementById('couponMessage');
+        const data = await response.json();
 
-        if (result.success) {
-            // Update the total price with discount
-            couponMessage.innerText = `Coupon applied! Discount: $${result.discountAmount.toFixed(2)}. New Total: $${result.newTotal.toFixed(2)}`;
-            document.getElementById('totalPrice').innerText = `$${result.newTotal.toFixed(2)}`;
-
-            // Update hidden input for final price
-            document.querySelector('input[name="finalPrice"]').value = result.newTotal; // Update the finalPrice input
+    if (!data.success) {
+        // Check for specific error messages and show them in SweetAlert
+        if (data.message === 'Insufficient wallet balance.') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Payment Failed',
+                text: data.message, // Show the error message from the server
+            });
         } else {
-            couponMessage.innerText = result.message;
+            // Handle other error messages
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message,
+            });
         }
+    } else {
+        window.location.href = `/orderSuccess/${data.orderId}`;
+    }
     }
 </script>
-<script>
-    function updateAddressDetails(select) {
-    const selectedAddressId = select.value;
 
-    // If an address is selected, show the buttons
-    if (selectedAddressId) {
-        document.getElementById('addressActions').style.display = 'block';
-        document.getElementById('editButton').setAttribute('data-id', selectedAddressId); // Set the data-id for the selected address
+
+
+
+
+<script>
+    async function applyCoupon() {
+    const couponCode = document.getElementById('couponCode').value;
+
+    // Fetching the total price and logging it
+    const totalPriceElement = document.getElementById('totalPrice').innerText;
+    console.log('Total price before parsing:', totalPriceElement);
+
+    // Remove the "₹" symbol and any commas, then parse the number
+    const totalAmount = parseFloat(totalPriceElement.replace('₹', '').replace(/,/g, ''));
+    console.log('Parsed total amount:', totalAmount);
+
+    const response = await fetch('/apply-coupon', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ couponCode, totalAmount })
+    });
+
+    const result = await response.json();
+    const couponMessage = document.getElementById('couponMessage');
+
+    if (result.success) {
+        couponMessage.innerText = `Coupon applied! Discount: ₹${result.discountAmount.toFixed(2)}. New Total: ₹${result.newTotal.toFixed(2)}`;
+        document.getElementById('totalPrice').innerText = `₹${result.newTotal.toFixed(2)}`;
+        document.querySelector('input[name="finalPrice"]').value = result.newTotal;
     } else {
-        // Hide the buttons if no address is selected
-        document.getElementById('addressActions').style.display = 'none';
+        couponMessage.innerText = result.message;
     }
 }
 
+</script>
+<script>
+    function validateForm() {
+        // Clear previous error messages
+        document.querySelectorAll('.error-message').forEach(msg => msg.innerText = "");
+
+        let isValid = true;
+
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const state = document.getElementById('state').value;
+        const city = document.getElementById('city').value;
+        const landMark = document.getElementById('landMark').value;
+        const pincode = document.getElementById('pincode').value;
+
+        // Validation for leading/trailing spaces
+        if (name.trim() !== name || name === "") {
+            document.getElementById('nameError').innerText = "Name cannot have leading or trailing spaces and cannot be empty.";
+            isValid = false;
+        } else if (!/^[A-Za-z\s]{3,50}$/.test(name)) {
+            document.getElementById('nameError').innerText = "Name must be 3-50 characters long and contain only letters.";
+            isValid = false;
+        }
+
+        if (phone.trim() !== phone || phone === "") {
+            document.getElementById('phoneError').innerText = "Phone cannot have leading or trailing spaces and cannot be empty.";
+            isValid = false;
+        } else if (!/^\d{10}$/.test(phone)) {
+            document.getElementById('phoneError').innerText = "Phone number must be exactly 10 digits.";
+            isValid = false;
+        }
+
+        if (state.trim() !== state || state === "") {
+            document.getElementById('stateError').innerText = "State cannot have leading or trailing spaces and cannot be empty.";
+            isValid = false;
+        } else if (!/^[A-Za-z\s]{2,50}$/.test(state)) {
+            document.getElementById('stateError').innerText = "State must be 2-50 characters long and contain only letters.";
+            isValid = false;
+        }
+
+        if (city.trim() !== city || city === "") {
+            document.getElementById('cityError').innerText = "City cannot have leading or trailing spaces and cannot be empty.";
+            isValid = false;
+        } else if (!/^[A-Za-z\s]{2,50}$/.test(city)) {
+            document.getElementById('cityError').innerText = "City must be 2-50 characters long and contain only letters.";
+            isValid = false;
+        }
+
+        if (landMark.trim() !== landMark || landMark === "") {
+            document.getElementById('landMarkError').innerText = "Landmark cannot have leading or trailing spaces and cannot be empty.";
+            isValid = false;
+        } else if (landMark.length < 3 || landMark.length > 100) {
+            document.getElementById('landMarkError').innerText = "Landmark must be between 3-100 characters.";
+            isValid = false;
+        }
+
+        if (pincode.trim() !== pincode || pincode === "") {
+            document.getElementById('pincodeError').innerText = "Postcode cannot have leading or trailing spaces and cannot be empty.";
+            isValid = false;
+        } else if (!/^\d{5}(-\d{4})?$/.test(pincode)) {
+            document.getElementById('pincodeError').innerText = "Postcode/ZIP must be 5 digits, optionally followed by a dash and 4 more digits.";
+            isValid = false;
+        }
+
+        // If the form is valid, submit it
+        if (isValid) {
+            document.getElementById('billingForm').submit();
+        }
+    }
 </script>
 
 

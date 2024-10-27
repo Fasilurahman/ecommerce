@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Tables</title>
+    <title>Essence of Heaven</title>
 
     <!-- Custom fonts for this template -->
     <link href="/startbootstrap-sb-admin-2-gh-pages/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -31,6 +31,35 @@
 
     
     <style>
+        .pagination {
+    display: flex;
+    justify-content: center;
+}
+
+.page-item {
+    margin: 0 5px;
+}
+
+.page-item .page-link {
+    color: #007bff;
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.page-item.active .page-link {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.page-item.disabled .page-link {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
         /* Additional styles for table and modal */
         .modal-dialog {
             max-width: 800px;
@@ -90,7 +119,7 @@
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+                <div class="sidebar-brand-text mx-3"><sup>ESSENCE OF HEAVEN</sup></div>
             </a>
 
             <!-- Divider -->
@@ -98,7 +127,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="/admin">
+                <a class="nav-link" href="/admin/dashboard">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
@@ -171,7 +200,7 @@
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
-            <a class="nav-link collapsed" href="/logout" data-toggle="" data-target="#collapsePages"
+            <a class="nav-link collapsed" href="/admin/logout" data-toggle="" data-target="#collapsePages"
                 aria-expanded="true" aria-controls="collapsePages">
                 <span>Logout</span>
             </a>
@@ -201,6 +230,7 @@
                             <th>Description</th>
                             <th>Brand</th>
                             <th>Variants</th>
+                            <th>Status</th> <!-- Add Status Column -->
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -209,7 +239,7 @@
                             <tr id="product-<%= product._id %>">
                                 <td><%= product.name %></td>
                                 <td><%= product.description %></td>
-                                <td><%= product.brandName %></td>
+                                <td><%= product.brand ? product.brand.brandName : 'No Brand' %></td>
                                 <td>
                                     <% if (product.variants && product.variants.length > 0) { %>
                                         <% product.variants.forEach((variant, index) => { %>
@@ -226,9 +256,21 @@
                                         <p>No variants available.</p>
                                     <% } %>
                                 </td>
-                                
+                                <td>
+                                    <% if (product.status === 'active') { %>
+                                        <span class="badge badge-success">Active</span>
+                                    <% } else { %>
+                                        <span class="badge badge-danger">Blocked</span>
+                                    <% } %>
+                                </td>
                                 <td>
                                     <a href="/admin/editProduct/<%= product._id %>" class="btn btn-primary btn-sm">Edit</a>
+                                    <!-- Block/Unblock buttons -->
+                                    <% if (product.status === 'active') { %>
+                                        <button class="btn btn-warning btn-sm block-btn" data-id="<%= product._id %>">Block</button>
+                                    <% } else { %>
+                                        <button class="btn btn-success btn-sm unblock-btn" data-id="<%= product._id %>">Unblock</button>
+                                    <% } %>
                                     <!-- Delete button with AJAX -->
                                     <button class="btn btn-danger btn-sm delete-btn" data-id="<%= product._id %>">Delete</button>
                                 </td>
@@ -236,7 +278,32 @@
                         <% }); %>
                     </tbody>
                 </table>
+                
+                
+                <div class="pagination d-flex justify-content-center">
+                    <ul class="pagination">
+                        <!-- Previous button, disabled if on the first page -->
+                        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                            <a class="page-link" href="/admin/products?page=<%= currentPage - 1 %>&limit=<%= limit %>">Previous</a>
+                        </li>
+                
+                        <!-- Show page numbers -->
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                <a class="page-link" href="/admin/products?page=<%= i %>&limit=<%= limit %>"><%= i %></a>
+                            </li>
+                        <% } %>
+                
+                        <!-- Next button, disabled if on the last page -->
+                        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                            <a class="page-link" href="/admin/products?page=<%= currentPage + 1 %>&limit=<%= limit %>">Next</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                  
             </div>
+            
             
 
 <!-- End of Page Wrapper -->
@@ -304,6 +371,115 @@
 
     <!-- Page level custom scripts -->
     <script src="/startbootstrap-sb-admin-2-gh-pages/js/demo/datatables-demo.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Block product
+            const blockButtons = document.querySelectorAll('.block-btn');
+            blockButtons.forEach(button => {
+                button.addEventListener('click', async function () {
+                    const productId = this.getAttribute('data-id');
+                    // SweetAlert confirmation dialog
+                    const result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: "Do you want to block this product?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, block it!',
+                        cancelButtonText: 'Cancel'
+                    });
+    
+                    if (result.isConfirmed) {
+                        fetch(`/admin/blockProduct/${productId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Blocked!',
+                                    'The product has been blocked successfully.',
+                                    'success'
+                                ).then(() => location.reload()); // Reload the page after success
+                            } else {
+                                Swal.fire(
+                                    'Error',
+                                    'Failed to block the product. Please try again.',
+                                    'error'
+                                );
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            Swal.fire(
+                                'Error',
+                                'There was a problem with the request.',
+                                'error'
+                            );
+                        });
+                    }
+                });
+            });
+    
+            // Unblock product
+            const unblockButtons = document.querySelectorAll('.unblock-btn');
+            unblockButtons.forEach(button => {
+                button.addEventListener('click', async function () {
+                    const productId = this.getAttribute('data-id');
+                    // SweetAlert confirmation dialog
+                    const result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: "Do you want to unblock this product?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, unblock it!',
+                        cancelButtonText: 'Cancel'
+                    });
+    
+                    if (result.isConfirmed) {
+                        fetch(`/admin/unblockProduct/${productId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Unblocked!',
+                                    'The product has been unblocked successfully.',
+                                    'success'
+                                ).then(() => location.reload()); // Reload the page after success
+                            } else {
+                                Swal.fire(
+                                    'Error',
+                                    'Failed to unblock the product. Please try again.',
+                                    'error'
+                                );
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            Swal.fire(
+                                'Error',
+                                'There was a problem with the request.',
+                                'error'
+                            );
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
 
 </body>
 

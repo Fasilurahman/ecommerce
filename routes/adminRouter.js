@@ -9,15 +9,16 @@ const orderController = require('../controller/admin/orderController');
 const couponController = require('../controller/admin/couponController');
 const offerController = require('../controller/admin/offerController');
 const salesController = require('../controller/admin/salesController');
+const dashboardController = require('../controller/admin/dashboardController');
 const {userAuth,adminAuth} = require('../middlewares/auth');
 
 
 
 router.get('/pageerror', adminController.pageerror);
-router.get('/login', adminController.loadadminLogin);
-router.post('/login', adminController.adminLogin);
+router.get('/login', adminAuth,adminController.loadadminLogin);
+router.post("/login", adminAuth,adminController.adminLogin);
 router.get('/', adminAuth, adminController.loadDashboard);
-router.get('/logout', adminController.logout);
+router.get('/logout',adminAuth, adminController.logout);
 router.get('/users', adminAuth, customerController.customerInfo);
 router.get('/users/block/:id', adminAuth, customerController.blockUser);
 router.get('/users/unblock/:id', adminAuth, customerController.unblockUser);
@@ -28,11 +29,10 @@ router.post('/category/deletecategory/:id',adminAuth, categoryController.deleteC
 router.post('/category/block/:id', adminAuth, categoryController.blockCategory);
 router.post('/category/unblock/:id', adminAuth, categoryController.unblockCategory);
 
-router.get('/brand', brandController.brandInfo);
-router.get('/brand', brandController.brandInfo);
-router.post('/brand/add', brandController.addBrand);
-router.post('/editbrand', brandController.editBrand);
-router.post('/deleteBrand', brandController.deleteBrand);
+router.get('/brand',adminAuth, brandController.brandInfo);
+router.post('/brand/add',adminAuth, brandController.addBrand);
+router.post('/editbrand',adminAuth, brandController.editBrand);
+router.post('/deleteBrand',adminAuth, brandController.deleteBrand);
 
 
 
@@ -53,10 +53,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.get('/dashboard',)
-router.get('/products', productController.productInfo);
-router.get('/addProduct', productController.showAddProductPage);
-router.post('/addProduct', upload.array('images', 4), productController.addProduct);
-router.get('/editProduct/:id', productController.showEditProductPage);
+router.get('/products',adminAuth, productController.productInfo);
+router.get('/addProduct',adminAuth, productController.showAddProductPage);
+router.post('/addProduct',adminAuth, upload.array('images', 4), productController.addProduct);
+router.get('/editProduct/:id',adminAuth, productController.showEditProductPage);
 
 
 
@@ -68,32 +68,58 @@ router.post('/editProduct/:id', upload.fields([
   { name: 'image2', maxCount: 1 },
   { name: 'image3', maxCount: 1 },
   { name: 'image4', maxCount: 1 }
-]), productController.editProduct);
+]),adminAuth, productController.editProduct);
 
-router.get('/product/:id', productController.showProductDetailPage);
-router.delete('/products/:id', productController.deleteProduct);
+router.get('/product/:id',adminAuth, productController.showProductDetailPage);
+router.delete('/products/:id',adminAuth, productController.deleteProduct);
+router.post('/blockProduct/:id', adminAuth, productController.blockProduct);
+router.post('/unblockProduct/:id', adminAuth,productController.unblockProduct);
+
 
 router.get('/order',adminAuth, orderController.orderDetails);
-router.post('/order/update/:orderId', orderController.updateOrderStatus);
+router.post('/order/update/:orderId',adminAuth, orderController.updateOrderStatus);
+router.post('/orders/return/:orderId', orderController.requestReturn);
+// admin routes (router/admin.js or wherever you configure admin routes)
+router.get('/return-requests', orderController.viewReturnRequests);
+router.post('/approve-return/:orderId', orderController.approveReturn);
+router.post('/reject-return/:orderId', orderController.rejectReturn);
+router.get('/order/view/:id', orderController.viewOrder);
 
 
-router.get('/coupon',couponController.loadCoupon)
-router.post('/coupon/add', couponController.addCoupon);
-router.post('/coupon/edit/:id', couponController.editCoupon);
-router.post('/coupon/delete/:id', couponController.deleteCoupon);
 
 
-router.get('/offer', offerController.getAllOffers);
-router.post('/offer/add', offerController.addOffer);
-router.get('/entities/:type', offerController.getEntitiesByType);
-router.put('/offer/:id', offerController.editOffer);
-router.patch('/offer/:id/block', offerController.blockOffer);
-router.delete('/offer/:id', offerController.deleteOffer);
 
-router.get('/sales-report',salesController.getSalesReport)
-router.get('/sales-report/pdf', salesController.generatePDF);
+router.get('/coupon',adminAuth,couponController.loadCoupon)
+router.post('/coupon/add',adminAuth, couponController.addCoupon);
+router.post('/coupon/edit/:id',adminAuth, couponController.editCoupon);
+router.post('/coupon/delete/:id',adminAuth, couponController.deleteCoupon);
 
 
+router.get('/offer',adminAuth, offerController.getAllOffers);
+router.post('/offer/add',adminAuth, offerController.addOffer);
+router.post('/offer/add',adminAuth, offerController.addOffer);
+router.get('/entities/:type',adminAuth, offerController.getEntitiesByType);
+router.put('/offer/:id',adminAuth, offerController.editOffer);
+router.patch('/offer/:id/block',adminAuth, offerController.blockOffer);
+router.delete('/offer/:id',adminAuth, offerController.deleteOffer);
+
+router.get('/sales-report',adminAuth,salesController.getSalesReport)
+router.get('/sales-report/pdf',adminAuth, salesController.generatePDF);
+
+router.get('/admin/dashboard',adminAuth, dashboardController.renderDashboard); // Route to render the dashboard
+router.get('/top-products',adminAuth, async (req, res) => {
+  const products = await dashboardController.getTopProducts();
+  res.json(products);
+});
+router.get('/top-categories',adminAuth, async (req, res) => {
+  const categories = await dashboardController.getTopCategories();
+  res.json(categories);
+});
+router.get('/top-brands',adminAuth, async (req, res) => {
+  const brands = await dashboardController.getTopBrands();
+  res.json(brands);
+});
+router.get('/sales',adminAuth, dashboardController.getSalesData);
 
 module.exports = router
 

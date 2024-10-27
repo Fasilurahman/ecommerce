@@ -10,26 +10,26 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-  <style>
-    .cropper-container {
-      margin-top: 20px;
-      max-width: 200px;  /* Increase the max width */
-      max-height: 200px; /* Increase the max height */
-      overflow: hidden;
-    }
-
-    .image-preview {
-      width: 100%;     /* Adjust to fit container */
-      height: auto;
-      display: block;
-      margin-bottom: 20px;
-    }
-
-    .crop-buttons {
-      margin-top: 10px;
-    }
-  </style>
-  </style>
+<style>
+    #image-preview-container {
+      margin: 20px 0;
+      max-width: 100%; /* Limit the width of the container */
+      display: flex; /* Use flex to display images side by side */
+      flex-wrap: wrap; /* Wrap images if there's overflow */
+  }
+  .image-crop-container {
+      position: relative; /* Position relative for cropper control */
+      margin: 10px; /* Space between images */
+  }
+  .cropper-view {
+      border: 1px solid #ccc;
+      max-width: 100%; /* Ensure the cropper fits the container */
+  }
+  #image-to-crop {
+      display: none; /* Hide the image initially */
+      max-width: 100%; /* Ensure the image fits within the container */
+  }
+</style>
 </head>
 <body>
   <div class="container">
@@ -80,16 +80,15 @@
         <button type="button" id="add-variant-btn" class="btn btn-secondary">Add Another Variant</button>
       </div>
 
-      <!-- File input for images -->
-      <div class="form-group">
-        <label for="images">Product Images (select up to 4)</label>
-        <input type="file" name="images" id="images" class="form-control" multiple required accept="image/*">
-    </div>
 
-    <!-- Image Preview Section -->
-    <div id="image-preview-container"></div>
-
+    
+      <h1>Image Cropper Example</h1>
+      <input type="file" id="images" multiple required accept="image/*">
+      <div id="image-preview-container"></div>
+      <div id="cropper-container"></div> <!-- Keep cropper container for active cropping -->
+    
     <button type="submit" class="btn btn-success">Add Product</button>
+    
     </form>
   </div>
 
@@ -98,127 +97,198 @@
   <script src="https://unpkg.com/cropperjs@1.5.12/dist/cropper.min.js"></script>
 
 
+  
 
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  const imagesInput = document.getElementById('images');
+const imagePreviewContainer = document.getElementById('image-preview-container');
+const cropperInstances = []; // Ensure this is defined globally
 
-  <script>
-    document.getElementById('add-product-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-  
-      // Form values
-      const productName = document.getElementById('name').value.trim();
-      const category = document.getElementById('category').value;
-      const description = document.getElementById('description').value.trim();
-      const brand = document.getElementById('brand').value;
-  
-      const variants = document.querySelectorAll('.variant-group');
-      const imagesInput = document.getElementById('images');
-      const images = imagesInput.files;
-  
-      let isValid = true;
-      let errorMessage = '';
-  
-      // Product name validation
-      if (productName.length < 3 || productName.length > 100) {
-        isValid = false;
-        errorMessage = 'Product name must be between 3 and 100 characters.';
-      }
-  
-      // Category validation
-      if (!category) {
-        isValid = false;
-        errorMessage = 'Please select a valid category.';
-      }
-  
-      // Brand validation
-      if (!brand) {
-        isValid = false;
-        errorMessage = 'Please select a valid brand.';
-      }
-  
-      // Variants validation
-      variants.forEach(variant => {
-        const quantity = variant.querySelector('input[name*="quantity"]').value;
-        const price = variant.querySelector('input[name*="price"]').value;
-        const stock = variant.querySelector('input[name*="stock"]').value;
-  
-  
-        if (!price || isNaN(price) || price <= 0) {
-          isValid = false;
-          errorMessage = 'Each variant must have a valid positive price.';
-        }
-  
-        if (!stock || isNaN(stock) || stock < 0) {
-          isValid = false;
-          errorMessage = 'Each variant must have a valid stock number.';
-        }
-      });
-  
-      // Images validation
-      if (images.length < 1 || images.length > 4) {
-        isValid = false;
-        errorMessage = 'Please select between 1 and 4 product images.';
-      }
-  
-      // Validate each image file
-      Array.from(images).forEach(image => {
-        if (!['image/jpeg', 'image/png'].includes(image.type)) {
-          isValid = false;
-          errorMessage = 'Only JPEG and PNG image formats are allowed.';
-        }
-        if (image.size > 2 * 1024 * 1024) { // 2MB limit
-          isValid = false;
-          errorMessage = 'Each image size must not exceed 2MB.';
-        }
-      });
-  
-      // Final validation check
-      if (!isValid) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Validation Error',
-          text: errorMessage,
-          confirmButtonText: 'OK'
+imagesInput.addEventListener('change', (event) => {
+    imagePreviewContainer.innerHTML = ''; // Clear previous previews
+    cropperInstances.length = 0; // Reset cropper instances
+
+    Array.from(event.target.files).forEach((file, index) => {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.classList.add('cropper-view');
+        imagePreviewContainer.appendChild(img);
+
+        const cropper = new Cropper(img, {
+            aspectRatio: 1,
+            viewMode: 1,
+            // other Cropper options
         });
-        return; // Prevent form submission if validation fails
+        cropperInstances.push(cropper); // Store the cropper instance
+    });
+});
+
+// Image selection and cropping setup
+imagesInput.addEventListener('change', (event) => {
+    imagePreviewContainer.innerHTML = ''; // Clear previous previews
+    cropperInstances.length = 0; // Reset cropper instances
+
+    Array.from(event.target.files).forEach((file, index) => {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.classList.add('cropper-view');
+        imagePreviewContainer.appendChild(img);
+
+        // Initialize Cropper.js
+        const cropper = new Cropper(img, {
+            aspectRatio: 1, // Adjust as needed
+            viewMode: 1,
+            // Additional options as needed
+        });
+        cropperInstances.push(cropper); // Store the cropper instance
+    });
+});
+
+
+  document.getElementById('add-product-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  // ... [Validation code remains unchanged] ...
+  // Form values
+  const productName = document.getElementById('name').value.trim();
+    const category = document.getElementById('category').value;
+    const description = document.getElementById('description').value.trim();
+    const brand = document.getElementById('brand').value;
+
+    const variants = document.querySelectorAll('.variant-group');
+    const images = imagesInput.files;
+
+    let isValid = true;
+    let errorMessage = '';
+
+    // Product name validation
+    if (productName.length < 3 || productName.length > 100) {
+      isValid = false;
+      errorMessage = 'Product name must be between 3 and 100 characters.';
+    }
+
+    // Category validation
+    if (!category) {
+      isValid = false;
+      errorMessage = 'Please select a valid category.';
+    }
+
+    // Brand validation
+    if (!brand) {
+      isValid = false;
+      errorMessage = 'Please select a valid brand.';
+    }
+
+    // Variants validation
+    variants.forEach(variant => {
+      const quantity = variant.querySelector('input[name*="quantity"]').value;
+      const price = variant.querySelector('input[name*="price"]').value;
+      const stock = variant.querySelector('input[name*="stock"]').value;
+
+      if (!price || isNaN(price) || price <= 0) {
+        isValid = false;
+        errorMessage = 'Each variant must have a valid positive price.';
       }
-  
-      // Proceed to submit the form if validation passes
-      const formData = new FormData(this);
-  
-      fetch(this.action, {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: data.message,
-            confirmButtonText: 'OK'
-          }).then(() => {
-            window.location.href = '/admin/products';
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error!',
-            text: data.message,
-            confirmButtonText: 'OK'
-          });
+
+      if (!stock || isNaN(stock) || stock < 0) {
+        isValid = false;
+        errorMessage = 'Each variant must have a valid stock number.';
+      }
+    });
+
+    // Images validation
+    if (images.length < 1 || images.length > 4) {
+      isValid = false;
+      errorMessage = 'Please select between 1 and 4 product images.';
+    }
+
+    // Validate each image file
+    Array.from(images).forEach(image => {
+      if (!['image/jpeg', 'image/png'].includes(image.type)) {
+        isValid = false;
+        errorMessage = 'Only JPEG and PNG image formats are allowed.';
+      }
+      if (image.size > 2 * 1024 * 1024) { // 2MB limit
+        isValid = false;
+        errorMessage = 'Each image size must not exceed 2MB.';
+      }
+    });
+
+    // Final validation check
+    if (!isValid) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Validation Error',
+        text: errorMessage,
+        confirmButtonText: 'OK'
+      });
+      return; // Prevent form submission if validation fails
+    }
+
+  const formData = new FormData(this);
+  const images = document.getElementById('images').files;
+
+  // Ensure we have cropper instances and process them
+  if (cropperInstances.length === 0) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      text: 'No images to crop.',
+      confirmButtonText: 'OK'
+    });
+    return; // Stop submission if no cropper instances exist
+  }
+
+  // Append cropped images to formData
+  Promise.all(cropperInstances.map((cropper, index) => {
+    return new Promise((resolve) => {
+      const canvas = cropper.getCroppedCanvas();
+      canvas.toBlob((blob) => {
+        if (blob) {
+          formData.append('croppedImages[]', blob, `cropped-${index}.jpg`); // Use array notation for multiple files
         }
-      })
-      .catch(error => {
+        resolve();
+      });
+    });
+  })).then(() => {
+    // Now all cropped images are appended, proceed with form submission
+    fetch(this.action, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: data.message,
+          confirmButtonText: 'OK'
+        }).then(() => {
+          window.location.href = '/admin/products';
+        });
+      } else {
         Swal.fire({
           icon: 'error',
           title: 'Error!',
-          text: 'An unexpected error occurred. Please try again later.',
+          text: data.message,
           confirmButtonText: 'OK'
         });
+      }
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'An unexpected error occurred. Please try again later.',
+        confirmButtonText: 'OK'
       });
     });
-  </script>
-  
+  });
+});
+
+</script>
+
 </body>
 </html>

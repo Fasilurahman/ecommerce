@@ -3,357 +3,338 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Profile</title>
+    <title>ESSENCE OF HEAVEN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="icon" type="/image/png" sizes="32x32" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="icon" type="/image/png" sizes="16x16" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
+    <link rel="manifest" href="/assets/images/icons/site.html">
+    <link rel="mask-icon" href="assets/images/icons/safari-pinned-tab.svg" color="#666666">
+    <link rel="shortcut icon" href="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at top right, #eae5e4, #ffffff, #ffffff);
-            display: flex;
-            min-height: 100vh;
-            color: #fff;
-        }
-
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 220px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-            text-align: left;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .navbar h2 {
-            font-size: 18px;
-            color: #461313;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
-        }
-
-        .navbar ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .navbar ul li {
-            margin-bottom: 12px;
-        }
-
-        .navbar ul li a {
-            color: #450d0d;
-            text-decoration: none;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-        }
-
-        .navbar ul li a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        
-
-        .content {
-            margin-left: 240px; /* Space for the sidebar */
-            flex: 1;
-            padding: 20px;
-            max-width: calc(100% - 240px); /* Adjust width based on sidebar width */
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .profile-container {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-            text-align: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            width: 100%;
-            max-width: 800px;
-            margin: auto;
-        }
-
-        .profile-container:hover {
-            transform: scale(1.03);
-            box-shadow: 0 12px 40px rgb(144, 227, 232);
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #300e0e;
-            padding-bottom: 1rem;
-            width: 100%;
-            max-width: 1000px;
-            margin-bottom: 2rem;
-        }
-
-        .profile-picture {
-            flex: 0 0 150px;
-            margin-right: 2rem;
-            text-align: center;
-        }
-
-        .profile-picture img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .profile-info {
-            flex: 1;
-            color: #581f1f;
-            text-align: left;
-        }
-
-        .profile-info h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            color: #421111;
-        }
-
-        .profile-info h2 {
-            margin: 0.5rem 0;
-            color: #421111;
-        }
-
-        .profile-info p {
-            margin: 0.5rem 0;
-            color: #421111;
-        }
-
-        .profile-info button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 16px;
-        }
-
-        .profile-info button:hover {
-            background-color: #0056b3;
-        }
-
-        .profile-details {
-            margin-top: 2rem;
-            width: 100%;
-            max-width: 1000px;
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                position: static;
-                width: 100%;
-                height: auto;
-                margin-bottom: 20px;
-            }
-
-            .content {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .profile-container {
-                width: 100%;
-            }
-            .navbar ul li a {
-            color: #450d0d;
-            text-decoration: none;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-            }
-
-            .navbar ul li a i {
-                margin-right: 10px; /* Space between icon and text */
-            }
-
-        }
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
-            padding-top: 60px;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 600px; /* Limit maximum width */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow */
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-header {
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            color: #333;
-        }
-
-        .close {
-            color: #aaa;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: #333;
-        }
-
-        .modal-body {
-            margin-top: 10px;
-        }
-
-        .modal-body label {
-            display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .modal-body input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            padding-top: 10px;
-            border-top: 1px solid #ddd;
-        }
-
-        .modal-footer .btn {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-            margin-left: 10px;
-        }
-
-        .modal-footer .btn:hover {
-            background-color: #0056b3;
-        }
-
-        /* Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @media (max-width: 768px) {
-            .modal-content {
-                width: 90%;
-                padding: 15px;
-            }
-        }
-        ul li a {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f0f0f0, #ffffff);
+    color: #333;
+    display: flex;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 240px;
+    background: linear-gradient(135deg, #00840b, #4b4c4d);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: background 0.3s ease;
+}
+.navbar:hover {
+    background: linear-gradient(135deg, #4b4c4d, #00840b);
+}
+.navbar h2 {
+    font-size: 1.8rem;
+    color: #fff;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.navbar ul {
+    list-style: none;
+}
+.navbar ul li {
+    margin-bottom: 15px;
+}
+.navbar ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 10px;
+    display: block;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, padding-left 0.3s;
+}
+.navbar ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding-left: 15px;
+}
+.content {
+    margin-left: 260px;
+    flex: 1;
+    padding: 20px;
+    max-width: calc(100% - 240px);
+}
+.profile-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.profile-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 74, 141, 0.3);
+}
+.profile-header {
     display: flex;
     align-items: center;
-    padding: 10px;
-    text-decoration: none;
-    color: #333; /* Change color as needed */
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
 }
-
-ul li a:hover {
-    background-color: #f0f0f0; /* Change hover effect */
+.profile-picture {
+    flex: 0 0 150px;
+    margin-right: 2rem;
+    text-align: center;
 }
+.profile-picture img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #00840b;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.profile-picture img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+.profile-info {
+    flex: 1;
+    text-align: left;
+    line-height: 1.6; /* Increase line height for better readability */
+}
+.profile-info h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: #00840b;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    font-weight: 600; /* Make the font bolder for modern look */
+}
+.profile-info h2,
+.profile-info p {
+    color: #555;
+    margin-bottom: 0.5rem;
+    font-weight: 400; /* Normal weight for subheadings */
+    font-size: 1.2rem; /* Slightly larger font size for better visibility */
+}
+.profile-info p {
+    font-size: 1rem; /* Adjust the paragraph font size */
+}
+.profile-info button {
+    background: #0f8f06;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+    font-size: 1rem;
+    font-weight: 500; /* Semi-bold font for buttons */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.profile-info button:hover {
+    background: #1aa810;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.profile-details {
+    margin-top: 2rem;
+    text-align: left;
+}
+@media (max-width: 768px) {
+    .navbar {
+        position: static;
+        width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+    }
+    .content {
+        margin-left: 0;
+        width: 100%;
+    }
+    .profile-container {
+        width: 100%;
+        padding: 20px;
+    }
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+    }
+    .profile-picture {
+        margin: 0 0 1rem 0;
+    }
+    .profile-info {
+        text-align: center;
+    }
+    .profile-info h1 {
+        font-size: 2rem;
+    }
+}
+@media (max-width: 480px) {
+    .navbar h2 {
+        font-size: 1.5rem;
+    }
 
-ul li a.active {
+    .navbar ul li a {
+        font-size: 0.9rem;
+    }
+
+    .profile-info h1 {
+        font-size: 1.8rem;
+    }
+
+    .profile-info h2 {
+        font-size: 1.2rem;
+    }
+
+    .profile-info button {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+}
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding-top: 60px;
+}
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.modal-header {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-header h2 {
+    margin: 0;
+    color: #4A90E2;
+}
+.close {
+    color: #aaa;
+    font-size: 24px;
     font-weight: bold;
-    color: #007bff; /* Change color for active link */
+    cursor: pointer;
+    transition: color 0.3s;
 }
+.close:hover {
+    color: #c91212;
+}
+.modal-body label {
+    margin-top: 10px;
+    color: #333;
+    display: block;
+    font-weight: bold;
+}
+.modal-body input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    transition: border 0.3s;
+}
+.modal-body input:focus {
+    border: 2px solid #4A90E2;
+}
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+.modal-footer .btn {
+    background: #0d9206;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 10px;
+    transition: background 0.3s;
+}
+.modal-footer .btn:hover {
+    background: #249a0f;
+}
+.referral-code {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <h2>My Account</h2>
-        <nav class="navbar">
-            <h2>My Account</h2>
-            <ul>
-                <li><a href="/profile" class="active"><i class="fas fa-user">&nbsp;&nbsp;</i>   Profile</a></li>
-                <li><a href="/addresses"><i class="fas fa-address-book">&nbsp;&nbsp;</i>   Addresses</a></li>
-                <li><a href="/orders"><i class="fas fa-box">  &nbsp;&nbsp;</i>   Orders</a></li>
-                <li><a href="/changepassword"><i class="fas fa-key"> &nbsp;&nbsp; </i>   Change Password</a></li>
-                <li><a href="/wallet"><i class="fas fa-wallet">&nbsp;&nbsp;</i>   Wallet</a></li>
-            </ul>
-        </nav>
-        
+   
+        <ul>
+            <a href="/" class="logo">
+                <img src="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg" alt="Molla Logo" width="190" height="60">
+            </a>
+            <li><a href="/profile" class="active"><i class="fas fa-user">&nbsp;&nbsp;</i>Profile</a></li>
+            <li><a href="/addresses"><i class="fas fa-address-book">&nbsp;&nbsp;</i>Addresses</a></li>
+            <li><a href="/orders"><i class="fas fa-box">&nbsp;&nbsp;</i>Orders</a></li>
+            <li><a href="/wallet"><i class="fas fa-wallet">&nbsp;&nbsp;</i>Wallet</a></li>
+            <li><a href="/changepassword"><i class="fas fa-key">&nbsp;&nbsp;</i>Change Password</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
     </nav>
     <div class="content">
         <div class="profile-container">
             <div class="profile-header">
                 <div class="profile-picture">
-                    <img src="/images/default-profile.png" alt="<%= user.username %>">
+                    <img src="<%= user.profilePicture ? user.profilePicture.replace(/\\/g, '/') : '/assets/images/icons/istockphoto-1300845620-612x612.jpg' %>" alt="<%= user.username %>">
                 </div>
                 <div class="profile-info">
                     <h1><%= user.username %></h1>
-                    <h2><%= user.email %></h2>
+                    <h2>Email: <%= user.email %></h2>
                     <p><i class="fas fa-phone-alt"></i> <%= user.phone %></p>
                     <button id="editProfileBtn">Edit Profile</button>
                 </div>
             </div>
-
-            <div class="profile-details">
-                <!-- Add any additional details or sections here -->
+            <div class="referral-code">
+                <h3>Your Referral Code</h3>
+                <p><strong><%= user.referralCode %></strong></p>
+                <p>Share this code with your friends and earn rewards!</p>
             </div>
         </div>
     </div>
-
-    <!-- The Modal -->
+    <!-- Edit Profile Modal -->
     <div id="editProfileModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -361,61 +342,109 @@ ul li a.active {
                 <span class="close">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="editProfileForm" action="/profile" method="POST">
+                <form id="editProfileForm" action="/profile" method="POST" enctype="multipart/form-data">
                     <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" value="<%= user.username %>" required>
-
+                    <input type="text" id="username" name="username" value="<%= user.username %>" required minlength="7" maxlength="20" 
+                        pattern="^(?=.*[A-Za-z]{5})(?=.*[0-9]{2,3})[A-Za-z0-9_]{7,20}$" 
+                        title="Username must contain at least 5 letters, 2 or 3 numbers, and may contain underscores but cannot be only underscores.">
+                    <span class="error-message" id="usernameError"></span>
+    
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" value="<%= user.email %>" required>
-
+                    <input type="email" id="email" name="email" value="<%= user.email %>" required 
+                        pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" 
+                        title="Please enter a valid email address (e.g., user@example.com).">
+                    <span class="error-message" id="emailError"></span>
+    
                     <label for="phone">Phone:</label>
-                    <input type="tel" id="phone" name="phone" value="<%= user.phone %>" required>
+                    <input type="tel" id="phone" name="phone" value="<%= user.phone %>" required 
+                        pattern="^\+?[1-9]\d{9,14}$" 
+                        title="Phone number must be 10-15 digits, starting with an optional '+' followed by digits only.">
+                    <span class="error-message" id="phoneError"></span>
+    
+                    <label for="profilePicture">Profile Picture (Optional, max size 2MB, .png only):</label>
+                    <input type="file" id="profilePicture" name="profilePicture" accept="image/png">
+                    <span class="error-message" id="profilePictureError"></span>
+
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn" id="closeModalBtn">Close</button>
+                <button type="button" class="btn" id="closeModalBtn">Close</button>
                 <button type="submit" form="editProfileForm" class="btn">Save Changes</button>
             </div>
         </div>
     </div>
-
     <script>
-        // Get the modal
-        var modal = document.getElementById("editProfileModal");
-
-        // Get the button that opens the modal
-        var btn = document.getElementById("editProfileBtn");
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
-        // Get the button that closes the modal
-        var closeBtn = document.getElementById("closeModalBtn");
-
-        // When the user clicks the button, open the modal
-        btn.onclick = function() {
-            modal.style.display = "block";
-        }
-
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
+    var modal = document.getElementById("editProfileModal");
+    var btn = document.getElementById("editProfileBtn");
+    var span = document.getElementsByClassName("close")[0];
+    var closeBtn = document.getElementById("closeModalBtn");
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    closeBtn.onclick = function() {
+        modal.style.display = "none";
+    }
+    window.onclick = function(event) {
+        if (event.target == modal) {
             modal.style.display = "none";
         }
+    }
 
-        // When the user clicks on "Close" button, close the modal
-        closeBtn.onclick = function() {
-            modal.style.display = "none";
+    document.getElementById("editProfileForm").addEventListener("submit", function(event) {
+        document.getElementById("usernameError").textContent = '';
+        document.getElementById("emailError").textContent = '';
+        document.getElementById("phoneError").textContent = '';
+        document.getElementById("profilePictureError").textContent = '';
+        let isValid = true;
+        const username = document.getElementById("username").value;
+        const usernamePattern = /^(?=.*[A-Za-z]{5})(?=.*[0-9]{2,3})[A-Za-z0-9_]{7,20}$/;
+        if (!usernamePattern.test(username)) {
+            document.getElementById("usernameError").textContent = 'Username must contain at least 5 letters, 2 or 3 numbers, and may contain underscores but cannot be only underscores.';
+            isValid = false;
         }
+        // Validate Email
+        const email = document.getElementById("email").value;
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(email)) {
+            document.getElementById("emailError").textContent = 
+                'Please enter a valid email address (e.g., user@example.com).';
+            isValid = false;
+        }
+        if (!emailPattern.test(email)) {
+            document.getElementById("emailError").textContent = 'Please enter a valid email address (e.g., user@example.com).';
+            isValid = false;
+        }
+        // Validate Phone Number
+        const phone = document.getElementById("phone").value;
+        const phonePattern = /^\d{10}$/; // Only allows exactly 10 digits
 
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
+        if (!phonePattern.test(phone)) {
+            document.getElementById("phoneError").textContent = 
+                'Phone number must be exactly 10 digits, with no other characters allowed.';
+            isValid = false;
+        }
+        // Validate Profile Picture (optional, but if uploaded, limit size and check format)
+        const profilePicture = document.getElementById("profilePicture").files[0];
+        if (profilePicture) {
+            const fileSizeLimit = 2 * 1024 * 1024; // 2MB size limit
+            const fileExtension = profilePicture.name.split('.').pop().toLowerCase();
+            
+            if (fileExtension !== "png") {
+                document.getElementById("profilePictureError").textContent = 'Only .png files are allowed.';
+                isValid = false;
+            } else if (profilePicture.size > fileSizeLimit) {
+                document.getElementById("profilePictureError").textContent = 'File size must be less than 2MB.';
+                isValid = false;
             }
         }
-    </script>
-
-    
-    
+        // Prevent form submission if validation fails
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+</script>
 </body>
 </html>

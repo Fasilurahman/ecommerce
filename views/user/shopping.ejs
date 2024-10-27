@@ -123,8 +123,8 @@ position: relative;
                             <i class="icon-bars"></i>
                         </button>
 
-                        <a href="index.html" class="logo">
-                            <img src="assets/images/logo.png" alt="Molla Logo" width="105" height="25">
+                        <a href="/" class="logo">
+                            <img src="/assets/images/icons/bf6dfabe-7912-4157-a730-fdd9ec06bc0e.jpg" alt="Molla Logo" width="120" height="40">
                         </a>
 
                         <nav class="main-nav">
@@ -161,29 +161,6 @@ position: relative;
                                 </div><!-- End .header-search-wrapper -->
                             </form>
                         </div><!-- End .header-search -->
-                        <div class="dropdown compare-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
-                                <i class="icon-random"></i>
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <ul class="compare-products">
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">Blue Night Dress</a></h4>
-                                    </li>
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">White Long Skirt</a></h4>
-                                    </li>
-                                </ul>
-
-                                <div class="compare-actions">
-                                    <a href="#" class="action-link">Clear All</a>
-                                    <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i class="icon-long-arrow-right"></i></a>
-                                </div>
-                            </div><!-- End .dropdown-menu -->
-                        </div><!-- End .compare-dropdown -->
 
                         <div class="dropdown cart-dropdown">
                             <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
@@ -192,57 +169,10 @@ position: relative;
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right">
-                                <div class="dropdown-cart-products">
-                                    <div class="product">
-                                        <div class="product-cart-details">
-                                            <h4 class="product-title">
-                                                <a href="product.html">Beige knitted elastic runner shoes</a>
-                                            </h4>
-
-                                            <span class="cart-product-info">
-                                                <span class="cart-product-qty">1</span>
-                                                x $84.00
-                                            </span>
-                                        </div><!-- End .product-cart-details -->
-
-                                        <figure class="product-image-container">
-                                            <a href="product.html" class="product-image">
-                                                <img src="assets/images/products/cart/product-1.jpg" alt="product">
-                                            </a>
-                                        </figure>
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                    </div>
-
-                                    <div class="product">
-                                        <div class="product-cart-details">
-                                            <h4 class="product-title">
-                                                <a href="product.html">Blue utility pinafore denim dress</a>
-                                            </h4>
-
-                                            <span class="cart-product-info">
-                                                <span class="cart-product-qty">1</span>
-                                                x $76.00
-                                            </span>
-                                        </div><!-- End .product-cart-details -->
-
-                                        <figure class="product-image-container">
-                                            <a href="product.html" class="product-image">
-                                                <img src="assets/images/products/cart/product-2.jpg" alt="product">
-                                            </a>
-                                        </figure>
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                    </div>
-                                </div><!-- End .cart-product -->
-
-                                <div class="dropdown-cart-total">
-                                    <span>Total</span>
-
-                                    <span class="cart-total-price">$160.00</span>
-                                </div><!-- End .dropdown-cart-total -->
+                                
 
                                 <div class="dropdown-cart-action">
-                                    <a href="cart.html" class="btn btn-primary">View Cart</a>
-                                    <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
+                                    <a href="/cart" class="btn btn-primary">View Cart</a>
                                 </div><!-- End .dropdown-cart-total -->
                             </div><!-- End .dropdown-menu -->
                         </div><!-- End .cart-dropdown -->
@@ -330,16 +260,20 @@ position: relative;
                                             <div class="price-box">
                                                 <label for="price-value" class="info-label">Price:</label>
                                                 <div id="price" class="info-value">
-                                                    <% if (product.discountedPrice) { %>
-                                                        <span id="price-value">
-                                                            <span class="old-price">$<%= product.originalPrice ? (product.originalPrice).toFixed(2) : '0.00' %></span>
-                                                            <span class="new-price">$<%= product.discountedPrice.toFixed(2) %></span>
-                                                        </span>
+                                                    <% if (product.variants && product.variants.length > 0) { %>
+                                                        <% const firstVariant = product.variants[0]; %>
+                                                        <% if (firstVariant.offerPrice < firstVariant.price) { %>
+                                                            <span id="price-value" class="original-price">₹<%= firstVariant.price.toFixed(2) %></span>
+                                                            <span id="offer-price-value" class="offer-price">₹<%= firstVariant.offerPrice.toFixed(2) %></span>
+                                                        <% } else { %>
+                                                            <span id="price-value">₹<%= firstVariant.price.toFixed(2) %></span>
+                                                        <% } %>
                                                     <% } else { %>
-                                                        <span id="price-value">$<%= product.price ? (product.price).toFixed(2) : '0.00' %></span>
+                                                        <span id="price-value">₹0.00</span>
                                                     <% } %>
                                                 </div>
                                             </div>
+                                            
                                             <div class="stock-box">
                                                 <label for="stock-value" class="info-label">Stock:</label>
                                                 <div id="stock" class="info-value"><span id="stock-value"><%= product.stock ? product.stock : 0 %></span> available</div>
@@ -352,7 +286,9 @@ position: relative;
                                             <span>Add to Cart</span>
                                         </a>
                                         <div class="details-action-wrapper">
-                                            <a href="#" class="btn-product btn-wishlist" title="Wishlist" onclick="addToWishlist('<%= product._id %>')"><span>Add to Wishlist</span></a>
+                                            <a href="#" class="btn-product btn-wishlist" title="Wishlist" onclick="addToWishlist('<%= product._id %>')">
+                                                <span>Add to Wishlist</span>
+                                            </a>
                                         </div>
                                     </div>
                                     <div class="product-details-footer">
@@ -502,9 +438,9 @@ position: relative;
                     <div class="product product-7 text-center">
                         <figure class="product-media">
                             <a href="/product/<%= product._id %>">
-                                <img src="/uploads/<%= product.images[0] %>" alt="<%= product.name %>" class="product-image" style="height: 250px; width: 100%;">
+                                <img src="/uploads/<%= product.images[0] %>" alt="<%= product.name %>" class="product-image" style="height: 250px; width: 300px;">
                                 <% if (product.images[1]) { %>
-                                    <img src="/uploads/<%= product.images[1] %>" alt="<%= product.name %>" class="product-image-hover" style="height: 250px; width: 100%;">
+                                    <img src="/uploads/<%= product.images[1] %>" alt="<%= product.name %>" class="product-image-hover" style="height: 250px; width: 300px;">
                                 <% } %>
                             </a>
                         </figure>
@@ -519,14 +455,14 @@ position: relative;
                                         const discountedPrice = product.price - discountAmount;
                                 %>
                                     <span class="old-price" style="text-decoration: line-through; color: #999;">
-                                        $<%= product.price.toFixed(2) %>
+                                        ₹<%= product.price.toFixed(2) %>
                                     </span>
                                     <span class="new-price" style="color: #e63946; font-weight: bold;">
-                                        $<%= discountedPrice.toFixed(2) %>
+                                        ₹<%= discountedPrice.toFixed(2) %>
                                     </span>
                                 <% } else { %>
                                     <span class="price">
-                                        $<%= product.price.toFixed(2) %>
+                                        ₹<%= product.price.toFixed(2) %>
                                     </span>
                                 <% } %>
                             </div>
@@ -570,53 +506,7 @@ position: relative;
                                 }
                             }
                         }'>
-                        <div class="product product-7 text-center">
-                            <figure class="product-media">
-                                <span class="product-label label-new">New</span>
-                                <a href="product.html">
-                                    <img src="assets/images/products/product-4.jpg" alt="Product image" class="product-image">
-                                </a>
 
-                                <div class="product-action-vertical">
-                                    <a href="/wishlist" class="btn-product-icon btn-wishlist btn-expandable" onclick="addToWishlist('<%= product._id %>')"><span>add to wishlist</span></a>
-                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
-                                </div>
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                </div>
-                            </figure>
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Women</a>
-                                </div>
-                                <h3 class="product-title"><a href="product.html">Brown paperbag waist <br>pencil skirt</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    $60.00
-                                </div>
-                                <div class="ratings-container">
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 20%;"></div>
-                                    </div>
-                                    <span class="ratings-text">( 2 Reviews )</span>
-                                </div>
-
-                                <div class="product-nav product-nav-thumbs">
-                                    <a href="#" class="active">
-                                        <img src="assets/images/products/product-4-thumb.jpg" alt="product desc">
-                                    </a>
-                                    <a href="#">
-                                        <img src="assets/images/products/product-4-2-thumb.jpg" alt="product desc">
-                                    </a>
-
-                                    <a href="#">
-                                        <img src="assets/images/products/product-4-3-thumb.jpg" alt="product desc">
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="product product-7 text-center">
                             <figure class="product-media">
@@ -849,35 +739,7 @@ position: relative;
     </div>
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
-    
-    <div class="sticky-bar">
-        <div class="container">
-            <div class="row">
-                <div class="col-6">
-                    <figure class="product-media">
-                        <a href="product.html">
-                            
-                        </a>
-                    </figure>
-                    <h4 class="product-title"><a href="product.html">Dark yellow lace cut out swing dress</a></h4><!-- End .product-title -->
-                </div>
 
-                <div class="col-6 justify-content-end">
-                    <div class="product-price">
-                        $84.00
-                    </div>
-                    <div class="product-details-quantity">
-                        <input type="number" id="sticky-cart-qty" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
-                    </div>
-
-                    <div class="product-details-action">
-                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                        <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     <div class="mobile-menu-overlay"></div>
@@ -1056,6 +918,8 @@ position: relative;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js"></script>
 
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     async function addToWishlist(productId) {
         try {
@@ -1068,18 +932,33 @@ position: relative;
             });
 
             const data = await response.json();
-
             if (data.success) {
-                alert('Product added to wishlist!');
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Product added to wishlist!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
             } else {
-                alert(data.message || 'Failed to add product to wishlist.');
+                Swal.fire({
+                    title: 'Oops!',
+                    text: data.message || 'Failed to add product to wishlist.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred while adding to wishlist.');
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while adding to wishlist.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
     }
 </script>
+
 <script>
     $(document).ready(function() {
         // Initialize ElevateZoom for the main image
@@ -1117,7 +996,7 @@ position: relative;
     });
 </script>
     
-    <script>
+<script>
         document.addEventListener('DOMContentLoaded', function() {
             const quantitySelect = document.getElementById('size');
             const priceValue = document.getElementById('price-value');
@@ -1134,7 +1013,7 @@ position: relative;
 
                 // Update price and stock display
                 if (price !== null && stock !== null) {
-                    priceValue.textContent = `$${parseFloat(price).toFixed(2)}`;
+                    priceValue.textContent = `₹${parseFloat(price).toFixed(2)}`;
                     stockValue.textContent = stock;
 
                     // Update hidden variantId input field
@@ -1144,7 +1023,7 @@ position: relative;
                     addToCartBtn.href = `/add-to-cart/<%= product._id %>?variant=${variantId}`;
                 } else {
                     // Default values if no valid option selected
-                    priceValue.textContent = '$0.00';
+                    priceValue.textContent = '₹0.00';
                     stockValue.textContent = '0';
                 }
             });
@@ -1156,6 +1035,9 @@ position: relative;
 
    
     </script>
+
+   
+
     
   
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -1163,92 +1045,9 @@ position: relative;
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-//     async function addToCart(productId, variantId) {
-//         console.log('1');
-        
-//         try {
-//             const selectedVariant = document.getElementById('size');
-//             const selectedValue = selectedVariant ? selectedVariant.value : variantId;
-
-//             if (!selectedValue || selectedValue === '#') {
-//                 Swal.fire({
-//                     icon: 'warning',
-//                     title: 'No Variant Selected!',
-//                     text: 'Please select a quantity before adding the product to your cart.',
-//                     confirmButtonText: 'OK',
-//                     allowOutsideClick: false,
-//                     allowEscapeKey: false,
-//                 });
-//                 return; // Prevent further execution if no variant is selected
-//             }
-
-//             const stock = parseInt(selectedVariant.options[selectedVariant.selectedIndex].getAttribute('data-stock'), 10);
-
-//             if (stock <= 0) {
-//                 Swal.fire({
-//                     icon: 'error',
-//                     title: 'Out of Stock!',
-//                     text: 'The selected quantity is not available.',
-//                     confirmButtonText: 'OK',
-//                     allowOutsideClick: false,
-//                     allowEscapeKey: false,
-//                 });
-//                 return;
-//             }
-//             console.log("sdf");
-            
-
-//             const response = await fetch(`/add-to-cart/${productId}?variant=${selectedValue}`, {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//             })
-//             .then((response)=>{
-//                 console.log("my respo",response);
-                
-//                 if(response.ok){
-//                     return response.json()
-//                 }
-//             })
-//             .then((response)=>{
-//                 if(response.added===true){
-//                     Swal.fire({
-//                     title: 'Added to Cart!',
-//                     text: 'Your product has been added to the cart.',
-//                     icon: 'success',
-//                     showCancelButton: true,
-//                     confirmButtonText: 'View Cart',
-//                     cancelButtonText: 'Continue Shopping'
-//                 }).then((result) => {
-//                     if (result.isConfirmed) {
-//                         window.location.href = '/cart';
-//                     }
-//                 });
-//                 }
-                
-//             })
-//         } catch (error) {
-//             console.error('Error adding product to cart:', error);
-//             Swal.fire({
-//                 title: 'Error',
-//                 text: 'Something went wrong. Please try again later.',
-//                 icon: 'error',
-//             });
-//         }
-//         function notifyOutOfStock() {
-//         Swal.fire({
-//             icon: 'error',
-//             title: 'Out of Stock',
-//             text: 'Sorry, this item is currently out of stock.',
-//             confirmButtonText: 'OK'
-//         });
-//     }
-    
-// }
 
 
-async function addToCart(productId, variantId,event) {
+    async function addToCart(productId, variantId,event) {
     event.preventDefault()
     console.log('Add to Cart Triggered'); // Step 1: Debugging entry point
     

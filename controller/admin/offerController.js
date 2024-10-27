@@ -4,18 +4,35 @@ const Offer = require('../../models/offerSchema');
 
 // Get all offers
 const getAllOffers = async (req, res) => {
-    
     try {
+        // Get the current page and limit from the query params (default: page 1, limit 10)
+        const { page = 1, limit = 2 } = req.query;
+        const currentPage = parseInt(page);
+        const offersPerPage = parseInt(limit);
 
-        const offers = await Offer.find().populate('entity')
-        console.log(offers,'offers');
-        
-        res.render('offer',{offers})
+        // Fetch offers for the current page
+        const offers = await Offer.find()
+            .populate('entity') // Populate the entity (e.g., brand or product)
+            .skip((currentPage - 1) * offersPerPage) // Skip offers from previous pages
+            .limit(offersPerPage); // Limit the number of offers per page
+
+        // Get the total number of offers
+        const totalOffers = await Offer.countDocuments();
+        const totalPages = Math.ceil(totalOffers / offersPerPage); // Calculate total pages
+
+        // Render the offer list page with pagination data
+        res.render('offer', {
+            offers,
+            currentPage,
+            totalPages,
+            offersPerPage
+        });
     } catch (error) {
-        console.log(error)
+        console.log(error);
         res.status(500).json({ message: error.message });
     }
 };
+
 
 // Add a new offer
 const addOffer = async (req, res) => {
@@ -57,7 +74,6 @@ const addOffer = async (req, res) => {
 
     try {
         const newOffer = await offer.save();
-        console.log(newOffer, 'new offer added successfully');
 
         if (offerType === 'Product') {
             const updatedProduct = await Product.findOneAndUpdate(

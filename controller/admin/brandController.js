@@ -3,18 +3,35 @@ const Brand = require('../../models/brandSchema');
 
 const brandInfo = async (req, res) => {
   try {
-
-    const allBrands = await Brand.find();
- 
+    const { page = 1, limit = 2 } = req.query; // Default page is 1, limit is 10 brands per page
     
+    // Parse page and limit as integers
+    const currentPage = parseInt(page);
+    const brandsPerPage = parseInt(limit);
 
-    res.render('brand',{
-      brands:allBrands
-    })
+    // Fetch brands for the current page
+    const brands = await Brand.find()
+      .skip((currentPage - 1) * brandsPerPage) // Skip previous page brands
+      .limit(brandsPerPage); // Limit the number of brands per page
+
+    // Calculate total number of brands for pagination
+    const totalBrands = await Brand.countDocuments();
+    const totalPages = Math.ceil(totalBrands / brandsPerPage); // Total pages based on brand count
+
+    // Render the view with pagination data
+    res.render('brand', {
+      brands,
+      currentPage,
+      totalPages,
+      brandsPerPage
+    });
   } catch (error) {
     console.error('Error fetching brand data:', error);
+    res.status(500).send('Internal Server Error');
   }
 };
+
+
 
 const addBrand = async (req, res) => {
     try {

@@ -27,7 +27,34 @@
 
         <!-- SweetAlert JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <style>
+        .pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
 
+.page-item .page-link {
+  color: #007bff;
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.page-item.active .page-link {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.page-item.disabled .page-link {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+    </style>
 
 </head>
 
@@ -43,7 +70,7 @@
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+                <div class="sidebar-brand-text mx-3"><sup>ESSENCE OF HEAVEN</sup></div>
             </a>
 
             <!-- Divider -->
@@ -51,7 +78,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="/admin">
+                <a class="nav-link" href="/admin/dashboard">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
@@ -124,7 +151,7 @@
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
-            <a class="nav-link collapsed" href="/logout" data-toggle="" data-target="#collapsePages"
+            <a class="nav-link collapsed" href="/admin/logout" data-toggle="" data-target="#collapsePages"
                 aria-expanded="true" aria-controls="collapsePages">
                 <span>Logout</span>
             </a>
@@ -412,6 +439,29 @@
                                             </table>
                                         </div>
                                     </div>
+
+                                    <div class="pagination d-flex justify-content-center">
+                                        <ul class="pagination">
+                                          <!-- Previous Button: Disabled on the first page -->
+                                          <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                            <a class="page-link" href="?page=<%= currentPage - 1 %>&limit=<%= offersPerPage %>">Previous</a>
+                                          </li>
+                                      
+                                          <!-- Page Numbers -->
+                                          <% for (let i = 1; i <= totalPages; i++) { %>
+                                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                              <a class="page-link" href="?page=<%= i %>&limit=<%= offersPerPage %>"><%= i %></a>
+                                            </li>
+                                          <% } %>
+                                      
+                                          <!-- Next Button: Disabled on the last page -->
+                                          <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                            <a class="page-link" href="?page=<%= currentPage + 1 %>&limit=<%= offersPerPage %>">Next</a>
+                                          </li>
+                                        </ul>
+                                      </div>
+
+                                      
                                     <!-- Add Offer Modal -->
                                     <div class="modal fade" id="addOfferModal" tabindex="-1" role="dialog" aria-labelledby="addOfferModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
@@ -633,7 +683,20 @@
     }
 
     async function deleteOffer(id) {
-    if (confirm('Are you sure you want to delete this offer?')) {
+    // Show a confirmation popup using SweetAlert2
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you really want to delete this offer? This action cannot be undone.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    });
+
+    // If the user confirmed the deletion
+    if (result.isConfirmed) {
         try {
             console.log('rahman'); // Indicates the function has been entered
             
@@ -646,23 +709,44 @@
             console.log('Response OK:', response.ok); // Log if the response is OK
             const responseBody = await response.json(); // Read the response body
             console.log('Response Body:', responseBody); // Log the response body
-            
+
             console.log('fasilu'); // This should print if the fetch call completes successfully
 
             if (response.ok) {
-                location.reload(); 
+                // Show a success message with SweetAlert
+                Swal.fire(
+                    'Deleted!',
+                    'The offer has been deleted successfully.',
+                    'success'
+                ).then(() => {
+                    // Reload the page after the success message
+                    location.reload();
+                });
             } else {
                 console.error('Failed to delete offer:', response.status);
+                // Show an error message with SweetAlert
+                Swal.fire(
+                    'Error',
+                    'There was a problem deleting the offer. Please try again.',
+                    'error'
+                );
             }
-            } catch (error) {
-                console.error('Error deleting offer:', error);
-            }
+        } catch (error) {
+            console.error('Error deleting offer:', error);
+            // Show an error message with SweetAlert
+            Swal.fire(
+                'Error',
+                'There was an error processing your request. Please try again.',
+                'error'
+            );
         }
+    } else {
+        // If the user canceled the action, log it or handle it accordingly
+        console.log('Offer deletion canceled');
     }
-
-
-
+}
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
 
 </body>
