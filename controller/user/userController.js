@@ -703,7 +703,8 @@ const loadCart = async (req, res) => {
       return res.render("cart", {
         cart: { items: [] },
         hasOutOfStockItems: false,
-        totalDiscountedPrice: 0, // Pass as a number
+        totalDiscountedPrice: 0,
+        brands // Pass as a number
       });
     }
 

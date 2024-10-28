@@ -193,7 +193,7 @@
                                     <div class="row"> 
                                         <div class="col-lg-9">
                                             <h2 class="checkout-title">Billing Details</h2>
-                                            <form id="billingForm" action="/address" method="POST">
+                                            <form id="billingForm" action="/addresses" method="POST">
                                                 <input type="hidden" name="userId" value="<%= user._id %>">
                                                 <input type="hidden" name="addressId" value="<%= selectedAddressId || '' %>">
                                                 <input type="hidden" name="totalPrice" value="<%= cart.totalPrice %>">
