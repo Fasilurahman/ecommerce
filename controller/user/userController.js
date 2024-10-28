@@ -280,23 +280,14 @@ const otpPage = async (req, res) => {
 
     if (otp === req.session.userOtp) {
       const user = req.session.userData;
-
-      // Check if the user already exists
-      const existingUser = await User.findOne({ email: user.email });
-      if (existingUser) {
-        return res
-          .status(400)
-          .json({ success: false, message: "User already exists" });
-      }
-
       const passwordHash = await securePassword(user.password);
-
+      const referralCode = generateReferralCode();
       const saveUserData = new User({
         username: user.username,
         email: user.email,
         phone: user.phone,
         password: passwordHash,
-        // No referralCode here
+        referralCode,
       });
 
       await saveUserData.save();
@@ -317,22 +308,14 @@ const otpPage = async (req, res) => {
 
 const loadUserProfile = async (req, res) => {
   try {
-    const user = await User.findOne({ _id: req.cookies.user });
-    if (!user) {
-      return res.status(404).send('User not found');
-    }
-
-    // Check if the user already has a referral code
-    if (!user.referralCode) {
-      const referralCode = generateReferralCode(); // Generate a new referral code
-      user.referralCode = referralCode; // Assign the generated referral code
-      await user.save(); // Save the updated user data with the referral code
-    }
-
-    res.render('userProfile', { user });
+      const user = await User.findOne({ _id: req.cookies.user });
+      if (!user) {
+          return res.status(404).send('User not found');
+      }
+      res.render('userProfile', { user });
   } catch (error) {
-    console.error('Error loading user profile:', error);
-    res.status(500).send('Error loading user profile');
+      console.error('Error loading user profile:', error);
+      res.status(500).send('Error loading user profile');
   }
 };
 
@@ -1956,5 +1939,6 @@ module.exports = {
   verifyRepaymentPOST,
   paymentFailed,
   loadBlog,
-  loadUserProfile
+  loadUserProfile,
+  generateReferralCode
 };
