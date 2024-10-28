@@ -266,9 +266,7 @@ const loadotpPage = async (req, res) => {
   }
 };
 
-const generateReferralCode = () => {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-};
+
 
 const otpPage = async (req, res) => {
   try {
@@ -279,13 +277,11 @@ const otpPage = async (req, res) => {
     if (otp === req.session.userOtp) {
       const user = req.session.userData;
       const passwordHash = await securePassword(user.password);
-      const referralCode = generateReferralCode();
       const saveUserData = new User({
         username: user.username,
         email: user.email,
         phone: user.phone,
         password: passwordHash,
-        referralCode,
       });
 
       await saveUserData.save();
