@@ -2,7 +2,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/userSchema');
 const passport = require('passport');
 const env = require('dotenv').config();
-const generateReferralCode = require('../utils/generateReferralCode'); // Adjust the path to your referral code generator
+const { generateUniqueReferralCode } = require('../config/referralCode'); // Import the unique referral code generator
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -17,13 +17,13 @@ async (accessToken, refreshToken, profile, done) => {
             // User already exists
             return done(null, user);
         } else {
-            // Create a new user with a referral code
-            const referralCode = generateReferralCode(); // Generate referral code
+            // Create a new user with a unique referral code
+            const referralCode = await generateUniqueReferralCode(); // Generate a unique referral code
             user = new User({
                 username: profile.displayName,
                 email: profile.emails[0].value,
                 googleId: profile.id,
-                referralCode // Save the generated referral code
+                referralCode // Save the unique referral code
             });
             await user.save();
             return done(null, user);
