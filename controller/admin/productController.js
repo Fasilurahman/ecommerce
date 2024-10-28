@@ -52,6 +52,8 @@ const addProduct = async (req, res) => {
     }));
 
     const images = req.files ? req.files.map((file) => file.filename) : [];
+    console.log(images,'images');
+    
 
     const newProduct = {
       name: req.body.name,
