@@ -268,6 +268,10 @@ const loadotpPage = async (req, res) => {
 
 
 
+const generateReferralCode = () => {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+};
+
 const otpPage = async (req, res) => {
   try {
     const { otp } = req.body;
@@ -276,12 +280,23 @@ const otpPage = async (req, res) => {
 
     if (otp === req.session.userOtp) {
       const user = req.session.userData;
+
+      // Check if the user already exists
+      const existingUser = await User.findOne({ email: user.email });
+      if (existingUser) {
+        return res
+          .status(400)
+          .json({ success: false, message: "User already exists" });
+      }
+
       const passwordHash = await securePassword(user.password);
+
       const saveUserData = new User({
         username: user.username,
         email: user.email,
         phone: user.phone,
         password: passwordHash,
+        // No referralCode here
       });
 
       await saveUserData.save();
@@ -299,6 +314,28 @@ const otpPage = async (req, res) => {
     res.status(500).json({ success: false, message: "An error occurred" });
   }
 };
+
+const loadUserProfile = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.cookies.user });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    // Check if the user already has a referral code
+    if (!user.referralCode) {
+      const referralCode = generateReferralCode(); // Generate a new referral code
+      user.referralCode = referralCode; // Assign the generated referral code
+      await user.save(); // Save the updated user data with the referral code
+    }
+
+    res.render('userProfile', { user });
+  } catch (error) {
+    console.error('Error loading user profile:', error);
+    res.status(500).send('Error loading user profile');
+  }
+};
+
 
 const resendOtp = async (req, res) => {
   try {
@@ -1919,4 +1956,5 @@ module.exports = {
   verifyRepaymentPOST,
   paymentFailed,
   loadBlog,
+  loadUserProfile
 };

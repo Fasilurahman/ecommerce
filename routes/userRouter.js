@@ -61,7 +61,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.get("/profile", userAuth, orderController.loadUserProfile);
+router.get("/profile", userAuth, userController.loadUserProfile);
 router.post('/register', userAuth, orderController.registerUser);
 router.post("/profile", userAuth,upload.single('profilePicture'), orderController.updateProfile);
 router.get("/addresses", userAuth, orderController.loadUserAddresses);

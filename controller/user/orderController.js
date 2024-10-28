@@ -39,30 +39,6 @@ const razorpay = new Razorpay({
     key_secret: 'YOUR_RAZORPAY_SECRET' // Replace with your Razorpay secret
 });
 
-const generateReferralCode = () => {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-};
-
-const loadUserProfile = async (req, res) => {
-    try {
-      const user = await User.findOne({ _id: req.cookies.user });
-      if (!user) {
-        return res.status(404).send('User not found');
-      }
-  
-      // Check if the user already has a referral code
-      if (!user.referralCode) {
-        const referralCode = generateReferralCode();
-        user.referralCode = referralCode; // Set the generated referral code
-        await user.save(); // Save the updated user data
-      }
-  
-      res.render('userProfile', { user });
-    } catch (error) {
-      console.error('Error loading user profile:', error);
-      res.status(500).send('Error loading user profile');
-    }
-  };
 
 const updateProfile = async (req, res) => {
     try {
@@ -777,7 +753,6 @@ const changepassword = async (req, res) => {
 
 
 module.exports = {
-     loadUserProfile,
      updateProfile, 
      loadUserAddresses, 
      loadUserOrders,

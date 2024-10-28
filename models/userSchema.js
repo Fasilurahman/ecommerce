@@ -66,7 +66,7 @@ const userSchema = new Schema({
     type: String,
     unique: true, // Ensure each referral code is unique
     required: false,
-    sparse:true
+
   },
   isReferred: {
     // Flag to check if the user has referred someone
