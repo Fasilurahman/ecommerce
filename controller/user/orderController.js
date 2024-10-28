@@ -48,7 +48,7 @@ const loadUserProfile = async (req, res) => {
         if (!user) {
             return res.status(404).send('User not found');
         }
-        res.render('userprofile', { user });
+        res.render('userProfile', { user });
     } catch (error) {
         console.error('Error loading user profile:', error);
         res.status(500).send('Error loading user profile');
