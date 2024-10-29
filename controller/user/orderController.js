@@ -11,8 +11,6 @@ const mongoose = require('mongoose');
 const Razorpay = require('razorpay');
 
 
-
-
 const registerUser = async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -300,9 +298,6 @@ const deleteaddress = async (req, res) => {
 
 const PDFDocument = require('pdfkit');
 
-// controllers/orderController.js
-
-
 const generateInvoicePDF = async (order) => {
     const doc = new PDFDocument({ margin: 50 });
     let buffers = [];
@@ -318,9 +313,9 @@ const generateInvoicePDF = async (order) => {
     const discountAmount = order.discountAmount || 0;
 
     // Invoice Header
-    doc.image('C:/Users/USER/Desktop/e-commerce/public/assets/images/icons/1.png', 50, 45, { width: 50 }) // Company logo
+    doc.image('public/assets/images/icons/1.png', 50, 45, { width: 50 }) // Company logo
         .fontSize(20)
-        .text('Company Name', 110, 50)
+        .text('Essence of Heaven', 110, 50)
         .fontSize(10)
         .text('Company Address', 110, 70)
         .text('City, State, ZIP', 110, 85)
@@ -345,16 +340,16 @@ const generateInvoicePDF = async (order) => {
     doc.fontSize(12).fillColor('black');
     doc.text('Bill To:', { align: 'left', underline: true });
     doc.text(`${order.address.name}`, { align: 'left' });
-    doc.text(`${order.address.street}, ${order.address.city}`, { align: 'left' });
-    doc.text(`${order.address.state}, ${order.address.zip}`, { align: 'left' });
-    doc.text(`${order.address.country}`, { align: 'left' });
+    doc.text(`${order.address.state}, ${order.address.city}`, { align: 'left' });
+    doc.text(`${order.address.landMark}, ${order.address.pincode}`, { align: 'left' });
+    doc.text(`${order.address.city}`, { align: 'left' });
     doc.moveDown();
 
     doc.text('Ship To:', { align: 'left', underline: true });
-    doc.text(`${order.address.name}`, { align: 'left' });
-    doc.text(`${order.address.street}, ${order.address.city}`, { align: 'left' });
-    doc.text(`${order.address.state}, ${order.address.zip}`, { align: 'left' });
-    doc.text(`${order.address.country}`, { align: 'left' });
+    doc.text(`Fasilu`, { align: 'left' });
+    doc.text(`Calicut, ${order.address.city}`, { align: 'left' });
+    doc.text(`Kerala, ${order.address.zip}`, { align: 'left' });
+    doc.text(``, { align: 'left' });
     doc.moveDown();
 
     // Table Headers with Borders and Background Color
@@ -363,7 +358,7 @@ const generateInvoicePDF = async (order) => {
     const tableWidths = [200, 70, 80, 80, 100];
 
     doc.rect(tableX, tableTop, tableWidths[0], 25).fillAndStroke('#f2f2f2', '#000');
-    doc.text('Product Name', tableX + 5, tableTop + 8);
+    doc.text('Essence of Heaven', tableX + 5, tableTop + 8);
 
     doc.rect(tableX + tableWidths[0], tableTop, tableWidths[1], 25).fillAndStroke('#f2f2f2', '#000');
     doc.text('SKU', tableX + tableWidths[0] + 5, tableTop + 8);
@@ -426,9 +421,6 @@ const generateInvoicePDF = async (order) => {
         doc.on('error', (err) => reject(err));
     });
 };
-
-
-
 
 
 
