@@ -1498,14 +1498,17 @@ const repayment_razorpayPOST = async (req, res) => {
     const order = await Order.findById(orderId);
 
     if (!order) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Order not found" });
+      return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    const payment_capture = 1;
-    const amount = order.finalPrice * 100;
+    // Calculate the total amount excluding canceled items
+    const validItemsTotal = order.ordereditems  // Adjusted to match the database field name
+      .filter(item => !item.isCancelled)  // Using isCancelled instead of status
+      .reduce((total, item) => total + item.price * item.quantity, 0);
+
+    const amount = validItemsTotal * 100; // Convert to smallest currency unit (e.g., paise)
     const currency = "INR";
+    const payment_capture = 1;
 
     const options = {
       amount,
@@ -1514,8 +1517,7 @@ const repayment_razorpayPOST = async (req, res) => {
       payment_capture,
     };
 
-    const response = await razorpayInstance.orders.create(options); // Use razorpayInstance here
-    console.log(response, "respond");
+    const response = await razorpayInstance.orders.create(options);
 
     res.status(200).json({
       success: true,
@@ -1528,10 +1530,12 @@ const repayment_razorpayPOST = async (req, res) => {
       orderReceipt: orderId,
     });
   } catch (error) {
-    console.error("Error:", error.response ? error.response : error); // Log detailed error
+    console.error("Error:", error.response ? error.response : error);
     res.status(500).json({ success: false, message: "Server error occurred" });
   }
 };
+
+
 
 const verifyRepaymentPOST = async (req, res) => {
   try {
