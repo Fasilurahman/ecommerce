@@ -1765,10 +1765,8 @@ const verifyPayment = async (req, res) => {
 
     const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
     if (!order || order.paymentMethod !== "razorpay") {
-      const orderID = order._id;
+      // const orderID = order._id;
       const response = "/orders";
-      console.log(order._id, "order id 1");
-      console.log(order.id, "order id 2");
       return res.status(400).json({
         success: false,
         message: "Invalid order or payment method.",
