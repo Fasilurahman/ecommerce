@@ -199,8 +199,8 @@ async function sendVerificationEmail(email, otp) {
       service: "gmail",
       requireTLS: true,
       auth: {
-        user: process.env.NODEMAILER_EMAIL,
-        pass: process.env.NODEMAILER_PASSWORD,
+        user: "fasilu707@gmail.com",
+        pass: 'pfel wwtg uled vlxf',
       },
     });
     const info = await transporter.sendMail({
@@ -220,6 +220,7 @@ async function sendVerificationEmail(email, otp) {
 const signup = async (req, res) => {
   const { username, phone, email, password } = req.body;
   try {
+    console.log(req.body, 'signup body data');
     const findUser = await User.findOne({ email });
     if (findUser) {
       return res.render("signup", {
@@ -227,9 +228,14 @@ const signup = async (req, res) => {
       });
     }
     let otp = generateOtp();
+    console.log('top generating otp', otp)
 
+    console.log(
+  "Using email:", process.env.NODEMAILER_EMAIL,
+  "Pass length:", process.env.NODEMAILER_PASSWORD
+);
     const sentEmail = await sendVerificationEmail(email, otp);
-
+    console.log(sentEmail, ' 1101fasilu sent email checking')
     if (!sentEmail) {
       return res.json("email-error");
     }
@@ -369,6 +375,7 @@ const login = async (req, res) => {
     const { email, password, referralCode } = req.body;
 
     const findUser = await User.findOne({ email: email });
+    console.log(findUser,'find user')
 
     if (!findUser) {
       return res.render("login", { message: "User not found" });
@@ -379,6 +386,7 @@ const login = async (req, res) => {
     }
 
     const passwordMatch = await bcrypt.compare(password, findUser.password);
+    console.log(passwordMatch);
 
     if (!passwordMatch) {
       return res.render("login", { message: "Incorrect password" });
@@ -1301,7 +1309,7 @@ const placeOrder = async (req, res) => {
       price: item.price,
     }));
 
-    if (paymentMethod === "cod" && finalPrice < 1000) {
+    if (paymentMethod === "cod" && finalPrice > 1000) {
       return res.status(400).json({
         success: false,
         message: "Cash on delivery is not allowed for orders below ₹1000.",

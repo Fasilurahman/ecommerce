@@ -74,7 +74,7 @@ const generatePDF = async (req, res) => {
   try {
       const { startDate, endDate } = req.query;
       const matchQuery = {};
-
+        console.log("Generating PDF with query:", req.query);
 
       if (startDate && endDate) {
           matchQuery.createdOn = {
