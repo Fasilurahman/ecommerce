@@ -1053,57 +1053,74 @@
     });
   </script>
   <script>
-  document.addEventListener('DOMContentLoaded', function () {
-  const removeButtons = document.querySelectorAll('.remove-btn');
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    document.addEventListener("DOMContentLoaded", function () {
+      const removeButtons = document.querySelectorAll(".remove-btn");
+      const csrfToken = document.querySelector(
+        'meta[name="csrf-token"]'
+      )?.content;
 
-  removeButtons.forEach(button => {
-    button.addEventListener('click', function () {
-      const itemId = this.getAttribute('data-id');
-      const buttonRef = this;
+      removeButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          const itemId = this.getAttribute("data-id");
+          const buttonRef = this;
 
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "This will remove the item from your cart!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, remove it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // User clicked yes, proceed to remove
-          fetch(`/cart/remove/${itemId}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest',
-              'CSRF-Token': csrfToken
+          Swal.fire({
+            title: "Are you sure?",
+            text: "This will remove the item from your cart!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, remove it!",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetch(`/cart/remove/${itemId}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Requested-With": "XMLHttpRequest",
+                  "CSRF-Token": csrfToken,
+                },
+              })
+                .then(async (response) => {
+                  if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(text || "Failed to remove item");
+                  }
+                  return response.json();
+                })
+                .then((data) => {
+                  console.log(data, 'data');
+                  const row = buttonRef.closest("tr");
+                  if (row) row.remove();
+
+                  document.getElementById("cart-subtotal").textContent =
+                    data.updatedCart.subtotal;
+                  document.getElementById("cart-total").textContent =
+                    data.updatedCart.total;
+
+                  if (data.updatedCart.isEmpty) {
+                    location.reload(); 
+                  }
+
+                  Swal.fire(
+                    "Removed!",
+                    "Item has been removed from your cart.",
+                    "success"
+                  );
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  Swal.fire(
+                    "Error",
+                    "Something went wrong while removing the item.",
+                    "error"
+                  );
+                });
             }
-          })
-          .then(async response => {
-            if (!response.ok) {
-              const text = await response.text();
-              throw new Error(text || 'Failed to remove item');
-            }
-            return response.json();
-          })
-          .then(() => {
-            // Remove the item row from UI
-            const row = buttonRef.closest('tr');
-            if (row) row.remove();
-
-            Swal.fire('Removed!', 'Item has been removed from your cart.', 'success');
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error', 'Something went wrong while removing the item.', 'error');
           });
-        }
+        });
       });
     });
-  });
-});
-
-</script>
+  </script>
 </html>

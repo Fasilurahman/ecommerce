@@ -15,976 +15,6 @@ const Category = require("../../models/categorySchema");
 const Coupon = require("../../models/couponSchema");
 const path = require("path");
 const fs = require("fs");
-const {
-  validateWebhookSignature,
-} = require("razorpay/dist/utils/razorpay-utils");
-
-const pageNotFount = async (req, res) => {
-  try {
-    res.render("page-404");
-  } catch (error) {
-    res.render("/pageNotFound");
-  }
-};
-
-const loadHomePage = async (req, res) => {
-  try {
-    const userId = req.cookies.user;
-
-    const brands = await Brand.find({});
-    const products = await Product.find({ status: "active" })
-      .populate("brand")
-      .populate("category")
-      .populate("offers");
-
-    if (userId) {
-      const userData = await User.findOne({ _id: userId });
-
-      if (userData?.isBlocked) {
-        console.log("User is blocked, redirecting to login");
-        req.session.destroy();
-        return res.redirect("/login");
-      }
-
-      if (!userData) {
-        console.log("User not found in the database");
-        return res.render("home", {
-          message: "User not found",
-          user: null,
-          products,
-          brands,
-        });
-      }
-
-      return res.render("home", { user: userData.username, products, brands });
-    } else {
-      console.log("User not logged in");
-      return res.render("home", { user: null, products, brands });
-    }
-  } catch (error) {
-    console.log("Home page error:", error);
-    res.status(500).send("Server error");
-  }
-};
-
-const loadBlog = async (req, res) => {
-  try {
-    const brands = await Brand.find({});
-    res.render("blog", { brands });
-  } catch (error) {
-    console.log("error", error);
-  }
-};
-
-const getProductsByBrand = async (req, res) => {
-  try {
-    const brandId = req.params.brandId;
-    const sortOption = req.query.sortby || "popularity";
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 6;
-    const searchQuery = req.query.q || "";
-
-    let sortCriteria;
-
-    switch (sortOption) {
-      case "price":
-        sortCriteria = { price: 1 };
-        break;
-      case "popularity":
-        sortCriteria = { popularity: -1 };
-        break;
-      default:
-        sortCriteria = { popularity: -1 };
-    }
-
-    const brand = await Brand.findById(brandId);
-    const brands = await Brand.find({});
-
-    if (!brand) {
-      return res.status(404).render("brand-products", {
-        brand: null,
-        products: [],
-        message: "Brand not found",
-      });
-    }
-
-    let filterCriteria = { brand: new ObjectId(brandId) };
-
-    if (searchQuery) {
-      filterCriteria.name = { $regex: new RegExp(searchQuery, "i") };
-    }
-
-    let selectedCategories = req.query.categories || [];
-    if (!Array.isArray(selectedCategories)) {
-      selectedCategories = [selectedCategories];
-    }
-
-    if (selectedCategories.length > 0) {
-      const categories = await Category.find({
-        name: { $regex: new RegExp(selectedCategories.join("|"), "i") },
-      });
-      const categoryIds = categories.map((category) => category._id);
-      if (categoryIds.length > 0)
-        filterCriteria.category = { $in: categoryIds };
-    }
-
-    let selectedSizes = req.query.sizes || [];
-    if (!Array.isArray(selectedSizes)) {
-      selectedSizes = [selectedSizes];
-    }
-
-    if (selectedSizes.length > 0) {
-      filterCriteria.variants = {
-        $elemMatch: {
-          quantity: { $in: selectedSizes.map((size) => `${size} ml`) },
-        },
-      };
-    }
-
-    const totalProducts = await Product.countDocuments(filterCriteria);
-    const products = await Product.find(filterCriteria)
-      .sort(sortCriteria)
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .exec();
-
-    const totalPages = Math.ceil(totalProducts / limit);
-
-    return res.render("brand-products", {
-      brand: brand.brandName,
-      products,
-      brands,
-      currentPage: page,
-      totalPages,
-      sortOption,
-      selectedSizes,
-      selectedCategories,
-      searchQuery,
-    });
-  } catch (error) {
-    console.error("Error fetching products for brand:", error);
-    return res.status(500).send("Server error");
-  }
-};
-
-const loadSignup = async (req, res) => {
-  try {
-    if (!req.session.user) {
-      return res.render("signup");
-    }
-    return res.redirect("/");
-  } catch (error) {
-    console.log("Signup page is not found");
-    res.status(500).send("Server error");
-  }
-};
-
-function generateOtp() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-async function sendVerificationEmail(email, otp) {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      requireTLS: true,
-      auth: {
-        user: "fasilu707@gmail.com",
-        pass: "pfel wwtg uled vlxf",
-      },
-    });
-    const info = await transporter.sendMail({
-      from: process.env.NODEMAILER_EMAIL,
-      to: email,
-      subject: "Verify your account",
-      html: `<b>Your OTP: ${otp}</b>`,
-    });
-    return info.accepted.length > 0;
-  } catch (error) {
-    console.error("Error in sending email", error);
-    return false;
-  }
-}
-
-// Signup function
-const signup = async (req, res) => {
-  const { username, phone, email, password } = req.body;
-  try {
-    console.log(req.body, "signup body data");
-    const findUser = await User.findOne({ email });
-    if (findUser) {
-      return res.render("signup", {
-        message: "User already exists with the same email",
-      });
-    }
-    let otp = generateOtp();
-    console.log("top generating otp", otp);
-
-    console.log(
-      "Using email:",
-      process.env.NODEMAILER_EMAIL,
-      "Pass length:",
-      process.env.NODEMAILER_PASSWORD
-    );
-    const sentEmail = await sendVerificationEmail(email, otp);
-    console.log(sentEmail, " 1101fasilu sent email checking");
-    if (!sentEmail) {
-      return res.json("email-error");
-    }
-
-    req.session.userOtp = otp;
-    req.session.userData = { username, phone, email, password };
-    req.session.userEmail = email;
-
-    res.redirect("otp");
-    console.log("OTP is: ", otp);
-  } catch (error) {
-    console.log("Error in signup", error);
-    res.redirect("/pageNotfoundServer");
-  }
-};
-
-const securePassword = async (password) => {
-  try {
-    const passwordHash = await bcrypt.hash(password, 10);
-    return passwordHash;
-  } catch (error) {}
-};
-
-const loadotpPage = async (req, res) => {
-  try {
-    if (!req.session.user) {
-      res.render("otp");
-    } else {
-      res.redirect("/");
-    }
-  } catch (error) {
-    console.error("Error loading OTP page", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
-
-const generateReferralCode = () => {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-};
-
-const otpPage = async (req, res) => {
-  try {
-    const { otp } = req.body;
-    console.log("sd", req.session.userOtp);
-    console.log("sddsd", otp);
-
-    if (otp === req.session.userOtp) {
-      const user = req.session.userData;
-      const passwordHash = await securePassword(user.password);
-      const referralCode = generateReferralCode();
-      const saveUserData = new User({
-        username: user.username,
-        email: user.email,
-        phone: user.phone,
-        password: passwordHash,
-        referralCode,
-      });
-
-      await saveUserData.save();
-
-      res
-        .status(200)
-        .json({ success: true, message: "Success", redirectUrl: "/login" });
-    } else {
-      res
-        .status(400)
-        .json({ success: false, message: "Invalid OTP, Please try again" });
-    }
-  } catch (error) {
-    console.error("Error Verifying OTP", error);
-    res.status(500).json({ success: false, message: "An error occurred" });
-  }
-};
-
-const loadUserProfile = async (req, res) => {
-  try {
-    const user = await User.findOne({ _id: req.cookies.user });
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
-    res.render("userprofile", { user });
-  } catch (error) {
-    console.error("Error loading user profile:", error);
-    res.status(500).send("Error loading user profile");
-  }
-};
-
-const resendOtp = async (req, res) => {
-  try {
-    const { email } = req.session.userData;
-    if (!email) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email not found in session" });
-    }
-    const otp = generateOtp();
-    req.session.userOtp = otp;
-
-    const emailSent = await sendVerificationEmail(email, otp);
-    if (emailSent) {
-      console.log("resend otp :", otp);
-      res
-        .status(200)
-        .json({ success: true, message: "OTP resended successfully" });
-    } else {
-      res.status(500).json({
-        success: false,
-        message: "Failed to resend otp. Please try again",
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Internal server error, Please try again",
-    });
-  }
-};
-
-const loadLogin = async (req, res) => {
-  try {
-    if (!req.session.user) {
-      return res.render("login");
-    } else {
-      res.redirect("/");
-    }
-  } catch (error) {
-    res.redirect("pageNotFount");
-  }
-};
-
-const login = async (req, res) => {
-  console.log(req.body);
-  try {
-    const { email, password, referralCode } = req.body;
-
-    const findUser = await User.findOne({ email: email });
-    console.log(findUser, "find user");
-
-    if (!findUser) {
-      return res.render("login", { message: "User not found" });
-    }
-
-    if (findUser.isBlocked) {
-      return res.render("login", { message: "User is blocked by admin" });
-    }
-
-    const passwordMatch = await bcrypt.compare(password, findUser.password);
-    console.log(passwordMatch);
-
-    if (!passwordMatch) {
-      return res.render("login", { message: "Incorrect password" });
-    }
-
-    // Check for referral code
-    if (referralCode) {
-      // Prevent user from redeeming their own code
-      if (referralCode === findUser.referralCode) {
-        return res.render("login", {
-          message: "You cannot redeem your own referral code",
-        });
-      }
-
-      // Check if the referral code is valid and if it hasn't been redeemed already
-      if (!findUser.redeemStatus) {
-        const referrer = await User.findOne({ referralCode: referralCode });
-
-        if (!referrer) {
-          return res.render("login", { message: "Invalid referral code" });
-        }
-
-        // Update referrer's wallet
-        await Wallet.updateOne(
-          { userId: referrer._id },
-          {
-            $inc: { balance: 500 },
-            $push: {
-              transactions: {
-                date: new Date(),
-                type: "credit",
-                amount: 500,
-                description: "Referral reward",
-              },
-            },
-          },
-          { upsert: true }
-        );
-
-        await Wallet.updateOne(
-          { userId: findUser._id },
-          {
-            $inc: { balance: 100 },
-            $push: {
-              transactions: {
-                date: new Date(),
-                type: "credit",
-                amount: 100,
-                description: "Referral reward",
-              },
-            },
-          },
-          { upsert: true }
-        );
-
-        // Set redeemStatus to true and add referred user ID to referrer's referredUsers
-        await User.findByIdAndUpdate(findUser._id, {
-          redeemStatus: true,
-          isReferred: true,
-        });
-        await User.findByIdAndUpdate(referrer._id, {
-          $push: { referredUsers: findUser._id },
-        });
-      } else {
-        return res.render("login", {
-          message: "Referral code can only be used once",
-        });
-      }
-    }
-
-    // For admin login
-    if (findUser.isAdmin) {
-      req.session.admin = true;
-      return res.redirect("/admin/dashboard");
-    } else {
-      req.session.user = findUser._id;
-      req.session.username = findUser.username;
-
-      res.cookie("user", req.session.user, { httpOnly: true, secure: true });
-      res.redirect("/");
-    }
-  } catch (error) {
-    console.log("login error", error);
-    res.render("login", { message: "Login failed, please try again" });
-  }
-};
-
-const logout = async (req, res) => {
-  try {
-    console.log("logout");
-
-    req.session.destroy((err) => {
-      if (err) {
-        console.log("Session destruction error:", err.message);
-        return res.redirect("/pageNotFound");
-      }
-
-      res.clearCookie("user");
-
-      return res.redirect("/login");
-    });
-  } catch (error) {
-    console.log("Logout error:", error);
-    res.redirect("/pageNotFound");
-  }
-};
-
-// function generateOtp() {endVerificationEmail
-//   return Math.floor(100000 + Math.random() * 900000).toString();
-// }
-
-// async function sendVerificationEmail(email, otp) {
-//   try {
-//     const transporter = nodemailer.createTransport({
-//       service: "gmail",
-//       requireTLS: true,
-//       auth: {
-//         user: process.env.NODEMAILER_EMAIL,
-//         pass: process.env.NODEMAILER_PASSWORD,
-//       },
-//     });
-
-//     await transporter.sendMail({
-//       from: process.env.NODEMAILER_EMAIL,
-//       to: email,
-//       subject: "Reset your password",
-//       html: `<b>Your OTP for password reset: ${otp}</b>`,
-//     });
-
-//     return true;
-//   } catch (error) {
-//     console.error("Error in sending email", error);
-//     return false;
-//   }
-// }
-
-const loadForgotPassword = (req, res) => {
-  const error = req.session.forgotPasswordError || null;
-  req.session.forgotPasswordError = null; // Clear the error after displaying it
-  res.render("forgotpassword", { error });
-};
-
-const forgotPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      // Set error message in session and redirect back to the form
-      req.session.forgotPasswordError = "User not found";
-      return res.redirect("/forgotpassword");
-    }
-
-    const otp = generateOtp();
-    req.session.forgotOtp = otp;
-    req.session.userEmail = email;
-
-    const emailSent = await sendVerificationEmail(email, otp);
-    console.log("Enter your OTP:", otp);
-
-    if (!emailSent) return res.status(500).send("Failed to send OTP email");
-
-    res.render("forgototp"); // Render OTP page
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Server error");
-  }
-};
-
-const verifyForgotOtp = (req, res) => {
-  const { otp } = req.body;
-  if (otp === req.session.forgotOtp) {
-    return res.json({
-      success: true,
-      redirectUrl: "/resetpassword?email=" + req.session.userEmail,
-    });
-  }
-  res.status(400).json({ success: false, message: "Invalid OTP" });
-};
-
-const resendForgotOtp = async (req, res) => {
-  try {
-    const email = req.session.userEmail;
-    if (!email)
-      return res
-        .status(400)
-        .json({ success: false, message: "Session expired" });
-
-    const otp = generateOtp();
-    req.session.forgotOtp = otp;
-    const emailSent = await sendVerificationEmail(email, otp);
-    console.log(otp);
-
-    if (emailSent) {
-      return res
-        .status(200)
-        .json({ success: true, message: "OTP resent successfully" });
-    }
-    res.status(500).json({ success: false, message: "Failed to resend OTP" });
-  } catch (error) {
-    console.error("Error resending OTP:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
-
-const resetPassword = async (req, res) => {
-  try {
-    const { email, newPassword } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).send("User not found");
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    await user.save();
-
-    req.session.forgotOtp = undefined;
-    req.session.userEmail = undefined;
-
-    res.redirect("/login");
-  } catch (error) {
-    console.error("Error resetting password:", error);
-    res.status(500).send("Server error");
-  }
-};
-
-const loadShopping = async (req, res) => {
-  try {
-    return res.render("shopping");
-  } catch (error) {
-    console.log("shopping page is not found");
-    res.status(500).send("server error");
-  }
-};
-
-const addToCart = async (req, res) => {
-  try {
-    const productId = req.params.productId || req.body.productId;
-    const variantId = req.query.variant || req.body.variantId;
-    const userId = req.session.user;
-
-    if (!userId) {
-      return res.status(401).json({ message: "Please login first" });
-    }
-
-    const product = await Product.findById(productId).populate("offers");
-
-    if (!product || product.isDeleted) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-    const variant = product.variants.find(
-      (v) => v._id.toString() === variantId
-    );
-
-    if (!product || !variant) {
-      return res.status(404);
-    }
-
-    if (variant.stock <= 0) {
-      return res.status(400).json({ message: "This product is out of stock" });
-    }
-
-    let cart = await Cart.findOne({ userId: userId });
-
-    if (!cart) {
-      cart = new Cart({ userId: userId, items: [] });
-    }
-
-    const cartItemIndex = cart.items.findIndex(
-      (item) =>
-        item.productId.toString() === productId &&
-        item.variantId.toString() === variantId
-    );
-
-    if (cartItemIndex > -1) {
-      cart.items[cartItemIndex].quantity += 1;
-
-      const offer = product.offers[0];
-      let itemTotalPrice;
-
-      if (offer) {
-        const discount = offer.discount || 0;
-        const discountAmount = (variant.price * discount) / 100;
-        const discountedPrice = variant.price - discountAmount;
-
-        itemTotalPrice = discountedPrice * cart.items[cartItemIndex].quantity;
-      } else {
-        itemTotalPrice = variant.price * cart.items[cartItemIndex].quantity;
-      }
-
-      cart.items[cartItemIndex].totalPrice = itemTotalPrice;
-    } else {
-      const offer = product.offers[0];
-      let totalPrice;
-
-      if (offer) {
-        const discount = offer.discount || 0;
-        const discountAmount = (variant.price * discount) / 100;
-        const discountedPrice = variant.price - discountAmount;
-
-        totalPrice = discountedPrice;
-      } else {
-        totalPrice = variant.price;
-      }
-
-      cart.items.push({
-        productId: productId,
-        variantId: variantId,
-        quantity: 1,
-        price: variant.price,
-        totalPrice: totalPrice,
-      });
-    }
-
-    await cart.save();
-    return res.status(200).json({ added: true });
-  } catch (error) {
-    console.error("Error adding product to cart:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
-const loadCart = async (req, res) => {
-  try {
-    const userId = req.session.user;
-
-    if (!userId) {
-      return res.redirect("/login");
-    }
-
-    const brands = await Brand.find({});
-
-    const cart = await Cart.findOne({ userId: userId }).populate(
-      "items.productId"
-    );
-
-    if (!cart) {
-      console.log("No cart found for user:", userId);
-      return res.render("cart", {
-        cart: { items: [] },
-        hasOutOfStockItems: false,
-        totalDiscountedPrice: 0,
-        brands, // Pass as a number
-      });
-    }
-
-    // Filter out items with null productId
-    cart.items = cart.items.filter(
-      (item) => item.productId !== null && item.productId.status === "active"
-    );
-
-    // Check for out of stock items
-    let hasOutOfStockItems = cart.items.some((item) => {
-      return item.productId.variants.some((variant) => variant.stock <= 0);
-    });
-
-    // Calculate total discounted price
-    let totalDiscountedPrice = 0;
-
-    cart.items.forEach((item) => {
-      let priceToUse = item.productId.price; // Base price
-
-      // Apply discount if any offers are present
-      if (item.productId.offers && item.productId.offers.length > 0) {
-        const offer = item.productId.offers[0];
-        const currentDate = new Date();
-        if (
-          currentDate >= offer.validFrom &&
-          currentDate <= offer.validTo &&
-          !offer.isBlocked
-        ) {
-          const discountPercentage = offer.discount;
-          console.log(discountPercentage, "discount percentage");
-
-          const discountAmount = (priceToUse * discountPercentage) / 100;
-          priceToUse -= discountAmount;
-        }
-      }
-
-      // Calculate total for the item
-      const itemTotal = item.quantity * priceToUse;
-      totalDiscountedPrice += itemTotal;
-    });
-
-    res.render("cart", {
-      cart,
-      brands,
-      hasOutOfStockItems,
-      totalDiscountedPrice: totalDiscountedPrice, // Pass as a number
-    });
-  } catch (error) {
-    console.error("Error loading cart:", error);
-    res.status(500).send("Internal Server Error");
-  }
-};
-
-const removeFromCart = async (req, res) => {
-  try {
-    const userId = req.session.user;
-    const itemId = req.params.itemId;
-
-    if (!userId) {
-      if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
-        return res.status(401).json({ error: "Not logged in" });
-      }
-      return res.redirect("/login");
-    }
-
-    const cart = await Cart.findOne({ userId: userId });
-
-    if (!cart) {
-      if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
-        return res.status(404).json({ error: "Cart not found" });
-      }
-      return res.status(404).send("Cart not found");
-    }
-
-    cart.items = cart.items.filter((item) => item._id.toString() !== itemId);
-    await cart.save();
-
-    if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
-      return res.json({ success: true, message: "Item removed" });
-    }
-
-    res.redirect("/cart");
-  } catch (error) {
-    console.error("Error removing item from cart:", error);
-
-    if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
-
-    res.status(500).send("Internal Server Error");
-  }
-};
-
-const updateQuantity = async (req, res) => {
-  try {
-    const userId = req.session.user;
-    const itemId = req.params.itemId;
-    const newQuantity = parseInt(req.body.newQuantity);
-
-    if (isNaN(newQuantity) || newQuantity < 1) {
-      return res.status(400).send("Invalid quantity.");
-    }
-
-    if (!userId) {
-      return res.redirect("/login");
-    }
-
-    let cart = await Cart.findOne({ userId: userId }).populate(
-      "items.productId"
-    );
-
-    if (!cart) {
-      return res.status(404).send("Cart not found");
-    }
-
-    const cartItem = cart.items.id(itemId);
-
-    if (!cartItem) {
-      return res.status(404).send("Item not found in cart");
-    }
-
-    const product = await Product.findById(cartItem.productId).populate(
-      "offers"
-    );
-
-    if (!product) {
-      return res.status(404).send("Product not found");
-    }
-
-    let priceToUse = product.price;
-
-    if (product.offers && product.offers.length > 0) {
-      const offer = product.offers[0];
-      const currentDate = new Date();
-      if (
-        currentDate >= offer.validFrom &&
-        currentDate <= offer.validTo &&
-        !offer.isBlocked
-      ) {
-        const discountPercentage = offer.discount;
-        const discountAmount = (priceToUse * discountPercentage) / 100;
-        priceToUse = priceToUse - discountAmount;
-      }
-    }
-
-    if (newQuantity > product.stock) {
-      return res.status(400).send("Quantity exceeds available stock");
-    }
-
-    cartItem.quantity = newQuantity;
-    cartItem.price = priceToUse;
-    cartItem.totalPrice = newQuantity * priceToUse;
-
-    await cart.save();
-
-    // Return the updated item with the new total price
-    res.json({ totalPrice: cartItem.totalPrice });
-  } catch (error) {
-    console.error("Error updating cart quantity:", error);
-    res.status(500).send("Internal Server Error");
-  }
-};
-
-const loadCheckout = async (req, res) => {
-  try {
-    delete req.session.appliedCoupon;
-    const user = req.user;
-
-    // Fetch the cart and populate product details
-    let cart = await Cart.findOne({ userId: user._id }).populate({
-      path: "items.productId",
-      populate: {
-        path: "offers",
-        model: "Offer",
-      },
-    });
-
-    // Check if the cart exists and has items, otherwise redirect to cart page
-    if (!cart || cart.items.length === 0) {
-      return res.redirect("/cart");
-    }
-
-    // Filter out inactive or deleted products
-    cart.items = cart.items.filter(
-      (item) => item.productId !== null && item.productId.status === "active"
-    );
-
-    // Check if the cart has any active items left, otherwise redirect to cart page
-    if (cart.items.length === 0) {
-      return res.redirect("/cart");
-    }
-
-    // Calculate total price
-    cart.totalPrice = cart.items.reduce((total, item) => {
-      const product = item.productId;
-      let itemTotalPrice = item.variantId
-        ? product.variants.id(item.variantId).price * item.quantity
-        : product.price * item.quantity;
-
-      // Check if the product has valid offers
-      if (product.offers && product.offers.length > 0) {
-        const validOffer = product.offers.find((offer) => {
-          const now = new Date();
-          return (
-            !offer.isBlocked && offer.validFrom <= now && offer.validTo >= now
-          );
-        });
-
-        if (validOffer) {
-          const discount = validOffer.discount || 0;
-          const discountAmount =
-            ((item.variantId
-              ? product.variants.id(item.variantId).price
-              : product.price) *
-              discount) /
-            100;
-          const offerPrice =
-            (item.variantId
-              ? product.variants.id(item.variantId).price
-              : product.price) - discountAmount;
-
-          itemTotalPrice = offerPrice * item.quantity;
-          item.offerPrice = offerPrice;
-        }
-      }
-
-      item.totalPrice = itemTotalPrice;
-      return total + itemTotalPrice;
-    }, 0);
-
-    // If a coupon is already applied, do not show available coupons
-    let coupons = [];
-    let discount = 0;
-
-    if (!cart.appliedCoupon) {
-      // If no coupon applied, fetch active coupons
-      coupons = await Coupon.find({ isActive: true });
-
-      // Filter out coupons that the user has already used
-      coupons = coupons.filter(
-        (coupon) => !coupon.userId.includes(user._id.toString())
-      );
-    } else {
-      // Calculate discount from the applied coupon
-      const appliedCoupon = await Coupon.findOne({ code: cart.appliedCoupon });
-      if (appliedCoupon) {
-        discount = (cart.totalPrice * appliedCoupon.discountValue) / 100;
-      }
-    }
-
-    const finalPrice = cart.totalPrice - discount;
-
-    // Render checkout page with necessary data
-    res.render("checkout", {
-      cart,
-      user,
-      userId: user._id,
-      addresses: await Address.find({ userId: user._id }),
-      selectedAddressId: null,
-      coupons, // Only show if no coupon is applied and not used by the user
-      finalPrice, // Pass the final price to the view
-    });
-  } catch (error) {
-    console.error("Error loading checkout page:", error);
-    res.status(500).send("Server error");
-  }
-};
 
 const editAddress = async (req, res) => {
   const { addressId, name, phone, state, city, landMark, pincode } = req.body;
@@ -1172,7 +202,7 @@ module.exports = { loadShop };
 const Razorpay = require("razorpay");
 
 const razorpayInstance = new Razorpay({
-  key_id: process.env.YOUR_RAZORPAY_KEY_ID, // Your Razorpay Key ID
+  key_id: process.env.YOUR_RAZORPAY_KEY_ID, 
   key_secret: process.env.RAZORPAY_KEY_SECRET, 
 });
 
@@ -1276,9 +306,6 @@ const placeOrder = async (req, res) => {
         });
       }
 
-      // Decrease the stock
-      // variant.stock -= item.quantity;
-
       await product.save();
     }
 
@@ -1345,11 +372,6 @@ const placeOrder = async (req, res) => {
         );
 
         await newOrder.save();
-
-        // cart.items = [];
-        // cart.totalPrice = 0;
-        // await cart.save();
-
         return res.json({
           status: true,
           data: {
@@ -1429,12 +451,11 @@ const repayment_razorpayPOST = async (req, res) => {
         .json({ success: false, message: "Order not found" });
     }
 
-    // Calculate the total amount excluding canceled items
-    const validItemsTotal = order.ordereditems // Adjusted to match the database field name
-      .filter((item) => !item.isCancelled) // Using isCancelled instead of status
+    const validItemsTotal = order.ordereditems 
+      .filter((item) => !item.isCancelled)
       .reduce((total, item) => total + item.price * item.quantity, 0);
 
-    const amount = validItemsTotal * 100; // Convert to smallest currency unit (e.g., paise)
+    const amount = validItemsTotal * 100; 
     const currency = "INR";
     const payment_capture = 1;
 
@@ -1486,11 +507,9 @@ const verifyRepaymentPOST = async (req, res) => {
           .json({ success: false, message: "Order not found" });
       }
 
-      // Update payment status to 'paid'
       order.paymentStatus = "paid";
       order.razorpayOrderId = razorpay_order_id;
 
-      // Decrease the stock of each ordered variant
       for (const item of order.ordereditems) {
         const product = await Product.findById(item.productId);
 
@@ -1510,7 +529,6 @@ const verifyRepaymentPOST = async (req, res) => {
           });
         }
 
-        // Check stock and decrease if sufficient stock exists
         if (variant.stock >= item.quantity) {
           variant.stock -= item.quantity;
         } else {
@@ -1547,7 +565,6 @@ const paymentFailed = async (req, res) => {
   const { razorpay_order_id } = req.query;
 
   try {
-    // Find the order and update payment status to failed
     const order = await Order.findOneAndUpdate(
       { razorpayOrderId: razorpay_order_id },
       { paymentStatus: "Failed" },
@@ -1573,44 +590,32 @@ const paymentFailed = async (req, res) => {
   }
 };
 
-const readData = () => {
-  if (fs.existsSync("orders.json")) {
-    const data = fs.readFileSync("orders.json");
-    return JSON.parse(data);
-  }
-  return [];
-};
-
-// Function to write data to JSON file
 const writeData = (data) => {
   fs.writeFileSync("orders.json", JSON.stringify(data, null, 2));
 };
 
-// Initialize orders.json if it doesn't exist
 if (!fs.existsSync("orders.json")) {
   writeData([]);
 }
 
 const razorpay = new Razorpay({
-  key_id: "YOUR_RAZORPAY_KEY", // Replace with your Razorpay key
-  key_secret: "YOUR_RAZORPAY_SECRET", // Replace with your Razorpay secret
+  key_id: "YOUR_RAZORPAY_KEY", 
+  key_secret: "YOUR_RAZORPAY_SECRET", 
 });
 
 const createOrder = async (req, res) => {
   const { userId, totalPrice, finalPrice, ordereditems, addressId } = req.body;
 
   try {
-    // Create a new order entry in the database
     const newOrder = await Order.create({
       userId,
       totalPrice,
       finalPrice,
       orderedItems: ordereditems,
       addressId,
-      paymentStatus: "Pending", // Initially set payment status to pending
+      paymentStatus: "Pending", 
     });
 
-    // Create an order in Razorpay
     const razorpayOrder = await razorpay.orders.create({
       amount: finalPrice * 100, 
       currency: "INR",
@@ -1624,7 +629,6 @@ const createOrder = async (req, res) => {
         .json({ success: false, message: "Failed to create Razorpay order" });
     }
 
-    // Respond with custom data
     res.json({
       success: true,
       order: {
@@ -1648,15 +652,10 @@ const paymentSuccess = async (req, res) => {
       return res.status(404).render("error", { message: "Order not found" });
     }
 
-    console.log("Applied Coupon:", req.session.appliedCoupon);
-    console.log("Session Contents:", req.session);
-
     if (req.session.appliedCoupon) {
       const couponCode = req.session.appliedCoupon.toLowerCase();
-      console.log("Querying with coupon code:", couponCode);
 
       const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
-      console.log("Retrieved Coupon:", coupon); 
 
       if (coupon) {
         const userId = req.cookies.user;
@@ -1665,7 +664,6 @@ const paymentSuccess = async (req, res) => {
         if (Array.isArray(coupon.userId)) {
           coupon.userId.push(mongooseUserId);
           await coupon.save();
-          console.log("Coupon updated:", coupon);
         } else {
           console.error("coupon.userId is not an array");
         }
@@ -1685,7 +683,6 @@ const paymentSuccess = async (req, res) => {
     await user.save();
   }
 
-    // Render the order success page or send a success response
     res.render("orderSuccess", { order });
   } catch (error) {
     console.error("Error processing payment success:", error);
@@ -1693,7 +690,6 @@ const paymentSuccess = async (req, res) => {
   }
 };
 
-// controllers/userController.js
 const verifyPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
@@ -1701,7 +697,6 @@ const verifyPayment = async (req, res) => {
 
     const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
     if (!order || order.paymentMethod !== "razorpay") {
-      // const orderID = order._id;
       const response = "/orders";
       return res.status(400).json({
         success: false,
@@ -1765,10 +760,8 @@ const applyCoupon = async (req, res) => {
   try {
     const totalAmountNum = Number(totalAmount);
 
-    // Log the initial session contents
     console.log("Session Before Applying Coupon:", req.session);
 
-    // Check if a coupon has already been applied to this order
     if (req.session.appliedCoupon) {
       return res.json({
         success: false,
@@ -1776,12 +769,8 @@ const applyCoupon = async (req, res) => {
       });
     }
 
-    // Log the coupon code to be applied
-    console.log("Coupon Code to be Applied:", couponCode);
-
-    // Find the coupon by code
     const coupon = await Coupon.findOne({
-      code: couponCode.trim(), // Ensure no extra spaces
+      code: couponCode.trim(), 
       isActive: true,
     });
 
@@ -1792,7 +781,6 @@ const applyCoupon = async (req, res) => {
       });
     }
 
-    // Check if the coupon has expired
     const currentDate = new Date();
     const expiryDate = new Date(coupon.expiryDate);
     if (expiryDate < currentDate) {
@@ -1860,34 +848,11 @@ const removeCoupon = (req, res) => {
 };
 
 module.exports = {
-  loadHomePage,
-  getProductsByBrand,
-  loadSignup,
-  loadShopping,
-  loadLogin,
-  signup,
-  loadotpPage,
-  login,
-  loadForgotPassword,
-  forgotPassword,
-  verifyForgotOtp,
-  resendForgotOtp,
-  resetPassword,
-  logout,
-  otpPage,
-  resendOtp,
-  pageNotFount,
-  loadCart,
-  addToCart,
-  removeFromCart,
-  updateQuantity,
   loadShop,
-  loadCheckout,
   editAddress,
   deleteAddress,
   placeOrder,
   getOrderPage,
-  // returnOrder,
   createOrder,
   applyCoupon,
   removeCoupon,
@@ -1896,7 +861,4 @@ module.exports = {
   repayment_razorpayPOST,
   verifyRepaymentPOST,
   paymentFailed,
-  loadBlog,
-  loadUserProfile,
-  generateReferralCode,
 };
