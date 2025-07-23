@@ -4,7 +4,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon"
+    "start": "nodemon",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "ISC",
@@ -28,6 +29,7 @@
     "jspdf-autotable": "^3.8.3",
     "mongodb": "^6.8.0",
     "mongoose": "^8.7.0",
+    "morgan": "^1.10.1",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.14",
     "nodemon": "^3.1.4",
@@ -40,5 +42,8 @@
     "uuid": "^10.0.0",
     "xlsx": "^0.18.5"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "eslint": "^9.31.0"
+  }
 }

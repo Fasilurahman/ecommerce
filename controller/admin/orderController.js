@@ -4,7 +4,7 @@ const Product = require('../../models/productSchema');
 
 const orderDetails = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1; // Default to page 1
+        const page = parseInt(req.query.page) || 1; 
         const limit = parseInt(req.query.limit) || 3; // Default to 10 items per page
         const skip = (page - 1) * limit; // Calculate items to skip for pagination
 
@@ -245,7 +245,9 @@ const rejectReturn = async (req, res) => {
 const viewOrder = async (req, res) => {
     try {
         const orderId = req.params.id;
-        const order = await Order.findById(orderId).populate('userId'); // Populate user details if needed
+        const order = await Order.findById(orderId).populate('userId');
+        console.log(order,'123456789');
+        
         if (!order) {
             return res.status(404).send('Order not found');
         }

@@ -14,27 +14,24 @@ const Razorpay = require('razorpay');
 const registerUser = async (req, res) => {
     try {
         const { username, email, password } = req.body;
-        const referralCode = generateReferralCode(); // Generate referral code
+        const referralCode = generateReferralCode(); 
         const newUser = new User({
             username,
             email,
             password: await bcrypt.hash(password, 10),
-            referralCode, // Save the generated referral code
+            referralCode, 
         });
 
         await newUser.save();
-        // Handle successful registration (e.g., redirect or send a success message)
         res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (error) {
-        // Handle registration error
         res.status(400).json({ message: 'Error registering user', error });
     }
 };
 
-// Initialize Razorpay with your key and secret
 const razorpay = new Razorpay({
-    key_id: 'YOUR_RAZORPAY_KEY_ID', // Replace with your Razorpay key ID
-    key_secret: 'YOUR_RAZORPAY_SECRET' // Replace with your Razorpay secret
+    key_id: 'YOUR_RAZORPAY_KEY_ID',
+    key_secret: 'YOUR_RAZORPAY_SECRET'
 });
 
 
@@ -45,23 +42,23 @@ const updateProfile = async (req, res) => {
             return res.status(401).send('Unauthorized: No user logged in');
         }
 
-        const user = await User.findById(req.cookies.user); // Use cookies instead of session
+        const user = await User.findById(req.cookies.user); 
         if (!user) {
             return res.status(404).send('User not found');
         }
 
-        // Update fields only if they exist
-        user.username = req.body.username || user.username; // Fallback to current username
-        user.email = req.body.email || user.email; // Fallback to current email
-        user.phone = req.body.phone || user.phone; // Fallback to current phone
+    
+        user.username = req.body.username || user.username; 
+        user.email = req.body.email || user.email; 
+        user.phone = req.body.phone || user.phone; 
 
         if (req.file) {
-            user.profilePicture = req.file.path; // Update profile picture if uploaded
+            user.profilePicture = req.file.path; 
         }
 
-        await user.save(); // Save changes to the database
+        await user.save();
 
-        res.redirect('/profile'); // Redirect to profile page
+        res.redirect('/profile'); 
     } catch (error) {
         console.error('Error updating user profile:', error);
         res.status(500).send('Error updating user profile');
@@ -81,7 +78,6 @@ const loadUserAddresses = async (req, res) => {
         res.render('address', { addresses, user });
     } catch (error) {
         console.error('Error loading user addresses:', error);
-        // Handle error appropriately
         res.status(500).send('Error loading user addresses');
     }
 }
@@ -121,12 +117,10 @@ const editaddress = async (req, res) => {
         const addressId = req.params.id;
         const { name, landmark, city, state, zip, phone } = req.body;
 
-        // Validate required fields
         if (!name || !landmark || !city || !state || !zip || !phone) {
             return res.status(400).send("All required fields must be provided.");
         }
 
-        // Validate specific field formats (you can customize these validations further)
         const phonePattern = /^\d{10}$/;
         const zipPattern = /^\d{5}$/;
 
@@ -138,7 +132,6 @@ const editaddress = async (req, res) => {
             return res.status(400).send("Zip code must be exactly 5 digits.");
         }
 
-        // Find the address by ID
         const findaddress = await Address.findOne({ 'address._id': addressId });
 
         if (!findaddress) {
@@ -167,12 +160,6 @@ const editaddress = async (req, res) => {
         res.status(500).send("Server error");
     }
 };
-
-
-
-
-
-
 
 const deleteaddress = async (req, res) => {
     try {
@@ -206,7 +193,6 @@ const deleteaddress = async (req, res) => {
                 return res.status(404).send('Address not found');
             }
             const addressData = address.address.id(addressId);
-            // Render the edit address view with fetched address
             res.render('edit-address', { address: addressData, user: req.user,users  }); 
         } catch (error) {
             console.error('Error fetching address:', error);
@@ -225,31 +211,27 @@ const deleteaddress = async (req, res) => {
                 return res.status(404).send('User not found');
             }
     
-            // Pagination parameters
-            const page = parseInt(req.query.page) || 1; // Current page
-            const limit = 3; // Number of orders per page
-            const skip = (page - 1) * limit; // Calculate how many records to skip
+            const page = parseInt(req.query.page) || 1; 
+            const limit = 3; 
+            const skip = (page - 1) * limit; 
     
-            // Fetch total number of orders
             const totalOrders = await Order.countDocuments({ userId: user._id });
     
-            // Fetch paginated orders
             const orders = await Order.find({ userId: user._id })
                 .populate('address')
                 .sort({ createdOn: -1 })
                 .skip(skip)
                 .limit(limit);
     
-            const totalPages = Math.ceil(totalOrders / limit); // Calculate total pages
+            const totalPages = Math.ceil(totalOrders / limit);
     
-            // Fetch the user's cart
             const cart = await Cart.find({ userId: user._id }).populate('items.productId');
     
             res.render('orders', {
                 orders,
                 cart,
                 currentPage: page,
-                totalPages, // Pass total pages to the view
+                totalPages,
             });
         } catch (error) {
             console.error('Error loading user orders:', error);
@@ -279,21 +261,16 @@ const deleteaddress = async (req, res) => {
                 return res.status(404).send("No orders found");
             }
     
-            // Filter out canceled items and calculate the updated total
             const activeItems = order.ordereditems.filter(item => !item.isCancelled);
             const updatedTotal = activeItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
             
     
-            // Pass the user, order, and updated total to the view
             res.render('ordersview', { order, user, updatedTotal, query: req.query });
         } catch (error) {
             console.error("Error fetching orders:", error);
             res.status(500).send("Server error");
         }
     };
-    
-
-
 
 
 const PDFDocument = require('pdfkit');
@@ -312,8 +289,7 @@ const generateInvoicePDF = async (order) => {
     const taxAmount = order.taxAmount || 0;
     const discountAmount = order.discountAmount || 0;
 
-    // Invoice Header
-    doc.image('public/assets/images/icons/1.png', 50, 45, { width: 50 }) // Company logo
+    doc.image('public/assets/images/icons/1.png', 50, 45, { width: 50 })
         .fontSize(20)
         .text('Essence of Heaven', 110, 50)
         .fontSize(10)
@@ -322,13 +298,11 @@ const generateInvoicePDF = async (order) => {
         .text('Phone: (123) 456-7890', 110, 100)
         .moveDown();
 
-    // Invoice Title
     doc.fontSize(25)
         .fillColor('#0000ff')
         .text('Invoice', { align: 'center' })
         .moveDown(1.5);
 
-    // Order Details
     doc.fontSize(14).fillColor('black');
     const orderDate = new Date(order.createdOn).toLocaleDateString();
     doc.text(`Order ID: ${order.orderId}`, { align: 'left' });
@@ -336,7 +310,6 @@ const generateInvoicePDF = async (order) => {
     doc.text(`Order Status: ${order.status}`, { align: 'left' });
     doc.moveDown();
 
-    // Customer & Shipping Details
     doc.fontSize(12).fillColor('black');
     doc.text('Bill To:', { align: 'left', underline: true });
     doc.text(`${order.address.name}`, { align: 'left' });
@@ -352,7 +325,6 @@ const generateInvoicePDF = async (order) => {
     doc.text(``, { align: 'left' });
     doc.moveDown();
 
-    // Table Headers with Borders and Background Color
     const tableTop = doc.y + 10;
     const tableX = 50;
     const tableWidths = [200, 70, 80, 80, 100];
@@ -372,21 +344,18 @@ const generateInvoicePDF = async (order) => {
     doc.rect(tableX + tableWidths[0] + tableWidths[1] + tableWidths[2] + tableWidths[3], tableTop, tableWidths[4], 25).fillAndStroke('#f2f2f2', '#000');
     doc.text('Total', tableX + tableWidths[0] + tableWidths[1] + tableWidths[2] + tableWidths[3] + 5, tableTop + 8);
 
-    // Render Products with alternating row background color
     let currentY = tableTop + 30;
     order.ordereditems.forEach((item, index) => {
         if (item.productId) {
             const totalPrice = (item.price * item.quantity).toFixed(2);
             const productSKU = item.productId.sku || 'N/A';
 
-            // Alternate row color
             if (index % 2 === 0) {
                 doc.rect(tableX, currentY, tableWidths.reduce((a, b) => a + b, 0), 25).fill('#f0f0f0').stroke();
             } else {
                 doc.rect(tableX, currentY, tableWidths.reduce((a, b) => a + b, 0), 25).stroke();
             }
 
-            // Render each product row
             doc.fillColor('black')
                 .text(item.productId.name, tableX + 5, currentY + 8)
                 .text(productSKU, tableX + tableWidths[0] + 5, currentY + 8)
@@ -398,7 +367,6 @@ const generateInvoicePDF = async (order) => {
         }
     });
 
-    // Additional Info (Shipping, Tax, Discounts)
     currentY += 30;
     doc.fontSize(12).fillColor('black');
     doc.text(`Shipping Fee: ₹${shippingFee.toFixed(2)}`, { align: 'right' });
@@ -406,11 +374,9 @@ const generateInvoicePDF = async (order) => {
     doc.text(`Discount: ₹${discountAmount.toFixed(2)}`, { align: 'right' });
     doc.moveDown();
 
-    // Final Amount - more prominent
     doc.fontSize(16).fillColor('#ff0000')
         .text(`Total Amount: ₹${order.finalPrice.toFixed(2)}`, { align: 'right', underline: true });
 
-    // Footer
     doc.fontSize(10).fillColor('gray')
         .text('Thank you for shopping with us!', 50, doc.page.height - 50, { align: 'center' });
 
@@ -453,51 +419,39 @@ const cancelOrder = async (req, res) => {
     try {
         const orderId = req.params.orderId;
 
-        // Validate order ID format
         if (!mongoose.Types.ObjectId.isValid(orderId)) {
             return res.status(400).send("Invalid order ID format");
         }
 
         const order = await Order.findById(orderId).populate('ordereditems.productId');
 
-        // Check if the order exists
         if (!order) {
             return res.status(404).send("Order not found");
         }
 
-        // Prevent cancellation if already fully cancelled or returned
         if (order.status === 'Cancelled' || order.status === 'Returned') {
             return res.status(400).send("Order is already cancelled or returned.");
         }
 
-        // Determine if there are any previously cancelled items
         const hasCancelledItems = order.ordereditems.some(item => item.isCancelled);
 
-        // Initialize total refund amount based on cancellation status and coupon
         let totalRefund = (!hasCancelledItems || order.couponApplied) ? order.finalPrice : 0;
 
-        // Process each item in the order to mark as cancelled and update stock
         for (const item of order.ordereditems) {
-            // Skip already-cancelled items
             if (item.isCancelled) continue;
 
-            // Mark the item as cancelled
             item.isCancelled = true;
 
-            // If no coupon was applied and there were previously cancelled items, calculate item refunds
             if (!order.couponApplied && hasCancelledItems) {
                 let itemRefund = item.price * item.quantity;
 
-                // Check for item-specific discounts
                 if (item.discount) {
                     itemRefund -= (itemRefund * item.discount) / 100;
                 }
 
-                // Add this item's refund to the total refund amount
                 totalRefund += itemRefund;
             }
 
-            // Increase stock for the product
             const product = await Product.findById(item.productId);
             if (product) {
                 if (item.variantId) {
@@ -512,21 +466,16 @@ const cancelOrder = async (req, res) => {
             }
         }
 
-        // Set order status to 'Cancelled'
         order.status = 'Cancelled';
 
-        // Save the updated order with cancelled status and items
         await order.save();
 
-        // Process wallet refund based on totalRefund if payment was successful
         if ((order.paymentStatus === 'success' || order.paymentStatus === 'paid') && totalRefund > 0) {
             const wallet = await Wallet.findOne({ userId: order.userId });
 
             if (wallet) {
-                // Increase wallet balance with the totalRefund from the order
                 wallet.balance += totalRefund;
 
-                // Record the transaction in the wallet
                 wallet.transactions.push({
                     amount: totalRefund,
                     type: 'credit',
@@ -541,21 +490,12 @@ const cancelOrder = async (req, res) => {
             }
         }
 
-        // Redirect to orders page after cancellation
         res.redirect('/orders');
     } catch (error) {
         console.error("Error cancelling order:", error);
         res.status(500).send("Server error");
     }
 };
-
-
-
-
-
-
-
-
 
 
 const cancelItem = async (req, res) => {
@@ -566,7 +506,6 @@ const cancelItem = async (req, res) => {
         console.log(orderId, 'order ID');
         console.log(productId, 'product ID');
 
-        // Validate order and product IDs
         if (!mongoose.Types.ObjectId.isValid(orderId) || !mongoose.Types.ObjectId.isValid(productId)) {
             return res.status(400).send("Invalid order or product ID format");
         }
@@ -574,10 +513,8 @@ const cancelItem = async (req, res) => {
         const order = await Order.findById(orderId);
         console.log(order, 'order');
 
-        // Check if the order exists
         if (!order) return res.status(404).send("Order not found");
 
-        // Find the item to cancel
         const itemIndex = order.ordereditems.findIndex(item => 
             item.productId.toString() === productId && !item.isCancelled
         );
@@ -591,7 +528,6 @@ const cancelItem = async (req, res) => {
         const product = await Product.findById(item.productId);
 
         if (product) {
-            // Update the stock for the product variant or product itself
             if (item.variantId) {
                 const variant = product.variants.id(item.variantId);
                 if (variant) variant.stock += item.quantity;
@@ -604,34 +540,28 @@ const cancelItem = async (req, res) => {
             return res.status(404).send("Product not found.");
         }
 
-        // Calculate refund based on final price after any discounts
         let priceToReturn = item.price * item.quantity;
 
-        // Check for item-specific discounts
         if (item.discount) {
             priceToReturn -= (priceToReturn * item.discount) / 100;
         }
 
-        // Check for any global coupon discount applied to the order
         if (order.couponApplied) {
             const couponDiscount = order.couponDiscount || 0;
             priceToReturn -= (priceToReturn * couponDiscount) / 100;
         }
 
-        // Check for any active offers for the product
         const activeOffers = await Offer.find({ entity: product._id, isBlocked: false });
         if (activeOffers.length > 0) {
             activeOffers.forEach(offer => {
-                const offerDiscount = offer.discount || 0; // Assuming the offer has a discount field
+                const offerDiscount = offer.discount || 0;
                 priceToReturn -= (priceToReturn * offerDiscount) / 100;
             });
         }
 
-        // Mark the item as cancelled
         order.ordereditems[itemIndex].isCancelled = true;
         await order.save();
 
-        // Refund only if payment was successful
         if (order.paymentStatus === 'success' || order.paymentStatus === 'paid') {
             const user = await User.findById(order.userId);
 
@@ -659,7 +589,6 @@ const cancelItem = async (req, res) => {
             }
         }
 
-        // Check if all items are canceled
         const allItemsCancelled = order.ordereditems.every(item => item.isCancelled);
 
         if (allItemsCancelled) {
@@ -668,17 +597,12 @@ const cancelItem = async (req, res) => {
             console.log(`Order ${orderId} has been fully cancelled as all items are cancelled.`);
         }
 
-        // Redirect to orders page after cancellation
         res.redirect(`/orders/${orderId}`);
     } catch (error) {
         console.error("Error cancelling item:", error);
         res.status(500).send("Server error");
     }
 };
-
-
-
-
 
 
 const loadchangepassword = async (req, res) => {
@@ -739,9 +663,6 @@ const changepassword = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
-
-
-
 
 
 module.exports = {

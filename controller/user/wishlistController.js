@@ -59,7 +59,6 @@ const removeFromWishlist = async (req, res) => {
   }
 };
 
-// Get user's wishlist
 const getWishlist = async (req, res) => {
   const userId = req.cookies.user;
   try {

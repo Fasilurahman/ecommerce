@@ -113,6 +113,7 @@ router.get("/orders", userAuth, userController.getOrderPage);
 router.post("/create-order", userAuth, userController.createOrder);
 router.post("/verify-payment", userAuth, userController.verifyPayment);
 router.post("/apply-coupon", userAuth, userController.applyCoupon);
+router.post("/remove-coupon", userAuth, userController.removeCoupon)
 
 router.get("/wallet", walletController.loadWalletPage);
 

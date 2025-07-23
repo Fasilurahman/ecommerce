@@ -38,7 +38,7 @@
         <div class="card">
             <div class="card-header">User Information</div>
             <div class="card-body">
-                <p>Name: <strong><%= order.userId ? order.userId.name : 'Unknown User' %></strong></p>
+                <p>Name: <strong><%= order.userId ? order.userId.username : 'Unknown User' %></strong></p>
                 <p>Email: <strong><%= order.userId ? order.userId.email : 'N/A' %></strong></p>
             </div>
         </div>
@@ -51,7 +51,7 @@
                     <% order.ordereditems.forEach(item => { %>
                         <li class="list-group-item">
                             <% if (item.productId) { %>
-                                <strong>Product Name:</strong> <%= item.productId.name %><br>
+                                <!-- <strong>Product Name:</strong> <%= item.productId.name %><br> -->
                                 <strong>Quantity:</strong> <%= item.quantity %><br>
                                 <strong>Price Paid:</strong> $<%= item.price %><br>
                                 <strong>Variant ID:</strong> <%= item.variantId %>
@@ -80,7 +80,7 @@
             <div class="card-body">
                 <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                 <p><strong>Payment Status:</strong> <span class="badge badge-warning"><%= order.paymentStatus %></span></p>
-                <p><strong>Razorpay Order ID:</strong> <%= order.razorpayOrderId %></p>
+                <!-- <p><strong>Razorpay Order ID:</strong> <%= order.razorpayOrderId %></p> -->
             </div>
         </div>
 
@@ -90,7 +90,7 @@
             <div class="card-body">
                 <p><strong>Status:</strong> <%= order.status %></p>
                 <p><strong>Final Price:</strong> $<%= order.finalPrice %></p>
-                <p><strong>Discount:</strong> $<%= order.discount %></p>
+                <!-- <p><strong>Discount:</strong> $<%= order.discount %></p> -->
                 <p><strong>Created On:</strong> <%= new Date(order.createdOn).toLocaleDateString() %></p>
                 <p><strong>Invoice:</strong> <%= new Date(order.invoice).toLocaleDateString() %></p>
             </div>

@@ -278,6 +278,10 @@
                                                             <th>Total</th>
                                                         </tr>
                                                     </thead>
+                                                    <!-- Hidden Inputs for Total Price Tracking -->
+<input type="hidden" id="originalTotalPrice" value="<%= cart && cart.totalPrice ? cart.totalPrice.toFixed(2) : '0.00' %>" />
+<input type="hidden" name="finalPrice" value="<%= cart && cart.totalPrice ? cart.totalPrice.toFixed(2) : '0.00' %>" />
+
                                                     <tbody>
                                                         <% if (cart && cart.items && cart.items.length > 0) { %>
                                                             <% cart.items.forEach(item => { %>
@@ -316,12 +320,13 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td colspan="2" class="apply-coupon">
-                                                                <input type="text" id="couponCode" placeholder="Enter coupon code" class="form-control" />
-                                                                <button type="button" class="btn btn-outline-primary mt-2" onclick="applyCoupon()">Apply Coupon</button>
-                                                                <div id="couponMessage" class="mt-2"></div>
-                                                            </td>
-                                                        </tr>
+    <td colspan="2" class="apply-coupon">
+        <input type="text" id="couponCode" placeholder="Enter coupon code" class="form-control" />
+        <button type="button" class="btn btn-outline-primary mt-2" id="couponButton" onclick="applyCoupon()">Apply Coupon</button>
+        <div id="couponMessage" class="mt-2 text-success"></div>
+    </td>
+</tr>
+
                                                         <tr>
                                                             <td colspan="2">
                                                                 <h5>Available Coupons:</h5>
@@ -711,7 +716,6 @@
 
         const order = await response.json();
         console.log(order, 'razorpay order');
-        console.log(order.data.razorpayOrder, 'razorpay details');
 
         if (response.ok) {
             const options = {
@@ -795,11 +799,38 @@
 
             rzp.open();
         } else {
-            alert(order.message);
+            if (response.status === 429 || order.message === "An order is already being processed. Please wait.") {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Order Already In Progress',
+            text: order.message || 'An order is already being processed. Please wait.',
+        });
+        return;
+    }
+
+    Swal.fire({
+        icon: 'error',
+        title: 'Order Failed',
+        text: order.message || 'An error occurred while placing the order.',
+    });
         }
     } catch (err) {
         console.error('Error:', err);
-        alert('An error occurred while placing the order.');
+        if (response.status === 429 || order.message === "An order is already being processed. Please wait.") {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Order Already In Progress',
+            text: order.message || 'An order is already being processed. Please wait.',
+        });
+        return;
+    }
+
+    Swal.fire({
+        icon: 'error',
+        title: 'Order Failed',
+        text: order.message || 'An error occurred while placing the order.',
+    });
+        // alert('An error occurred while placing the order. Please try again later.');
     }
 }
  else if (selectedPaymentMethod === 'wallet') {
@@ -846,38 +877,78 @@
 
 
 <script>
+    let couponApplied = false;
+    let appliedCouponCode = ''; // track which coupon was applied
+
     async function applyCoupon() {
-    const couponCode = document.getElementById('couponCode').value;
+        if (couponApplied) {
+            removeCoupon();
+            return;
+        }
 
-    // Fetching the total price and logging it
-    const totalPriceElement = document.getElementById('totalPrice').innerText;
-    console.log('Total price before parsing:', totalPriceElement);
+        const couponCode = document.getElementById('couponCode').value.trim();
+        if (!couponCode) {
+            document.getElementById('couponMessage').innerText = "Please enter a coupon code.";
+            return;
+        }
 
-    // Remove the "₹" symbol and any commas, then parse the number
-    const totalAmount = parseFloat(totalPriceElement.replace('₹', '').replace(/,/g, ''));
-    console.log('Parsed total amount:', totalAmount);
+        const totalPriceElement = document.getElementById('totalPrice').innerText;
+        const totalAmount = parseFloat(totalPriceElement.replace('₹', '').replace(/,/g, ''));
 
-    const response = await fetch('/apply-coupon', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ couponCode, totalAmount })
-    });
+        const response = await fetch('/apply-coupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ couponCode, totalAmount })
+        });
 
-    const result = await response.json();
-    const couponMessage = document.getElementById('couponMessage');
+        const result = await response.json();
+        const couponMessage = document.getElementById('couponMessage');
 
-    if (result.success) {
-        couponMessage.innerText = `Coupon applied! Discount: ₹${result.discountAmount.toFixed(2)}. New Total: ₹${result.newTotal.toFixed(2)}`;
-        document.getElementById('totalPrice').innerText = `₹${result.newTotal.toFixed(2)}`;
-        document.querySelector('input[name="finalPrice"]').value = result.newTotal;
-    } else {
-        couponMessage.innerText = result.message;
+        if (result.success) {
+            document.getElementById('totalPrice').innerText = `₹${result.newTotal.toFixed(2)}`;
+            document.querySelector('input[name="finalPrice"]').value = result.newTotal.toFixed(2);
+            couponMessage.innerText = `Coupon applied! Discount: ₹${result.discountAmount.toFixed(2)}.`;
+
+            // Update button appearance and state
+            couponApplied = true;
+            appliedCouponCode = couponCode;
+
+            const couponBtn = document.getElementById('couponButton');
+            couponBtn.innerText = "Remove Coupon";
+            couponBtn.classList.remove("btn-outline-primary");
+            couponBtn.classList.add("btn-danger");
+        } else {
+            couponMessage.innerText = result.message;
+        }
     }
+
+    async function removeCoupon() {
+    const originalTotal = parseFloat(document.getElementById('originalTotalPrice').value);
+    document.getElementById('totalPrice').innerText = `₹${originalTotal.toFixed(2)}`;
+    document.querySelector('input[name="finalPrice"]').value = originalTotal.toFixed(2);
+
+    document.getElementById('couponMessage').innerText = 'Coupon removed.';
+    document.getElementById('couponCode').value = '';
+
+    // Reset UI button
+    couponApplied = false;
+    appliedCouponCode = '';
+
+    const couponBtn = document.getElementById('couponButton');
+    couponBtn.innerText = "Apply Coupon";
+    couponBtn.classList.remove("btn-danger");
+    couponBtn.classList.add("btn-outline-primary");
+
+    await fetch('/remove-coupon', {
+        method: 'POST'
+    });
 }
 
 </script>
+
+
 <script>
     function validateForm() {
         // Clear previous error messages

@@ -31,9 +31,8 @@ const loadHomePage = async (req, res) => {
   try {
     const userId = req.cookies.user;
 
-    // Fetch all brands and products
     const brands = await Brand.find({});
-    const products = await Product.find({ status: "active" }) // Filter only active products
+    const products = await Product.find({ status: "active" })
       .populate("brand")
       .populate("category")
       .populate("offers");
@@ -53,7 +52,7 @@ const loadHomePage = async (req, res) => {
           message: "User not found",
           user: null,
           products,
-          brands, // Pass brands to the frontend
+          brands,
         });
       }
 
@@ -77,32 +76,27 @@ const loadBlog = async (req, res) => {
   }
 };
 
-// Assuming you have the necessary imports at the top
-
 const getProductsByBrand = async (req, res) => {
   try {
     const brandId = req.params.brandId;
-    const sortOption = req.query.sortby || "popularity"; // Default sorting
-    const page = parseInt(req.query.page) || 1; // Default page
-    const limit = parseInt(req.query.limit) || 6; // Default limit
-    const searchQuery = req.query.q || ""; // Capture search query
+    const sortOption = req.query.sortby || "popularity";
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+    const searchQuery = req.query.q || "";
 
     let sortCriteria;
 
-    // Define sorting criteria based on the sortOption
     switch (sortOption) {
       case "price":
-        sortCriteria = { price: 1 }; // Ascending price
+        sortCriteria = { price: 1 };
         break;
       case "popularity":
-        sortCriteria = { popularity: -1 }; // Descending popularity
+        sortCriteria = { popularity: -1 };
         break;
-      // Add more cases for other sort options if needed
       default:
-        sortCriteria = { popularity: -1 }; // Default to popularity
+        sortCriteria = { popularity: -1 };
     }
 
-    // Fetch the brand
     const brand = await Brand.findById(brandId);
     const brands = await Brand.find({});
 
@@ -114,15 +108,12 @@ const getProductsByBrand = async (req, res) => {
       });
     }
 
-    // Initialize filter criteria
     let filterCriteria = { brand: new ObjectId(brandId) };
 
-    // Search filtering
     if (searchQuery) {
       filterCriteria.name = { $regex: new RegExp(searchQuery, "i") };
     }
 
-    // Category filtering (if needed, based on the original loadShop logic)
     let selectedCategories = req.query.categories || [];
     if (!Array.isArray(selectedCategories)) {
       selectedCategories = [selectedCategories];
@@ -137,7 +128,6 @@ const getProductsByBrand = async (req, res) => {
         filterCriteria.category = { $in: categoryIds };
     }
 
-    // Size filtering (if needed, based on the original loadShop logic)
     let selectedSizes = req.query.sizes || [];
     if (!Array.isArray(selectedSizes)) {
       selectedSizes = [selectedSizes];
@@ -200,7 +190,7 @@ async function sendVerificationEmail(email, otp) {
       requireTLS: true,
       auth: {
         user: "fasilu707@gmail.com",
-        pass: 'pfel wwtg uled vlxf',
+        pass: "pfel wwtg uled vlxf",
       },
     });
     const info = await transporter.sendMail({
@@ -220,7 +210,7 @@ async function sendVerificationEmail(email, otp) {
 const signup = async (req, res) => {
   const { username, phone, email, password } = req.body;
   try {
-    console.log(req.body, 'signup body data');
+    console.log(req.body, "signup body data");
     const findUser = await User.findOne({ email });
     if (findUser) {
       return res.render("signup", {
@@ -228,14 +218,16 @@ const signup = async (req, res) => {
       });
     }
     let otp = generateOtp();
-    console.log('top generating otp', otp)
+    console.log("top generating otp", otp);
 
     console.log(
-  "Using email:", process.env.NODEMAILER_EMAIL,
-  "Pass length:", process.env.NODEMAILER_PASSWORD
-);
+      "Using email:",
+      process.env.NODEMAILER_EMAIL,
+      "Pass length:",
+      process.env.NODEMAILER_PASSWORD
+    );
     const sentEmail = await sendVerificationEmail(email, otp);
-    console.log(sentEmail, ' 1101fasilu sent email checking')
+    console.log(sentEmail, " 1101fasilu sent email checking");
     if (!sentEmail) {
       return res.json("email-error");
     }
@@ -271,8 +263,6 @@ const loadotpPage = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-
 
 const generateReferralCode = () => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -314,17 +304,16 @@ const otpPage = async (req, res) => {
 
 const loadUserProfile = async (req, res) => {
   try {
-      const user = await User.findOne({ _id: req.cookies.user });
-      if (!user) {
-          return res.status(404).send('User not found');
-      }
-      res.render('userprofile', { user });
+    const user = await User.findOne({ _id: req.cookies.user });
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    res.render("userprofile", { user });
   } catch (error) {
-      console.error('Error loading user profile:', error);
-      res.status(500).send('Error loading user profile');
+    console.error("Error loading user profile:", error);
+    res.status(500).send("Error loading user profile");
   }
 };
-
 
 const resendOtp = async (req, res) => {
   try {
@@ -375,7 +364,7 @@ const login = async (req, res) => {
     const { email, password, referralCode } = req.body;
 
     const findUser = await User.findOne({ email: email });
-    console.log(findUser,'find user')
+    console.log(findUser, "find user");
 
     if (!findUser) {
       return res.render("login", { message: "User not found" });
@@ -494,34 +483,34 @@ const logout = async (req, res) => {
   }
 };
 
-function generateOtp() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
+// function generateOtp() {endVerificationEmail
+//   return Math.floor(100000 + Math.random() * 900000).toString();
+// }
 
-async function sendVerificationEmail(email, otp) {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      requireTLS: true,
-      auth: {
-        user: process.env.NODEMAILER_EMAIL,
-        pass: process.env.NODEMAILER_PASSWORD,
-      },
-    });
+// async function sendVerificationEmail(email, otp) {
+//   try {
+//     const transporter = nodemailer.createTransport({
+//       service: "gmail",
+//       requireTLS: true,
+//       auth: {
+//         user: process.env.NODEMAILER_EMAIL,
+//         pass: process.env.NODEMAILER_PASSWORD,
+//       },
+//     });
 
-    await transporter.sendMail({
-      from: process.env.NODEMAILER_EMAIL,
-      to: email,
-      subject: "Reset your password",
-      html: `<b>Your OTP for password reset: ${otp}</b>`,
-    });
+//     await transporter.sendMail({
+//       from: process.env.NODEMAILER_EMAIL,
+//       to: email,
+//       subject: "Reset your password",
+//       html: `<b>Your OTP for password reset: ${otp}</b>`,
+//     });
 
-    return true;
-  } catch (error) {
-    console.error("Error in sending email", error);
-    return false;
-  }
-}
+//     return true;
+//   } catch (error) {
+//     console.error("Error in sending email", error);
+//     return false;
+//   }
+// }
 
 const loadForgotPassword = (req, res) => {
   const error = req.session.forgotPasswordError || null;
@@ -728,7 +717,7 @@ const loadCart = async (req, res) => {
         cart: { items: [] },
         hasOutOfStockItems: false,
         totalDiscountedPrice: 0,
-        brands // Pass as a number
+        brands, // Pass as a number
       });
     }
 
@@ -788,22 +777,36 @@ const removeFromCart = async (req, res) => {
     const itemId = req.params.itemId;
 
     if (!userId) {
+      if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
+        return res.status(401).json({ error: "Not logged in" });
+      }
       return res.redirect("/login");
     }
 
     const cart = await Cart.findOne({ userId: userId });
 
     if (!cart) {
+      if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
+        return res.status(404).json({ error: "Cart not found" });
+      }
       return res.status(404).send("Cart not found");
     }
 
     cart.items = cart.items.filter((item) => item._id.toString() !== itemId);
-
     await cart.save();
+
+    if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
+      return res.json({ success: true, message: "Item removed" });
+    }
 
     res.redirect("/cart");
   } catch (error) {
     console.error("Error removing item from cart:", error);
+
+    if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
     res.status(500).send("Internal Server Error");
   }
 };
@@ -1051,87 +1054,6 @@ const getOrderPage = async (req, res) => {
   }
 };
 
-// controllers/OrderController.js
-// const returnOrder = async (req, res) => {
-//   const userId = req.cookies.user;
-//   const orderId = req.params.orderId;
-
-//   if (!userId) {
-//     return res
-//       .status(400)
-//       .json({ error: "User not logged in or session expired" });
-//   }
-
-//   try {
-//     // Find the order by ID
-//     const order = await Order.findById(orderId);
-
-//     // Check if the order exists and belongs to the user
-//     if (!order || order.userId.toString() !== userId.toString()) {
-//       return res
-//         .status(404)
-//         .json({ error: "Order not found or does not belong to user" });
-//     }
-
-//     // Check if the order has already been returned
-//     if (order.status === "Returned") {
-//       return res.status(400).json({ error: "Order has already been returned" });
-//     }
-
-//     // Update the order status to "Returned"
-//     order.status = "Returned";
-//     await order.save();
-
-//     // Increase the stock for each item in the order
-//     for (const item of order.ordereditems) {
-//       const product = await Product.findById(item.productId);
-
-//       if (product) {
-//         if (item.variantId) {
-//           const variant = product.variants.id(item.variantId);
-
-//           if (variant) {
-//             variant.stock += item.quantity; // Increase variant stock
-//             await product.save();
-//           } else {
-//             console.error(
-//               `Variant with ID ${item.variantId} not found in product ${product._id}`
-//             );
-//           }
-//         } else {
-//           product.stock += item.quantity; // Increase product stock if no variant
-//           await product.save();
-//         }
-//       }
-//     }
-
-//     // Process refund to the user's wallet
-//     const wallet = await Wallet.findOne({ userId: order.userId });
-//     if (wallet) {
-//       const refundAmount = order.finalPrice; // Amount to refund
-
-//       // Increase the wallet balance
-//       wallet.balance += refundAmount;
-
-//       // Record the transaction
-//       wallet.transactions.push({
-//         amount: refundAmount,
-//         type: "credit",
-//         description: `Refund for returned order ${order._id}`,
-//         orderId: order._id,
-//         date: new Date(),
-//       });
-
-//       await wallet.save();
-//     }
-
-//     res.redirect("/orders");
-//   } catch (err) {
-//     console.error("Error processing return:", err);
-//     res.status(500).json({ error: "Error processing return" });
-//   }
-// };
-
 const loadShop = async (req, res) => {
   const sortOption = req.query.sortby || "popularity";
   const page = parseInt(req.query.page) || 1;
@@ -1166,25 +1088,21 @@ const loadShop = async (req, res) => {
       break;
   }
 
-  // Capture categories and sizes from query
   let selectedCategories = req.query.categories || [];
   let selectedSizes = req.query.sizes || [];
   if (!Array.isArray(selectedCategories))
     selectedCategories = [selectedCategories];
   if (!Array.isArray(selectedSizes)) selectedSizes = [selectedSizes];
 
-  // Initialize filter criteria
   let filterCriteria = { status: "active" };
 
-  // Search filtering
   if (searchQuery) {
     filterCriteria.name = { $regex: new RegExp(searchQuery, "i") };
   }
 
   try {
-    console.log("Selected Categories:", selectedCategories); // Debugging
+    console.log("Selected Categories:", selectedCategories); 
 
-    // Category filtering
     if (selectedCategories.length > 0) {
       const categories = await Category.find({
         $or: [
@@ -1204,7 +1122,7 @@ const loadShop = async (req, res) => {
         isBlocked: false,
       });
 
-      console.log("Matched Categories from DB:", categories); // Debugging
+      console.log("Matched Categories from DB:", categories);
 
       const categoryIds = categories.map((category) => category._id);
       if (categoryIds.length > 0) {
@@ -1214,7 +1132,6 @@ const loadShop = async (req, res) => {
       }
     }
 
-    // Size filtering
     if (selectedSizes.length > 0) {
       filterCriteria.variants = {
         $elemMatch: {
@@ -1223,10 +1140,8 @@ const loadShop = async (req, res) => {
       };
     }
 
-    // Fetch brands for rendering
     const brands = await Brand.find({});
 
-    // Fetch total products and products based on filter criteria
     const totalProducts = await Product.countDocuments(filterCriteria);
     const products = await Product.find(filterCriteria)
       .sort(sortCriteria)
@@ -1236,7 +1151,6 @@ const loadShop = async (req, res) => {
 
     const totalPages = Math.ceil(totalProducts / limit);
 
-    // Render the shop view with products and filter data
     res.render("shop", {
       products,
       currentPage: page,
@@ -1259,7 +1173,7 @@ const Razorpay = require("razorpay");
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.YOUR_RAZORPAY_KEY_ID, // Your Razorpay Key ID
-  key_secret: process.env.RAZORPAY_KEY_SECRET, // Your Razorpay Secret Key
+  key_secret: process.env.RAZORPAY_KEY_SECRET, 
 });
 
 const placeOrder = async (req, res) => {
@@ -1284,14 +1198,27 @@ const placeOrder = async (req, res) => {
       .json({ success: false, message: "Invalid address selected." });
   }
 
+  const user = await User.findById(req.session.user);
+  console.log('12345678912345678',user, "user in place order");
+  
   try {
-    const user = await User.findOne({ _id: req.session.user });
+
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not found." });
     }
 
+    if (user.orderInProgress) {
+      return res.status(429).json({
+        success: false,
+        message: "An order is already being processed. Please wait.",
+      });
+    }
+
+    user.orderInProgress = true;
+    await user.save();
+    console.log("orderInProgress updated for user:", user._id);
     const addressDoc = await Address.findById(selectedAddressId);
     if (!addressDoc || !addressDoc.address || addressDoc.address.length === 0) {
       return res
@@ -1316,11 +1243,9 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    // Loop through each ordered item to update stock of the specific product variant
     for (let item of orderItems) {
       const product = await Product.findById(item.productId);
 
-      // Check if product exists and is active
       if (!product || product.status !== "active") {
         return res.status(404).json({
           success: false,
@@ -1328,10 +1253,8 @@ const placeOrder = async (req, res) => {
         });
       }
 
-      // Retrieve the variant based on the variantId
       const variant = product.variants.id(item.variantId);
 
-      // Check if the variant exists
       if (!variant) {
         return res.status(404).json({
           success: false,
@@ -1339,7 +1262,6 @@ const placeOrder = async (req, res) => {
         });
       }
 
-      // Check if the stock exists or is zero
       if (variant.stock === 0) {
         return res.status(400).json({
           success: false,
@@ -1347,7 +1269,6 @@ const placeOrder = async (req, res) => {
         });
       }
 
-      // Check if the requested quantity can be fulfilled
       if (variant.stock < item.quantity) {
         return res.status(400).json({
           success: false,
@@ -1358,36 +1279,31 @@ const placeOrder = async (req, res) => {
       // Decrease the stock
       // variant.stock -= item.quantity;
 
-      await product.save(); // Save the updated product with decreased variant stock
+      await product.save();
     }
 
     let razorpayOrderId = null;
 
-    // Handle wallet payment method
     if (paymentMethod === "wallet") {
       let wallet = await Wallet.findOne({ userId: user._id });
 
-      // If wallet does not exist, create a new one
       if (!wallet) {
         wallet = new Wallet({
           userId: user._id,
-          balance: 0, // Initialize with 0 balance
+          balance: 0,
           transactions: [],
         });
-        await wallet.save(); // Save the new wallet
+        await wallet.save();
       }
 
-      // Check if wallet has enough balance
       if (wallet.balance < finalPrice) {
         return res
           .status(400)
           .json({ success: false, message: "Insufficient wallet balance." });
       }
 
-      // Deduct the final price from the wallet balance
       wallet.balance -= finalPrice;
 
-      // Record the transaction in the wallet
       wallet.transactions.push({
         type: "debit",
         amount: finalPrice,
@@ -1395,15 +1311,15 @@ const placeOrder = async (req, res) => {
         date: new Date(),
       });
 
-      await wallet.save(); // Save the wallet with the updated balance and transaction
+      await wallet.save();
     }
 
     if (paymentMethod === "razorpay") {
       const options = {
-        amount: finalPrice * 100, // Amount in paise
+        amount: finalPrice * 100,
         currency: "INR",
         receipt: `receipt_order_${new Date().getTime()}`,
-        payment_capture: 1, // Auto capture payment
+        payment_capture: 1,
       };
 
       try {
@@ -1419,7 +1335,7 @@ const placeOrder = async (req, res) => {
           finalPrice: finalPrice,
           discount: discount,
           razorpayOrderId,
-          paymentStatus: "pending", // Razorpay payment pending
+          paymentStatus: "pending",
           status: "Pending",
         });
         console.log(
@@ -1430,9 +1346,9 @@ const placeOrder = async (req, res) => {
 
         await newOrder.save();
 
-        cart.items = [];
-        cart.totalPrice = 0;
-        await cart.save();
+        // cart.items = [];
+        // cart.totalPrice = 0;
+        // await cart.save();
 
         return res.json({
           status: true,
@@ -1443,6 +1359,7 @@ const placeOrder = async (req, res) => {
         });
       } catch (err) {
         console.error("Error creating Razorpay order:", err);
+        
         return res.status(500).json({
           success: false,
           message: "Failed to create Razorpay order.",
@@ -1450,7 +1367,6 @@ const placeOrder = async (req, res) => {
       }
     }
 
-    // Save the order for wallet or other payment methods
     const newOrder = new Order({
       userId: user._id,
       address: address,
@@ -1467,12 +1383,10 @@ const placeOrder = async (req, res) => {
 
     const order = await newOrder.save();
 
-    // Clear the cart after order is placed
     cart.items = [];
     cart.totalPrice = 0;
     await cart.save();
 
-    // Add order transaction to user's transaction history
     if (!user.transactions) {
       user.transactions = [];
     }
@@ -1493,6 +1407,10 @@ const placeOrder = async (req, res) => {
     });
   } catch (error) {
     console.error("Error placing order:", error);
+    if (user) {
+      user.orderInProgress = false;
+      await user.save();
+    }
     return res
       .status(500)
       .json({ success: false, message: "Failed to place order." });
@@ -1506,12 +1424,14 @@ const repayment_razorpayPOST = async (req, res) => {
     const order = await Order.findById(orderId);
 
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
     }
 
     // Calculate the total amount excluding canceled items
-    const validItemsTotal = order.ordereditems  // Adjusted to match the database field name
-      .filter(item => !item.isCancelled)  // Using isCancelled instead of status
+    const validItemsTotal = order.ordereditems // Adjusted to match the database field name
+      .filter((item) => !item.isCancelled) // Using isCancelled instead of status
       .reduce((total, item) => total + item.price * item.quantity, 0);
 
     const amount = validItemsTotal * 100; // Convert to smallest currency unit (e.g., paise)
@@ -1542,8 +1462,6 @@ const repayment_razorpayPOST = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error occurred" });
   }
 };
-
-
 
 const verifyRepaymentPOST = async (req, res) => {
   try {
@@ -1606,6 +1524,11 @@ const verifyRepaymentPOST = async (req, res) => {
       }
 
       await order.save();
+      const user = await User.findById(order.userId);
+      if (user) {
+        user.orderInProgress = false;
+        await user.save();
+      }
 
       res.status(200).json({
         success: true,
@@ -1637,8 +1560,13 @@ const paymentFailed = async (req, res) => {
         .json({ success: false, message: "Order not found" });
     }
 
-    // Redirect or respond with failure message
-    res.redirect("/payment-failure"); // Change this to your payment failure page URL
+    const user = await User.findById(order.userId);
+    if (user) {
+      user.orderInProgress = false;
+      await user.save();
+    }
+
+    res.redirect("/payment-failure");
   } catch (error) {
     console.error("Error updating payment status:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -1684,10 +1612,10 @@ const createOrder = async (req, res) => {
 
     // Create an order in Razorpay
     const razorpayOrder = await razorpay.orders.create({
-      amount: finalPrice * 100, // Amount in paise
+      amount: finalPrice * 100, 
       currency: "INR",
       receipt: newOrder._id.toString(),
-      payment_capture: 1, // Auto-capture the payment
+      payment_capture: 1, 
     });
 
     if (!razorpayOrder) {
@@ -1700,10 +1628,10 @@ const createOrder = async (req, res) => {
     res.json({
       success: true,
       order: {
-        orderId: newOrder._id, // Your custom order ID
-        razorpayOrderId: razorpayOrder.id, // Razorpay order ID
-        totalAmount: finalPrice, // Amount in INR (formatted as needed)
-        paymentStatus: "Pending", // Initial payment status
+        orderId: newOrder._id, 
+        razorpayOrderId: razorpayOrder.id, 
+        totalAmount: finalPrice, 
+        paymentStatus: "Pending", 
       },
     });
   } catch (error) {
@@ -1720,22 +1648,20 @@ const paymentSuccess = async (req, res) => {
       return res.status(404).render("error", { message: "Order not found" });
     }
 
-    // Log applied coupon code
     console.log("Applied Coupon:", req.session.appliedCoupon);
     console.log("Session Contents:", req.session);
 
     if (req.session.appliedCoupon) {
       const couponCode = req.session.appliedCoupon.toLowerCase();
-      console.log("Querying with coupon code:", couponCode); // Log coupon code being queried
+      console.log("Querying with coupon code:", couponCode);
 
       const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
-      console.log("Retrieved Coupon:", coupon); // Log the retrieved coupon
+      console.log("Retrieved Coupon:", coupon); 
 
       if (coupon) {
         const userId = req.cookies.user;
         const mongooseUserId = new mongoose.Types.ObjectId(userId);
 
-        // Check if userId is valid and coupon.userId is an array
         if (Array.isArray(coupon.userId)) {
           coupon.userId.push(mongooseUserId);
           await coupon.save();
@@ -1744,18 +1670,20 @@ const paymentSuccess = async (req, res) => {
           console.error("coupon.userId is not an array");
         }
 
-        // Set couponApplied to true in the order
         order.couponApplied = true;
       } else {
         console.error("Coupon not found or inactive");
       }
 
-      // Clear applied coupon from the session
       delete req.session.appliedCoupon;
     }
 
-    // Save the updated order with couponApplied status
     await order.save();
+    const user = await User.findById(order.userId);
+  if (user) {
+    user.orderInProgress = false;
+    await user.save();
+  }
 
     // Render the order success page or send a success response
     res.render("orderSuccess", { order });
@@ -1794,6 +1722,16 @@ const verifyPayment = async (req, res) => {
     if (isVerified) {
       order.paymentStatus = "success";
       await order.save();
+      const cart = await Cart.findOne({ userId: order.userId });
+      if (cart) {
+        cart.items = [];
+        cart.totalPrice = 0;
+        await cart.save();
+      }
+      const user = await User.findById(order.userId);
+      if (user) {
+        user.orderInProgress = false;
+      }
       return res.status(200).json({ success: true, orderID });
     } else {
       order.paymentStatus = "failed";
@@ -1901,13 +1839,22 @@ const applyCoupon = async (req, res) => {
     discountAmount = Math.min(discountAmount, totalAmountNum);
     const newTotal = totalAmountNum - discountAmount;
 
-    // Store the applied coupon in the session, trimmed
     req.session.appliedCoupon = couponCode.trim();
-    console.log("Applied Coupon Stored in Session:", req.session.appliedCoupon); // Log the stored coupon
+    console.log("Applied Coupon Stored in Session:", req.session.appliedCoupon);
 
     res.json({ success: true, discountAmount, newTotal });
   } catch (error) {
     console.error("Error applying coupon:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const removeCoupon = (req, res) => {
+  try {
+    delete req.session.appliedCoupon;
+    res.json({ success: true, message: "Coupon removed from session." });
+  } catch (error) {
+    console.error("Error removing coupon:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -1943,6 +1890,7 @@ module.exports = {
   // returnOrder,
   createOrder,
   applyCoupon,
+  removeCoupon,
   paymentSuccess,
   verifyPayment,
   repayment_razorpayPOST,
@@ -1950,5 +1898,5 @@ module.exports = {
   paymentFailed,
   loadBlog,
   loadUserProfile,
-  generateReferralCode
+  generateReferralCode,
 };

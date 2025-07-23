@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const userRouter = require('./routes/userRouter');
 const adminRouter = require('./routes/adminRouter');
 const dashboardRoutes = require('./routes/adminRouter');
+const morgan = require('morgan'); 
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('./config/passport');
@@ -13,7 +14,7 @@ const cookieParser = require('cookie-parser');
 
 
 connectDB();
-
+app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

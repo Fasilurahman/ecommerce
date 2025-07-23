@@ -84,7 +84,8 @@ const generatePDF = async (req, res) => {
       }
 
       const orders = await Order.find(matchQuery).populate('userId');
-
+      console.log(orders,'orderesssss');
+      
       const doc = new PDFDocument();
       let fileName = `Sales_Report_${new Date().toISOString().split('T')[0]}.pdf`;
       res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
@@ -99,7 +100,7 @@ const generatePDF = async (req, res) => {
           doc
               .fontSize(12)
               .text(`Order ID: ${order.orderId}`)
-              .text(`User Name: ${order.userId.name}`)
+              .text(`User Name: ${order.userId.username}`)
               .text(`Total Amount: ₹${order.finalPrice.toFixed(2)}`)
               .text(`Ordered At: ${order.createdOn.toLocaleDateString()}`)
               .text(`Delivered At: ${order.deliveredAt ? order.deliveredAt.toLocaleDateString() : 'Pending'}`)

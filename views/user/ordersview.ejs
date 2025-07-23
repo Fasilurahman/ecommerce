@@ -386,25 +386,48 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
         function confirmCancelOrder(event, orderId) {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, cancel it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/orders/cancel/${orderId}`;
-                    document.body.appendChild(form);
-                    form.submit();
+    event.preventDefault();
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, cancel it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/orders/cancel/${orderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ orderId }) 
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to cancel order');
                 }
+                return response.json(); 
+            })
+            .then(data => {
+                Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success');
+
+                const orderRow = document.getElementById(`order-${orderId}`);
+                if (orderRow) {
+                    orderRow.classList.add('cancelled'); 
+                    orderRow.querySelector('.order-status').textContent = 'Cancelled';
+                }
+            })
+            .catch(error => {
+                Swal.fire('Error', error.message, 'error');
             });
         }
+    });
+}
+
 
         function repaymentRazorpay(orderId) {
         fetch('/order/repayment-razorpay', {

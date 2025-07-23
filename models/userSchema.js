@@ -64,37 +64,27 @@ const userSchema = new Schema({
   ],
   referralCode: {
     type: String,
-    unique: true, // Ensure each referral code is unique
+    unique: true, 
     required: false,
-
   },
   isReferred: {
-    // Flag to check if the user has referred someone
     type: Boolean,
     default: false,
   },
   referredUsers: [
     {
-      // List of users who have used the referral code
       type: Schema.Types.ObjectId,
       ref: "User",
     },
   ],
   redeemStatus: {
-    // Status for referral redemption
     type: Boolean,
     default: false,
   },
-  // searchHistory:[{
-  //     category:{
-  //         type:Schema.Types.ObjectId,
-  //         ref:"Category"
-  //     },
-  //     searchOn:{
-  //         type:Date,
-  //         default:Date.now
-  //     }
-  // }]
+  orderInProgress: {
+    type: Boolean,
+    default: false, 
+  },
 });
 
 const User = mongoose.model("User", userSchema);

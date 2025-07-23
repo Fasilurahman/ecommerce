@@ -89,7 +89,6 @@ exports.getSalesData = async (req, res) => {
     const filter = req.query.filter;
     let groupBy;
     
-    // Determine how to group data based on the filter
     switch (filter) {
         case 'daily':
             groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$orderDate" } };
