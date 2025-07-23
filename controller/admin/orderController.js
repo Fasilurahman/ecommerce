@@ -5,32 +5,28 @@ const Product = require('../../models/productSchema');
 const orderDetails = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1; 
-        const limit = parseInt(req.query.limit) || 3; // Default to 10 items per page
-        const skip = (page - 1) * limit; // Calculate items to skip for pagination
+        const limit = parseInt(req.query.limit) || 3; 
+        const skip = (page - 1) * limit; 
 
-        // Fetch total number of orders for pagination calculation
         const totalOrders = await Order.countDocuments();
-        const totalPages = Math.ceil(totalOrders / limit); // Calculate total number of pages
+        const totalPages = Math.ceil(totalOrders / limit); 
 
-        // Fetch orders for the current page
         const orders = await Order.find({})
             .populate('userId', 'name email')
             .populate('ordereditems.productId', 'name')
             .populate('address')
-            .sort({ createdOn: -1 }) // Sort by latest
+            .sort({ createdOn: -1 }) 
             .skip(skip)
             .limit(limit)
             .lean();
 
-        // Debugging: log important values to check if pagination works
         console.log({ page, limit, totalOrders, totalPages, skip });
 
-        // Render the orders page with the pagination data
         res.render('order', { 
             orders, 
             currentPage: page, 
             totalPages,
-            query: req.query // Pass the query for URL limit handling
+            query: req.query 
         });
     } catch (error) {
         console.error('Error fetching orders:', error);
@@ -39,10 +35,6 @@ const orderDetails = async (req, res) => {
 };
 
 
-
-
-
-// Function to update order status
 const updateOrderStatus = async (req, res) => {
     const orderId = req.params.orderId;
     const newStatus = req.body.status;
