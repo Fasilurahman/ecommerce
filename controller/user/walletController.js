@@ -6,12 +6,10 @@ const loadWalletPage = async (req, res) => {
     const users = req.cookies.user;
     const user = await User.findById(users);
 
-    // Get page from query (default = 1)
     const page = parseInt(req.query.page) || 1;
-    const limit = 5; // Number of transactions per page
+    const limit = 5; 
     const skip = (page - 1) * limit;
 
-    // Find or create wallet
     let wallet = await Wallet.findOne({ userId: user });
 
     if (!wallet) {
@@ -29,7 +27,6 @@ const sortedTransactions = wallet.transactions.sort(
 );
 
 
-    // Paginate transactions
     const totalTransactions = sortedTransactions.length;
     const totalPages = Math.ceil(totalTransactions / limit);
     const paginatedTransactions = sortedTransactions.slice(skip, skip + limit);

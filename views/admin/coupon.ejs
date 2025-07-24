@@ -412,7 +412,7 @@
                                                             <td><%= coupon.code %></td>
                                                             <td><%= coupon.discountType %></td>
                                                             <td><%= coupon.discountValue %></td>
-                                                            <td><%= coupon.expiryDate %></td>
+                                                            <td><%= coupon.expiryDate.toDateString() %></td>
                                                             <td>
                                                                 <% if (!coupon.isBlocked) { %>
                                                                     <button onclick="blockCoupon('<%= coupon._id %>')" class="btn btn-warning">Block</button>
